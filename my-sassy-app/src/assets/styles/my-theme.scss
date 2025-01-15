@@ -1,0 +1,18 @@
+﻿@use "@angular/material" as mat;
+@import "partials/theme";
+@include mat.core();
+
+
+html {
+  color-scheme: light;
+  @include mat.theme($theme);
+  height: 100%;
+}
+
+body {
+  @include mat.all-component-themes($theme);
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  margin: 0;
+  height: 100%;
+}
+
