@@ -1,4 +1,5 @@
-﻿using HealthQ_API.Entities;
+﻿using HealthQ_API.DTOs;
+using HealthQ_API.Entities;
 using HealthQ_API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -46,7 +47,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> Post([FromBody] UserModel user, CancellationToken ct)
+    public async Task<ActionResult> Post([FromBody] UserDTO user, CancellationToken ct)
     {
         try
         {
@@ -57,10 +58,14 @@ public class UserController : ControllerBase
         {
             return StatusCode(500, "Internal Server Error");
         }
+        catch (InvalidCastException e)
+        {
+            return StatusCode(500, e.Message);
+        }
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult> Put(string email, UserModel user, CancellationToken ct)
+    public async Task<ActionResult> Put(string email, UserDTO user, CancellationToken ct)
     {
 
         try
