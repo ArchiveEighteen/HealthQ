@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -11,11 +11,13 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioButton } from '@angular/material/radio';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatMenuModule } from '@angular/material/menu';
 import { FormsModule } from '@angular/forms';
 import {
   Questionnaire,
   QuestionnaireItem,
   QuestionnaireItemAnswerOption,
+  QuestionnaireItemEnableWhen,
 } from 'fhir/r5';
 import { v4 as uuidv4 } from 'uuid';
 import { QuestionType } from '../../enums/question-types';
@@ -35,19 +37,23 @@ import { UiQuestionnaire } from '../../classes/ui-questionnaire';
     MatSelectModule,
     FormsModule,
     MatCheckboxModule,
-    MatRadioButton,
     MatDividerModule,
     MatTooltipModule,
+    MatMenuModule,
   ],
   templateUrl: './q-constructor.component.html',
   styleUrl: './q-constructor.component.scss',
 })
 export class QConstructorComponent implements OnInit {
+  @ViewChild('questionsContainer') questionsContainer!: ElementRef;
+
   questionTypes = Object.entries(QuestionType);
 
   questionnaireTitle: string = 'Some Survey Title';
 
   uiQuestionnaire: UiQuestionnaire;
+
+  questions: QuestionnaireItem[];
 
   selectedQuestionType: string;
 
@@ -75,15 +81,25 @@ export class QConstructorComponent implements OnInit {
     if (this.questionTypes.length > 0) {
       this.selectedQuestionType = this.questionTypes[0][0];
     }
+
+    this.questions = this.uiQuestionnaire.questionnaire.item;
   }
 
   addQuestion() {
-    this.uiQuestionnaire.questionnaire.item.push({
+    this.questions.push({
       linkId: uuidv4(),
       type: 'question',
       text: '',
       answerOption: [],
     });
+
+    // Scroll to the bottom of the container
+    setTimeout(() => {
+      this.questionsContainer.nativeElement.scrollTo({
+        top: this.questionsContainer.nativeElement.scrollHeight,
+        behavior: 'smooth',
+      });
+    }, 0);
 
     this.saveToLocalStorage();
   }
@@ -97,9 +113,9 @@ export class QConstructorComponent implements OnInit {
   }
 
   deleteQuestion(question: QuestionnaireItem) {
-    const index = this.uiQuestionnaire.questionnaire.item.indexOf(question);
+    const index = this.questions.indexOf(question);
     if (index > -1) {
-      this.uiQuestionnaire.questionnaire.item.splice(index, 1);
+      this.questions.splice(index, 1);
       this.saveToLocalStorage();
     } else {
       console.log('Failed to remove question!');
@@ -128,5 +144,15 @@ export class QConstructorComponent implements OnInit {
     }
 
     this.saveToLocalStorage();
+  }
+
+  addConditionalQuestion(parentQuestion: QuestionnaireItem) {
+    this.questions.push({
+      linkId: uuidv4(),
+      type: 'question',
+      text: '',
+      answerOption: [],
+      enableWhen: [{ question: parentQuestion.linkId, operator: 'exists' }],
+    });
   }
 }

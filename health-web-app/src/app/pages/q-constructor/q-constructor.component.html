@@ -1,6 +1,6 @@
 <div class="main-container">
   <mat-toolbar color="secondary" class="header">
-    <mat-form-field subscriptSizing="dynamic">
+    <mat-form-field subscriptSizing="dynamic" class="questionnaire-title">
       <mat-label>Survey title</mat-label>
       <input
         matInput
@@ -9,7 +9,6 @@
         (blur)="saveToLocalStorage()"
       />
     </mat-form-field>
-    <span class="spacer"></span>
     <button mat-flat-button class="toolbar-button" color="primary">
       <mat-icon>star</mat-icon>
       <span>Select template</span>
@@ -33,13 +32,10 @@
     </button>
   </mat-toolbar>
 
-  <div class="questions-container">
-    <mat-card
-      *ngFor="let question of uiQuestionnaire.questionnaire.item"
-      class="question-card"
-    >
+  <div class="questions-container" #questionsContainer>
+    <mat-card *ngFor="let question of questions" class="question-card">
       <mat-card-title class="question-title">
-        <mat-form-field>
+        <mat-form-field class="question-text">
           <mat-label>Question text</mat-label>
           <textarea
             matInput
@@ -175,10 +171,20 @@
           >
             <mat-icon>delete</mat-icon>
           </button>
-          <button mat-icon-button matTooltip="More" matTooltipShowDelay="500">
+          <button
+            mat-icon-button
+            matTooltip="More"
+            matTooltipShowDelay="500"
+            [matMenuTriggerFor]="menu"
+          >
             <mat-icon>more_vert</mat-icon>
           </button>
         </mat-toolbar>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="addConditionalQuestion(question)">
+            <span>Add conditional question</span>
+          </button>
+        </mat-menu>
       </mat-card-content>
     </mat-card>
   </div>

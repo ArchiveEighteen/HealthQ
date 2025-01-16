@@ -1,9 +1,17 @@
+.main-container {
+  display: flex;
+  flex-direction: column;
+  height: 95vh;
+}
+
 .questions-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
   box-sizing: border-box;
+  overflow-y: auto;
+  flex: 1;
 }
 
 .question-content {
@@ -29,7 +37,7 @@
 }
 
 .spacer {
-  flex-grow: 1; /* Ensures it takes up as much space as possible */
+  flex-grow: 1;
 }
 
 .toolbar-button {
@@ -79,7 +87,8 @@
   overflow: visible;
 }
 
-.answer-form-field {
+.answer-form-field,
+.question-text {
   width: 100%;
 }
 
@@ -95,4 +104,8 @@
 
 .upload-button {
   margin-bottom: 1rem;
+}
+
+.questionnaire-title {
+  flex-grow: 1;
 }
