@@ -1,0 +1,185 @@
+<div class="main-container">
+  <mat-toolbar color="secondary" class="header">
+    <mat-form-field subscriptSizing="dynamic">
+      <mat-label>Survey title</mat-label>
+      <input
+        matInput
+        [(ngModel)]="uiQuestionnaire.questionnaire.title"
+        (keyup.enter)="saveToLocalStorage()"
+        (blur)="saveToLocalStorage()"
+      />
+    </mat-form-field>
+    <span class="spacer"></span>
+    <button mat-flat-button class="toolbar-button" color="primary">
+      <mat-icon>star</mat-icon>
+      <span>Select template</span>
+    </button>
+    <button mat-flat-button class="toolbar-button" color="primary">
+      <mat-icon>bookmark</mat-icon>
+      <span>Save template</span>
+    </button>
+    <button
+      mat-flat-button
+      class="toolbar-button"
+      color="primary"
+      (click)="addQuestion()"
+    >
+      <mat-icon>add</mat-icon>
+      <span>Add question</span>
+    </button>
+    <button mat-flat-button class="toolbar-button" color="accent">
+      <mat-icon>check</mat-icon>
+      <span>Submit</span>
+    </button>
+  </mat-toolbar>
+
+  <div class="questions-container">
+    <mat-card
+      *ngFor="let question of uiQuestionnaire.questionnaire.item"
+      class="question-card"
+    >
+      <mat-card-title class="question-title">
+        <mat-form-field>
+          <mat-label>Question text</mat-label>
+          <textarea
+            matInput
+            [(ngModel)]="question.text"
+            (keyup.enter)="saveToLocalStorage()"
+            (blur)="saveToLocalStorage()"
+          ></textarea>
+        </mat-form-field>
+        <mat-form-field class="question-type-select">
+          <mat-label>Question type</mat-label>
+          <span class="spacer"></span>
+          <mat-select
+            color="primary"
+            [(ngModel)]="question.type"
+            (selectionChange)="onQuestionChange(question)"
+          >
+            <mat-option *ngFor="let type of questionTypes" [value]="type[0]">
+              {{ type[1] }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </mat-card-title>
+      <mat-divider></mat-divider>
+
+      <mat-card-content class="question-content">
+        <ng-container [ngSwitch]="question.type">
+          <!-- One choice -->
+          <ng-container *ngSwitchCase="'OneChoice'">
+            <div *ngFor="let option of question.answerOption" class="option">
+              <mat-icon class="icon radio-icon"
+                >radio_button_unchecked</mat-icon
+              >
+              <mat-form-field
+                subscriptSizing="dynamic"
+                class="answer-form-field"
+              >
+                <input
+                  matInput
+                  [(ngModel)]="option.valueString"
+                  (keyup.enter)="saveToLocalStorage()"
+                  (blur)="saveToLocalStorage()"
+                />
+                <button
+                  *ngIf="option.valueString"
+                  matSuffix
+                  mat-icon-button
+                  aria-label="Clear"
+                  (click)="option.valueString = ''"
+                >
+                  <mat-icon>close</mat-icon>
+                </button>
+              </mat-form-field>
+              <button
+                mat-icon-button
+                (click)="deleteOption(question, option)"
+                matTooltip="Remove option"
+              >
+                <mat-icon>remove</mat-icon>
+              </button>
+            </div>
+            <a class="new-option option" (click)="addNewOption(question)">
+              <mat-icon class="icon radio-icon"
+                >radio_button_unchecked</mat-icon
+              >
+              <span>Add option</span>
+            </a>
+          </ng-container>
+
+          <!-- Multiple choice -->
+          <ng-container *ngSwitchCase="'MultipleChoice'">
+            <div *ngFor="let option of question.answerOption" class="option">
+              <mat-icon class="icon check-icon"
+                >check_box_outline_blank</mat-icon
+              >
+              <mat-form-field
+                subscriptSizing="dynamic"
+                class="answer-form-field"
+              >
+                <input
+                  matInput
+                  [(ngModel)]="option.valueString"
+                  (keyup.enter)="saveToLocalStorage()"
+                  (blur)="saveToLocalStorage()"
+                />
+                <button
+                  *ngIf="option.valueString"
+                  matSuffix
+                  mat-icon-button
+                  aria-label="Clear"
+                  (click)="option.valueString = ''"
+                >
+                  <mat-icon>close</mat-icon>
+                </button>
+              </mat-form-field>
+              <button
+                mat-icon-button
+                (click)="deleteOption(question, option)"
+                matTooltip="Remove option"
+              >
+                <mat-icon>remove</mat-icon>
+              </button>
+            </div>
+            <a class="new-option option" (click)="addNewOption(question)">
+              <mat-icon class="icon check-icon"
+                >check_box_outline_blank</mat-icon
+              >
+              <span>Add option</span>
+            </a>
+          </ng-container>
+
+          <!-- Text input -->
+          <ng-container *ngSwitchCase="'Text'">
+            <mat-form-field appearance="outline" class="answer-form-field">
+              <mat-label>Answer</mat-label>
+              <textarea matInput disabled="true"></textarea>
+            </mat-form-field>
+          </ng-container>
+
+          <!-- File upload -->
+          <ng-container *ngSwitchCase="'File'">
+            <button mat-raised-button color="primary" class="upload-button">
+              Upload File
+            </button>
+          </ng-container>
+        </ng-container>
+        <mat-divider></mat-divider>
+        <mat-toolbar class="question-toolbar">
+          <button
+            mat-icon-button
+            matTooltip="Delete question"
+            matTooltipShowDelay="500"
+            (click)="deleteQuestion(question)"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+          <button mat-icon-button matTooltip="More" matTooltipShowDelay="500">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+        </mat-toolbar>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
