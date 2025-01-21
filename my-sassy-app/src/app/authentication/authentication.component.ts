@@ -46,12 +46,12 @@ import {MatSelect} from '@angular/material/select';
 export class AuthenticationComponent {
 
   constructor(public service: AuthenticationService) {
-    service.formData.userType = "administrator";
+    service.formData.userType = "Administrator";
     service.formData.password = "123456";
     service.formData.firstName = "John";
     service.formData.lastName = "Doe";
     service.formData.email = "john@doe.com";
-    service.formData.gender = "male";
+    service.formData.gender = "Male";
     service.formData.birthDate = new Date(2005, 1, 6, 0, 0, 0, 0);
     service.formData.username = "CoolJohn";
     service.formData.phoneNumber = "0674527417";

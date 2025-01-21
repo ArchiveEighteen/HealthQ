@@ -1,5 +1,6 @@
 using HealthQ_API.Context;
 using HealthQ_API.Entities;
+using HealthQ_API.Services;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
@@ -10,6 +11,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers();
+
+builder.Services.AddScoped<UserService>();
 
 builder.Services.AddCors(options =>
 {
