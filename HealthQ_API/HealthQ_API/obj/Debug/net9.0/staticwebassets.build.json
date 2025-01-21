@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "5Gt4sFcLU5+nYDN/HZh0ySpBTQR+jF1/+I+/uC4IC/0=",
+  "Source": "HealthQ_API",
+  "BasePath": "_content/HealthQ_API",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
