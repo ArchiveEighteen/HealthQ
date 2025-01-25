@@ -240,3 +240,11 @@ E:\A_Work\Project.png\HealthQ_API\HealthQ_API\bin\Debug\net9.0\ru\Microsoft.Code
 E:\A_Work\Project.png\HealthQ_API\HealthQ_API\bin\Debug\net9.0\tr\Microsoft.CodeAnalysis.Scripting.resources.dll
 E:\A_Work\Project.png\HealthQ_API\HealthQ_API\bin\Debug\net9.0\zh-Hans\Microsoft.CodeAnalysis.Scripting.resources.dll
 E:\A_Work\Project.png\HealthQ_API\HealthQ_API\bin\Debug\net9.0\zh-Hant\Microsoft.CodeAnalysis.Scripting.resources.dll
+E:\A_Work\Project.png\HealthQ_API\HealthQ_API\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+E:\A_Work\Project.png\HealthQ_API\HealthQ_API\bin\Debug\net9.0\Microsoft.IdentityModel.Abstractions.dll
+E:\A_Work\Project.png\HealthQ_API\HealthQ_API\bin\Debug\net9.0\Microsoft.IdentityModel.JsonWebTokens.dll
+E:\A_Work\Project.png\HealthQ_API\HealthQ_API\bin\Debug\net9.0\Microsoft.IdentityModel.Logging.dll
+E:\A_Work\Project.png\HealthQ_API\HealthQ_API\bin\Debug\net9.0\Microsoft.IdentityModel.Protocols.dll
+E:\A_Work\Project.png\HealthQ_API\HealthQ_API\bin\Debug\net9.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+E:\A_Work\Project.png\HealthQ_API\HealthQ_API\bin\Debug\net9.0\Microsoft.IdentityModel.Tokens.dll
+E:\A_Work\Project.png\HealthQ_API\HealthQ_API\bin\Debug\net9.0\System.IdentityModel.Tokens.Jwt.dll

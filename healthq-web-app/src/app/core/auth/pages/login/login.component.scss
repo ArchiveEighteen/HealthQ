@@ -1,0 +1,38 @@
+mat-toolbar {
+  position: fixed;
+  height: 7vh;
+  z-index: 100;
+}
+mat-card-header h1 {
+  margin-top: 0
+}
+.login-container {
+  padding-top: 20vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+mat-card {
+  width: 36rem;
+  padding: 20px;
+}
+.submit-button-container{
+  width: 80%;
+  margin: auto;
+}
+.submit-button {
+  width: 100%;
+  border-radius: 9999px;
+}
+
+.signup-link {
+  margin-top: 15px;
+  text-align: center;
+}
+
+mat-form-field {
+  width: 100%;
+
+}

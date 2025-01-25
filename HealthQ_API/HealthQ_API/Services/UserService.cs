@@ -39,7 +39,7 @@ public class UserService
         var user = await _context.Users.FindAsync([email], cancellationToken: ct);
 
         if (user == null)
-            throw new NullReferenceException($"User with email {email} does not exist");
+            return null;
 
         var userDto = new UserDTO
         {
@@ -59,6 +59,9 @@ public class UserService
 
     public async Task<UserDTO> CreateUserAsync(UserDTO user, CancellationToken ct)
     {
+        if( await GetUserByEmailAsync(user.Email, ct) != null)
+            throw new Exception($"User with email {user.Email} already exists");
+        
         var (hash, salt) = HashingUtility.HashPassword(user.Password!);
 
         EGender userGender;
@@ -94,10 +97,15 @@ public class UserService
         return user;
     }
 
-    public async Task<UserDTO> UpdateUserAsync(UserDTO user, CancellationToken ct)
+    public async Task<UserDTO> VerifyUserAsync(UserDTO user, CancellationToken ct)
     {
-        _context.Entry(user).State = EntityState.Modified;
-        await _context.SaveChangesAsync(ct);
+        var existingUser = await _context.Users.FindAsync([user.Email], cancellationToken: ct);
+        if (existingUser == null)
+            throw new Exception($"User with email {user.Email} does not exist");
+
+        if(existingUser.PasswordHash != HashingUtility.HashPassword(user.Password!, existingUser.PasswordSalt).Hash)
+            throw new Exception("Wrong password");
+        
         return user;
     }
 

@@ -1,10 +1,14 @@
+using System.Text;
 using HealthQ_API.Context;
 using HealthQ_API.Entities;
 using HealthQ_API.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
+var config = builder.Configuration;
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -24,6 +28,26 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddAuthentication(x =>
+{
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(x =>
+{
+    x.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidIssuer = config["JwtSettings:Issuer"],
+        ValidAudience = config["JwtSettings:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(config["JwtSettings:Key"]!)),
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true
+    };
+});
+
 builder.Services.AddAuthorization();
 
 builder.Services.AddDbContext<HealthqDbContext>(options =>
@@ -41,10 +65,12 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
+
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseCors("Policy1");
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

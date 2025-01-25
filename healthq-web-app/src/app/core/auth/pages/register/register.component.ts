@@ -4,7 +4,7 @@ import {MatCard, MatCardContent, MatCardHeader} from '@angular/material/card';
 import {MatFormFieldModule, MatLabel, MatSuffix} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatAnchor, MatButton, MatIconButton} from '@angular/material/button';
-import {RouterLink} from '@angular/router';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {FormsModule, NgForm, NgModel} from '@angular/forms';
 import {AuthService} from '../../auth.service';
 import {MatGridList, MatGridTile} from '@angular/material/grid-list';
@@ -57,8 +57,9 @@ export class RegisterComponent {
   readonly _currentDate = new Date();
   hidePassword = signal(true);
   confirmPassword = "";
+  errorMessage: string = "";
 
-  constructor(public service: AuthService) {
+  constructor(public service: AuthService, private router: Router, public route: ActivatedRoute) {
     service.formData.userType = "Administrator";
     service.formData.password = "123456";
     service.formData.firstName = "John";
@@ -87,9 +88,12 @@ export class RegisterComponent {
   onSubmit(form: NgForm) {
     this.service.formSubmitted = true;
     if(form.valid){
-      this.service.putUser().subscribe({
+      this.service.register().subscribe({
         next: data =>{
           console.log(data);
+          this.service.isLoggedIn = true;
+          this.service.saveJwtToken(JSON.stringify(data));
+          this.router.navigate(['/']);
         },
         error: error => {
           console.log(error);

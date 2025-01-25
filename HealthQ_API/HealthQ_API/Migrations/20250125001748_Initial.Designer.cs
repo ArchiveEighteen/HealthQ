@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthQ_API.Migrations
 {
     [DbContext(typeof(HealthqDbContext))]
-    [Migration("20250105204130_Initial")]
+    [Migration("20250125001748_Initial")]
     partial class Initial
     {
         /// <inheritdoc />

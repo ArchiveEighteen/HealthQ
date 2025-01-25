@@ -1,1 +1,49 @@
-<p>login works!</p>
+<div class="login-container">
+  <mat-card>
+    <mat-card-header>
+      <h1>Log in</h1>
+    </mat-card-header>
+    <mat-card-content>
+      <form #form="ngForm" (submit)="onSubmit(form)" [class.submitted]="service.formSubmitted" novalidate
+            autocomplete="off">
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Email</mat-label>
+          <input
+            matInput
+            name="email"
+            #email="ngModel"
+            [(ngModel)]="service.formData.email"
+            type="email"
+            required
+          />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Password</mat-label>
+          <input
+            matInput
+            [type]="hidePassword() ? 'password' : 'text'"
+            name="password"
+            #password="ngModel"
+            [(ngModel)]="service.formData.password"
+            required/>
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="changeButtonVisibility($event)"
+            [attr.aria-label]="'Hide password'"
+            [attr.aria-pressed]="hidePassword()"
+          >
+            <mat-icon>{{hidePassword() ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </button>
+        </mat-form-field>
+        <div class="submit-button-container">
+          <button mat-raised-button type="submit" class="submit-button">Sign up</button>
+        </div>
+      </form>
+      <div class="signup-link">
+        <a mat-button routerLink="/signup">Don't have an account? Sing up.</a>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

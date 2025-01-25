@@ -1,12 +1,15 @@
 ﻿using HealthQ_API.DTOs;
 using HealthQ_API.Entities;
+using HealthQ_API.Security;
 using HealthQ_API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace HealthQ_API.Controllers;
 
-[Route("api/[controller]")]
+[Authorize]
+[Route("[controller]/[action]")]
 [ApiController]
 public class UserController : ControllerBase
 {
@@ -18,7 +21,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult> GetAll(CancellationToken ct)
+    public async Task<ActionResult> Get(CancellationToken ct)
     {
         try
         {
@@ -31,7 +34,7 @@ public class UserController : ControllerBase
         }
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{email}")]
     public async Task<ActionResult> GetById(string email, CancellationToken ct)
     {
         try
@@ -46,46 +49,52 @@ public class UserController : ControllerBase
         }
     }
 
+    [AllowAnonymous]
     [HttpPost]
-    public async Task<ActionResult> Post([FromBody] UserDTO user, CancellationToken ct)
+    public async Task<ActionResult> Register([FromBody] UserDTO user, CancellationToken ct)
     {
         try
         {
             var createdUser = await _userService.CreateUserAsync(user, ct);
-            return Ok(createdUser);
+            var accessToken = $"{{\"token\":\"{JwtUtility.GenerateToken(createdUser.Email)}\"}}";
+            return Ok(accessToken);
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(500, "Internal Server Error");
+            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
         }
-        catch (InvalidCastException e)
+        catch (InvalidCastException)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError, "{\"message\":\"Internal Server Error\"}");
+        }
+        catch (Exception e)
+        {
+            return StatusCode(StatusCodes.Status409Conflict, $"{{\"message\":\"{e.Message}\"}}");
         }
     }
 
-    [HttpPut("{id}")]
-    public async Task<ActionResult> Put(string email, UserDTO user, CancellationToken ct)
+    [AllowAnonymous]
+    [HttpPut]
+    public async Task<ActionResult> Login(UserDTO user, CancellationToken ct)
     {
 
         try
         {
-            if (email != user.Email) return BadRequest();
-
-            var updatedUser = await _userService.UpdateUserAsync(user, ct);
-            return Ok(updatedUser);
+            var updatedUser = await _userService.VerifyUserAsync(user, ct);
+            var accessToken = $"{{\"token\":\"{JwtUtility.GenerateToken(updatedUser.Email)}\"}}";
+            return Ok(accessToken);
         }
         catch (OperationCanceledException)
         {
             return StatusCode(500, "Internal Server Error");
         }
-        catch (DbUpdateConcurrencyException)
+        catch (Exception e)
         {
-            return Conflict();
+            return StatusCode(StatusCodes.Status409Conflict, $"{{\"message\":\"{e.Message}\"}}");
         }
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{email}")]
     public async Task<ActionResult> Delete(string email, CancellationToken ct)
     {
         var user = await _userService.GetUserByEmailAsync(email, ct);
