@@ -56,8 +56,19 @@ public class UserController : ControllerBase
         try
         {
             var createdUser = await _userService.CreateUserAsync(user, ct);
-            var accessToken = $"{{\"token\":\"{JwtUtility.GenerateToken(createdUser.Email)}\"}}";
-            return Ok(accessToken);
+            
+            var accessToken = JwtUtility.GenerateToken(createdUser.Email);
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true, // Prevents JavaScript from accessing it (Mitigates XSS)
+                Secure = true,   // TODO: set to 'true' after release
+                SameSite = SameSiteMode.Lax, // Helps prevent CSRF attacks + allows cross-origin requests
+                Path = "/",
+                Expires = DateTime.UtcNow.AddHours(1), // Token expiry
+            };
+            HttpContext.Response.Cookies.Append("auth_token", accessToken, cookieOptions);
+            
+            return Ok(createdUser);
         }
         catch (OperationCanceledException)
         {
@@ -81,8 +92,19 @@ public class UserController : ControllerBase
         try
         {
             var updatedUser = await _userService.VerifyUserAsync(user, ct);
-            var accessToken = $"{{\"token\":\"{JwtUtility.GenerateToken(updatedUser.Email)}\"}}";
-            return Ok(accessToken);
+            
+            var accessToken = JwtUtility.GenerateToken(updatedUser.Email);
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true, // Prevents JavaScript from accessing it (Mitigates XSS)
+                Secure = true,   // TODO: set to 'true' after release
+                SameSite = SameSiteMode.Lax, // Helps prevent CSRF attacks + allows cross-origin requests
+                Path = "/",
+                Expires = DateTime.UtcNow.AddHours(1), // Token expiry
+            };
+            HttpContext.Response.Cookies.Append("auth_token", accessToken, cookieOptions);
+            
+            return Ok(updatedUser);
         }
         catch (OperationCanceledException)
         {

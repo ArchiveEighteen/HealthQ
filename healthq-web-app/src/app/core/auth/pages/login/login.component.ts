@@ -43,8 +43,7 @@ export class LoginComponent {
     if(form.valid) {
       this.service.login().subscribe({
         next: data => {
-          this.service.isLoggedIn = true;
-          this.service.saveJwtToken(JSON.stringify(data));
+          this.service.$isLoggedIn = true;
           this.router.navigate(['/']);
           console.log(data);
         },

@@ -23,6 +23,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("Policy1", policy =>
     {
         policy.WithOrigins("http://localhost:4200");
+        policy.AllowCredentials();
         policy.AllowAnyHeader();
         policy.AllowAnyMethod();
     });
@@ -46,6 +47,24 @@ builder.Services.AddAuthentication(x =>
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true
     };
+
+    // Extract token from the cookie
+    x.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var token = context.Request.Cookies["auth_token"]; // Read JWT from cookies
+            if (!string.IsNullOrEmpty(token))
+            {
+                context.Token = token;
+            }
+            return Task.CompletedTask;
+        }
+    };
+}).AddCookie("Cookies", options =>
+{
+    options.Cookie.Name = "auth_token";
+    options.Cookie.SameSite = SameSiteMode.None;
 });
 
 builder.Services.AddAuthorization();
