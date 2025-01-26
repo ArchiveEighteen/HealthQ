@@ -4,8 +4,13 @@
       <h1>Log in</h1>
     </mat-card-header>
     <mat-card-content>
-      <form #form="ngForm" (submit)="onSubmit(form)" [class.submitted]="service.formSubmitted" novalidate
-            autocomplete="off">
+      <form
+        #form="ngForm"
+        (submit)="onSubmit(form)"
+        [class.submitted]="service.formSubmitted"
+        novalidate
+        autocomplete="off"
+      >
         <mat-form-field appearance="outline" class="form-field">
           <mat-label>Email</mat-label>
           <input
@@ -25,7 +30,8 @@
             name="password"
             #password="ngModel"
             [(ngModel)]="service.formData.password"
-            required/>
+            required
+          />
           <button
             mat-icon-button
             matSuffix
@@ -34,11 +40,15 @@
             [attr.aria-label]="'Hide password'"
             [attr.aria-pressed]="hidePassword()"
           >
-            <mat-icon>{{hidePassword() ? 'visibility_off' : 'visibility'}}</mat-icon>
+            <mat-icon>{{
+              hidePassword() ? "visibility_off" : "visibility"
+            }}</mat-icon>
           </button>
         </mat-form-field>
         <div class="submit-button-container">
-          <button mat-raised-button type="submit" class="submit-button">Sign up</button>
+          <button mat-raised-button type="submit" class="submit-button">
+            Sign in
+          </button>
         </div>
       </form>
       <div class="signup-link">

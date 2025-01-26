@@ -20,9 +20,9 @@ import {
   QuestionnaireItemEnableWhen,
 } from 'fhir/r5';
 import { v4 as uuidv4 } from 'uuid';
-import { QuestionType} from '../../../../shared/enums/question-types';
-import { UiQuestionnaire} from '../../../../shared/ui/ui-questionnaire';
-import {AuthService} from '../../../../core/auth/auth.service';
+import { QuestionType } from '../../../../shared/enums/question-types';
+import { UiQuestionnaire } from '../../../../shared/ui/ui-questionnaire';
+import { AuthService } from '../../../../core/auth/auth.service';
 
 @Component({
   selector: 'app-q-constructor',
@@ -60,9 +60,13 @@ export class QConstructorComponent implements OnInit {
 
   constructor(private service: AuthService) {
     service.get().subscribe({
-      next: data => {console.log(data)},
-      error: error => {console.log(error)}
-    })
+      next: (data) => {
+        console.log(data);
+      },
+      error: (error) => {
+        console.log(error);
+      },
+    });
   }
   ngOnInit(): void {
     const savedQuestionnaire = localStorage.getItem('questionnaire');
