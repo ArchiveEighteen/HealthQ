@@ -47,6 +47,18 @@ public class UserController : ControllerBase
         {
             return StatusCode(500, "Internal Server Error");
         }
+    }    
+    
+    [AllowAnonymous]
+    [HttpGet]
+    public Task<ActionResult> IsAuthenticated()
+    {
+        if(User.Identity is { IsAuthenticated: true })
+        {
+            return Task.FromResult<ActionResult>(Ok(new { isAuthenticated = true }));
+        }
+
+        return Task.FromResult<ActionResult>(Unauthorized(new {isAuthenticated = false}));
     }
 
     [AllowAnonymous]

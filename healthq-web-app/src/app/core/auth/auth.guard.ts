@@ -1,16 +1,14 @@
 import { inject } from '@angular/core';
 import {AuthService} from './auth.service';
 import {Router} from '@angular/router';
-import {subscribeOn, Subscription, tap} from 'rxjs';
+import {map, subscribeOn, Subscription, take, tap} from 'rxjs';
 
-export const authGuard = () => {
+export const authGuard = async () => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
+  const isAuthenticated = await authService.checkAuthenticated();
+  console.log("Authentication check: ", isAuthenticated);
 
-  if(authService.$isLoggedIn) {
-    console.log('authService: ', authService.$isLoggedIn);
-    return true;
-  }
-  return router.parseUrl('/login');
+  return isAuthenticated ? true : router.parseUrl('/login');
 };

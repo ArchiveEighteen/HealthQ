@@ -91,7 +91,6 @@ export class RegisterComponent {
       this.service.register().subscribe({
         next: data =>{
           console.log(data);
-          this.service.$isLoggedIn = true;
           this.router.navigate(['/']);
         },
         error: error => {
