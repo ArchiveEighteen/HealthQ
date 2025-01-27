@@ -100,7 +100,6 @@ public class UserController : ControllerBase
     [HttpPut]
     public async Task<ActionResult> Login(UserDTO user, CancellationToken ct)
     {
-
         try
         {
             var updatedUser = await _userService.VerifyUserAsync(user, ct);

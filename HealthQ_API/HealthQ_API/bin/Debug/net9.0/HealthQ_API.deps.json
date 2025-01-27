@@ -8,6 +8,7 @@
     ".NETCoreApp,Version=v9.0": {
       "HealthQ_API/1.0.0": {
         "dependencies": {
+          "Hl7.Fhir.R5": "6.0.0-alpha1",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "9.0.1",
           "Microsoft.AspNetCore.OpenApi": "9.0.0",
           "Microsoft.EntityFrameworkCore": "9.0.0",
@@ -19,6 +20,41 @@
         },
         "runtime": {
           "HealthQ_API.dll": {}
+        }
+      },
+      "Hl7.Fhir.Base/6.0.0-alpha1": {
+        "dependencies": {
+          "Newtonsoft.Json": "13.0.3",
+          "System.ComponentModel.Annotations": "5.0.0",
+          "System.Reflection.Emit.Lightweight": "4.7.0"
+        },
+        "runtime": {
+          "lib/net8.0/Hl7.Fhir.Base.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.0.0"
+          }
+        }
+      },
+      "Hl7.Fhir.Conformance/6.0.0-alpha1": {
+        "dependencies": {
+          "Hl7.Fhir.Base": "6.0.0-alpha1"
+        },
+        "runtime": {
+          "lib/net8.0/Hl7.Fhir.Conformance.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.0.0"
+          }
+        }
+      },
+      "Hl7.Fhir.R5/6.0.0-alpha1": {
+        "dependencies": {
+          "Hl7.Fhir.Conformance": "6.0.0-alpha1"
+        },
+        "runtime": {
+          "lib/net8.0/Hl7.Fhir.R5.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.0.0"
+          }
         }
       },
       "Humanizer/2.14.1": {
@@ -1703,6 +1739,7 @@
         }
       },
       "System.Collections.Immutable/8.0.0": {},
+      "System.ComponentModel.Annotations/5.0.0": {},
       "System.Composition/7.0.0": {
         "dependencies": {
           "System.Composition.AttributedModel": "7.0.0",
@@ -1791,6 +1828,7 @@
         }
       },
       "System.IO.Pipelines/7.0.0": {},
+      "System.Reflection.Emit.Lightweight/4.7.0": {},
       "System.Reflection.Metadata/8.0.0": {
         "dependencies": {
           "System.Collections.Immutable": "8.0.0"
@@ -1833,6 +1871,27 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "Hl7.Fhir.Base/6.0.0-alpha1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-waLlBAD25SN1MbQZE03ldJ6zeG7GxyiKEiyQ0e9UhIFYLrop8TCLMlu5UbE6Zw+MQ7TzYPEykPWD5Rl67s7Gsg==",
+      "path": "hl7.fhir.base/6.0.0-alpha1",
+      "hashPath": "hl7.fhir.base.6.0.0-alpha1.nupkg.sha512"
+    },
+    "Hl7.Fhir.Conformance/6.0.0-alpha1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-U0G7zwqdEzhjf7pwaeOPvMIY+cjcX942syoiGXrVTaj0SH7lYMod+9dWtC7AGDaQMmSJMz3euChoAkrHk1ucMg==",
+      "path": "hl7.fhir.conformance/6.0.0-alpha1",
+      "hashPath": "hl7.fhir.conformance.6.0.0-alpha1.nupkg.sha512"
+    },
+    "Hl7.Fhir.R5/6.0.0-alpha1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-/JR9dmj+ppF0DMJxbcJn6C6AZ+uh4qymKH+Mbe3POgugRkCnSl+SLJYrmMerJsV6WYKoWXq6CwjH145wQuZLjQ==",
+      "path": "hl7.fhir.r5/6.0.0-alpha1",
+      "hashPath": "hl7.fhir.r5.6.0.0-alpha1.nupkg.sha512"
     },
     "Humanizer/2.14.1": {
       "type": "package",
@@ -2660,6 +2719,13 @@
       "path": "system.collections.immutable/8.0.0",
       "hashPath": "system.collections.immutable.8.0.0.nupkg.sha512"
     },
+    "System.ComponentModel.Annotations/5.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-dMkqfy2el8A8/I76n2Hi1oBFEbG1SfxD2l5nhwXV3XjlnOmwxJlQbYpJH4W51odnU9sARCSAgv7S3CyAFMkpYg==",
+      "path": "system.componentmodel.annotations/5.0.0",
+      "hashPath": "system.componentmodel.annotations.5.0.0.nupkg.sha512"
+    },
     "System.Composition/7.0.0": {
       "type": "package",
       "serviceable": true,
@@ -2743,6 +2809,13 @@
       "sha512": "sha512-jRn6JYnNPW6xgQazROBLSfpdoczRw694vO5kKvMcNnpXuolEixUyw6IBuBs2Y2mlSX/LdLvyyWmfXhaI3ND1Yg==",
       "path": "system.io.pipelines/7.0.0",
       "hashPath": "system.io.pipelines.7.0.0.nupkg.sha512"
+    },
+    "System.Reflection.Emit.Lightweight/4.7.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-a4OLB4IITxAXJeV74MDx49Oq2+PsF6Sml54XAFv+2RyWwtDBcabzoxiiJRhdhx+gaohLh4hEGCLQyBozXoQPqA==",
+      "path": "system.reflection.emit.lightweight/4.7.0",
+      "hashPath": "system.reflection.emit.lightweight.4.7.0.nupkg.sha512"
     },
     "System.Reflection.Metadata/8.0.0": {
       "type": "package",

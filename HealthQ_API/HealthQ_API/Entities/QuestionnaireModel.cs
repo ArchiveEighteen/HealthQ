@@ -14,7 +14,7 @@ public class QuestionnaireModel
     [Key]
     [Required]
     [Column("id")]
-    public Guid Id { get; set; }
+    public required Guid Id { get; set; }
     
     [Required]
     [Column("questionnaire_content")]

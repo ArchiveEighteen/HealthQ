@@ -12,6 +12,7 @@ import { MatRadioButton } from '@angular/material/radio';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatSidenavModule } from '@angular/material/sidenav';
 import { FormsModule } from '@angular/forms';
 import {
   Questionnaire,
@@ -40,6 +41,7 @@ import { AuthService } from '../../../../../core/auth/auth.service';
     MatDividerModule,
     MatTooltipModule,
     MatMenuModule,
+    MatSidenavModule,
   ],
   templateUrl: './d-main-page.component.html',
   styleUrl: './d-main-page.component.scss',

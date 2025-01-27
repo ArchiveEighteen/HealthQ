@@ -1,6 +1,7 @@
 ﻿using HealthQ_API.Context;
-using HealthQ_API.DTOs;
-using Hl7.Fhir.Model;
+using HealthQ_API.Entities;
+using HealthQ_API.Entities.Auxiliary;
+using Microsoft.EntityFrameworkCore;
 
 namespace HealthQ_API.Services;
 
@@ -13,21 +14,31 @@ public class QuestionnaireService
         _context = context;
     }
 
-    public async Task<IEnumerable<Questionnaire>> GetAllSurveysAsync(CancellationToken ct)
+    public async Task<List<string>> GetAllSurveysAsync(string userEmail)
     {
-        var users = await _context.UserQuestionnaires.;
-        return users.Select(user => new UserDTO
-            {
-                Email = user.Email,
-                Username = user.Username,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                PhoneNumber = user.PhoneNumber,
-                BirthDate = user.BirthDate.ToDateTime(new TimeOnly(0, 0)),
-                Gender = user.Gender.ToString(),
-                UserType = user.UserType.ToString(),
-                Password = ""
-            })
-            .ToList();
+        var questionnaireStrings = await _context.UserQuestionnaires
+            .Where(uq => uq.User.Email == userEmail)
+            .Select(uq => uq.Questionnaire.QuestionnaireContent)
+            .ToListAsync();
+
+        return questionnaireStrings;
+    }
+
+    public async Task<UserQuestionnaire> AddSurveyAsync(string userEmail, QuestionnaireModel questionnaire)
+    {
+        if( await _context.UserQuestionnaires.Where(uq => uq.QuestionnaireId == questionnaire.Id || uq.UserId == userEmail).AnyAsync())
+            throw new Exception($"Questionnaire bound to user {userEmail} with id {questionnaire.Id} already exists");
+
+        await _context.Questionnaires.AddAsync(questionnaire);
+
+        var userQuestionnaire = new UserQuestionnaire
+        {
+            User = await _context.Users.FindAsync(userEmail),
+            Questionnaire = questionnaire,
+        };
+        
+        await _context.UserQuestionnaires.AddAsync(userQuestionnaire);
+        await _context.SaveChangesAsync();
+        return userQuestionnaire;
     }
 }

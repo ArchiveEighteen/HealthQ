@@ -9,7 +9,7 @@ import { DMainPageComponent } from './features/actors/doctor/pages/d-main-page/d
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: '/doctor',
+    redirectTo: '/constructor',
     pathMatch: 'full',
   },
   {

@@ -5,8 +5,8 @@
       <input
         matInput
         [(ngModel)]="uiQuestionnaire.questionnaire.title"
-        (keyup.enter)="saveToLocalStorage()"
-        (blur)="saveToLocalStorage()"
+        (keyup.enter)="saveToSessionStorage()"
+        (blur)="saveToSessionStorage()"
       />
     </mat-form-field>
     <button mat-flat-button class="toolbar-button">
@@ -17,15 +17,11 @@
       <mat-icon>bookmark</mat-icon>
       <span>Save template</span>
     </button>
-    <button
-      mat-flat-button
-      class="toolbar-button"
-      (click)="addQuestion()"
-    >
+    <button mat-flat-button class="toolbar-button" (click)="addQuestion()">
       <mat-icon>add</mat-icon>
       <span>Add question</span>
     </button>
-    <button mat-flat-button class="toolbar-button" >
+    <button mat-flat-button class="toolbar-button" (click)="onSubmit()">
       <mat-icon>check</mat-icon>
       <span>Submit</span>
     </button>
@@ -39,8 +35,8 @@
           <textarea
             matInput
             [(ngModel)]="question.text"
-            (keyup.enter)="saveToLocalStorage()"
-            (blur)="saveToLocalStorage()"
+            (keyup.enter)="saveToSessionStorage()"
+            (blur)="saveToSessionStorage()"
           ></textarea>
         </mat-form-field>
         <mat-form-field class="question-type-select">
@@ -64,7 +60,7 @@
           <ng-container *ngSwitchCase="'OneChoice'">
             <div *ngFor="let option of question.answerOption" class="option">
               <mat-icon class="icon radio-icon"
-              >radio_button_unchecked</mat-icon
+                >radio_button_unchecked</mat-icon
               >
               <mat-form-field
                 subscriptSizing="dynamic"
@@ -73,8 +69,8 @@
                 <input
                   matInput
                   [(ngModel)]="option.valueString"
-                  (keyup.enter)="saveToLocalStorage()"
-                  (blur)="saveToLocalStorage()"
+                  (keyup.enter)="saveToSessionStorage()"
+                  (blur)="saveToSessionStorage()"
                 />
                 <button
                   *ngIf="option.valueString"
@@ -96,7 +92,7 @@
             </div>
             <a class="new-option option" (click)="addNewOption(question)">
               <mat-icon class="icon radio-icon"
-              >radio_button_unchecked</mat-icon
+                >radio_button_unchecked</mat-icon
               >
               <span>Add option</span>
             </a>
@@ -106,7 +102,7 @@
           <ng-container *ngSwitchCase="'MultipleChoice'">
             <div *ngFor="let option of question.answerOption" class="option">
               <mat-icon class="icon check-icon"
-              >check_box_outline_blank</mat-icon
+                >check_box_outline_blank</mat-icon
               >
               <mat-form-field
                 subscriptSizing="dynamic"
@@ -115,8 +111,8 @@
                 <input
                   matInput
                   [(ngModel)]="option.valueString"
-                  (keyup.enter)="saveToLocalStorage()"
-                  (blur)="saveToLocalStorage()"
+                  (keyup.enter)="saveToSessionStorage()"
+                  (blur)="saveToSessionStorage()"
                 />
                 <button
                   *ngIf="option.valueString"
@@ -138,7 +134,7 @@
             </div>
             <a class="new-option option" (click)="addNewOption(question)">
               <mat-icon class="icon check-icon"
-              >check_box_outline_blank</mat-icon
+                >check_box_outline_blank</mat-icon
               >
               <span>Add option</span>
             </a>
@@ -154,9 +150,7 @@
 
           <!-- File upload -->
           <ng-container *ngSwitchCase="'File'">
-            <button mat-raised-button class="upload-button">
-              Upload File
-            </button>
+            <button mat-raised-button class="upload-button">Upload File</button>
           </ng-container>
         </ng-container>
         <mat-divider></mat-divider>

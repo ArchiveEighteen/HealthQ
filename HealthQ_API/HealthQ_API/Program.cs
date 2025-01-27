@@ -17,6 +17,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<QuestionnaireService>();
 
 builder.Services.AddCors(options =>
 {

@@ -498,3 +498,6 @@ C:\Users\Danatello\Documents\HealthQ\HealthQ_API\HealthQ_API\obj\Debug\net9.0\re
 C:\Users\Danatello\Documents\HealthQ\HealthQ_API\HealthQ_API\obj\Debug\net9.0\HealthQ_API.pdb
 C:\Users\Danatello\Documents\HealthQ\HealthQ_API\HealthQ_API\obj\Debug\net9.0\HealthQ_API.genruntimeconfig.cache
 C:\Users\Danatello\Documents\HealthQ\HealthQ_API\HealthQ_API\obj\Debug\net9.0\ref\HealthQ_API.dll
+C:\Users\Danatello\Documents\HealthQ\HealthQ_API\HealthQ_API\bin\Debug\net9.0\Hl7.Fhir.Base.dll
+C:\Users\Danatello\Documents\HealthQ\HealthQ_API\HealthQ_API\bin\Debug\net9.0\Hl7.Fhir.Conformance.dll
+C:\Users\Danatello\Documents\HealthQ\HealthQ_API\HealthQ_API\bin\Debug\net9.0\Hl7.Fhir.R5.dll
