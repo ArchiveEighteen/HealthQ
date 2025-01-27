@@ -27,6 +27,39 @@ namespace HealthQ_API.Migrations
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "uuid-ossp");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("HealthQ_API.Entities.Auxiliary.UserQuestionnaire", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)");
+
+                    b.Property<Guid>("QuestionnaireId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("UserId", "QuestionnaireId");
+
+                    b.HasIndex("QuestionnaireId");
+
+                    b.ToTable("user_questionnaire", "public");
+                });
+
+            modelBuilder.Entity("HealthQ_API.Entities.QuestionnaireModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("QuestionnaireContent")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("questionnaire_content");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("questionnaires", "public");
+                });
+
             modelBuilder.Entity("HealthQ_API.Entities.UserModel", b =>
                 {
                     b.Property<string>("Email")
@@ -85,6 +118,35 @@ namespace HealthQ_API.Migrations
                     b.HasKey("Email");
 
                     b.ToTable("users", "public");
+                });
+
+            modelBuilder.Entity("HealthQ_API.Entities.Auxiliary.UserQuestionnaire", b =>
+                {
+                    b.HasOne("HealthQ_API.Entities.QuestionnaireModel", "Questionnaire")
+                        .WithMany("UserQuestionnaires")
+                        .HasForeignKey("QuestionnaireId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HealthQ_API.Entities.UserModel", "User")
+                        .WithMany("UserQuestionnaires")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Questionnaire");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("HealthQ_API.Entities.QuestionnaireModel", b =>
+                {
+                    b.Navigation("UserQuestionnaires");
+                });
+
+            modelBuilder.Entity("HealthQ_API.Entities.UserModel", b =>
+                {
+                    b.Navigation("UserQuestionnaires");
                 });
 #pragma warning restore 612, 618
         }

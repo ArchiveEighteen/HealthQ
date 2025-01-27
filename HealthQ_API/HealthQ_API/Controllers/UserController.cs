@@ -1,12 +1,15 @@
 ﻿using HealthQ_API.DTOs;
 using HealthQ_API.Entities;
+using HealthQ_API.Security;
 using HealthQ_API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace HealthQ_API.Controllers;
 
-[Route("api/[controller]")]
+[Authorize]
+[Route("[controller]/[action]")]
 [ApiController]
 public class UserController : ControllerBase
 {
@@ -18,7 +21,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult> GetAll(CancellationToken ct)
+    public async Task<ActionResult> Get(CancellationToken ct)
     {
         try
         {
@@ -31,7 +34,7 @@ public class UserController : ControllerBase
         }
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{email}")]
     public async Task<ActionResult> GetById(string email, CancellationToken ct)
     {
         try
@@ -44,48 +47,87 @@ public class UserController : ControllerBase
         {
             return StatusCode(500, "Internal Server Error");
         }
+    }    
+    
+    [AllowAnonymous]
+    [HttpGet]
+    public Task<ActionResult> IsAuthenticated()
+    {
+        if(User.Identity is { IsAuthenticated: true })
+        {
+            return Task.FromResult<ActionResult>(Ok(new { isAuthenticated = true }));
+        }
+
+        return Task.FromResult<ActionResult>(Unauthorized(new {isAuthenticated = false}));
     }
 
+    [AllowAnonymous]
     [HttpPost]
-    public async Task<ActionResult> Post([FromBody] UserDTO user, CancellationToken ct)
+    public async Task<ActionResult> Register([FromBody] UserDTO user, CancellationToken ct)
     {
         try
         {
             var createdUser = await _userService.CreateUserAsync(user, ct);
+            
+            var accessToken = JwtUtility.GenerateToken(createdUser.Email);
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true, // Prevents JavaScript from accessing it (Mitigates XSS)
+                Secure = true,   // TODO: set to 'true' after release
+                SameSite = SameSiteMode.Lax, // Helps prevent CSRF attacks + allows cross-origin requests
+                Path = "/",
+                Expires = DateTime.UtcNow.AddHours(1), // Token expiry
+            };
+            HttpContext.Response.Cookies.Append("auth_token", accessToken, cookieOptions);
+            
             return Ok(createdUser);
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(500, "Internal Server Error");
+            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
         }
-        catch (InvalidCastException e)
+        catch (InvalidCastException)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError, "{\"message\":\"Internal Server Error\"}");
+        }
+        catch (Exception e)
+        {
+            return StatusCode(StatusCodes.Status409Conflict, $"{{\"message\":\"{e.Message}\"}}");
         }
     }
 
-    [HttpPut("{id}")]
-    public async Task<ActionResult> Put(string email, UserDTO user, CancellationToken ct)
+    [AllowAnonymous]
+    [HttpPut]
+    public async Task<ActionResult> Login(UserDTO user, CancellationToken ct)
     {
-
         try
         {
-            if (email != user.Email) return BadRequest();
-
-            var updatedUser = await _userService.UpdateUserAsync(user, ct);
+            var updatedUser = await _userService.VerifyUserAsync(user, ct);
+            
+            var accessToken = JwtUtility.GenerateToken(updatedUser.Email);
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true, // Prevents JavaScript from accessing it (Mitigates XSS)
+                Secure = true,   // TODO: set to 'true' after release
+                SameSite = SameSiteMode.Lax, // Helps prevent CSRF attacks + allows cross-origin requests
+                Path = "/",
+                Expires = DateTime.UtcNow.AddHours(1), // Token expiry
+            };
+            HttpContext.Response.Cookies.Append("auth_token", accessToken, cookieOptions);
+            
             return Ok(updatedUser);
         }
         catch (OperationCanceledException)
         {
             return StatusCode(500, "Internal Server Error");
         }
-        catch (DbUpdateConcurrencyException)
+        catch (Exception e)
         {
-            return Conflict();
+            return StatusCode(StatusCodes.Status409Conflict, $"{{\"message\":\"{e.Message}\"}}");
         }
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{email}")]
     public async Task<ActionResult> Delete(string email, CancellationToken ct)
     {
         var user = await _userService.GetUserByEmailAsync(email, ct);

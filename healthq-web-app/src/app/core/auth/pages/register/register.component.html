@@ -1,4 +1,3 @@
-
 <div class="registration-container">
   <mat-card>
     <mat-card-header>
@@ -84,10 +83,13 @@
           <mat-grid-tile>
             <mat-form-field appearance="outline" class="form-field">
               <mat-label>Gender</mat-label>
-              <mat-select [(value)]="service.formData.gender" required>
-                <mat-option value="Male">Male</mat-option>
-                <mat-option value="Female">Female</mat-option>
-                <mat-option value="Special">Other</mat-option>
+              <mat-select
+                #gender="ngModel"
+                [(ngModel)]="service.formData.gender"
+                name="gender"
+                required
+              >
+                <mat-option *ngFor="let gender of EGender" [value]="gender[0]"> {{gender[1]}}</mat-option>
               </mat-select>
             </mat-form-field>
           </mat-grid-tile>
@@ -109,10 +111,12 @@
           <mat-grid-tile>
             <mat-form-field appearance="outline" class="form-field">
               <mat-label>Role</mat-label>
-              <mat-select [(value)]="service.formData.userType" required>
-                <mat-option value="Administrator">Administrator</mat-option>
-                <mat-option value="Doctor">Doctor</mat-option>
-                <mat-option value="Patient">Patient</mat-option>
+              <mat-select
+                name="userRole"
+                #userRole="ngModel"
+                [(ngModel)]="service.formData.userType"
+                required>
+                <mat-option *ngFor="let role of EUserRole" [value]="role[0]">{{role[1]}}</mat-option>
               </mat-select>
             </mat-form-field>
           </mat-grid-tile>
@@ -122,11 +126,21 @@
               <mat-label>Password</mat-label>
               <input
                 matInput
+                [type]="hidePassword() ? 'password' : 'text'"
                 name="password"
                 #password="ngModel"
                 [(ngModel)]="service.formData.password"
-                type="password"
                 required/>
+              <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                (click)="changeButtonVisibility($event)"
+                [attr.aria-label]="'Hide password'"
+                [attr.aria-pressed]="hidePassword()"
+              >
+                <mat-icon>{{hidePassword() ? 'visibility_off' : 'visibility'}}</mat-icon>
+              </button>
             </mat-form-field>
           </mat-grid-tile>
 
@@ -137,8 +151,9 @@
                 matInput
                 name="conf_password"
                 #conf_password="ngModel"
-                [(ngModel)]="service.formData.password"
-                type="password"
+                [(ngModel)]="confirmPassword"
+                [type]="hidePassword() ? 'password' : 'text'"
+                (blur)="isPasswordMatch($event, password, conf_password)"
                 required/>
             </mat-form-field>
           </mat-grid-tile>

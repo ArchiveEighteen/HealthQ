@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using HealthQ_API.Entities.Auxiliary;
 
 namespace HealthQ_API.Entities;
 
@@ -56,4 +57,6 @@ public class UserModel
     [Required]
     [Column("user_type")]
     public required EUserType UserType { get; set; }
+
+    public ICollection<UserQuestionnaire> UserQuestionnaires { get; set; } = new List<UserQuestionnaire>();
 }

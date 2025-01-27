@@ -20,8 +20,14 @@ import {
   QuestionnaireItemEnableWhen,
 } from 'fhir/r5';
 import { v4 as uuidv4 } from 'uuid';
-import { QuestionType} from '../../../../shared/enums/question-types';
-import { UiQuestionnaire} from '../../../../shared/ui/ui-questionnaire';
+import { QuestionType } from '../../../../shared/enums/question-types';
+import { UiQuestionnaire } from '../../../../shared/ui/ui-questionnaire';
+import { AuthService } from '../../../../core/auth/auth.service';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../../environments/environment';
+import { User } from '../../../../core/auth/user.model';
+import { QConstructorService } from '../../q-constructor.service';
+import { QuestionnaireComponent } from '../questionnaire/questionnaire.component';
 
 @Component({
   selector: 'app-q-constructor',
@@ -57,17 +63,50 @@ export class QConstructorComponent implements OnInit {
 
   selectedQuestionType: string;
 
+  url: string = environment.apiBaseUrl + '/Questionnaire';
+
+  constructor(
+    private service: AuthService,
+    private http: HttpClient,
+    private constructorService: QConstructorService
+  ) {
+    service.get().subscribe({
+      next: (data) => {
+        console.log(data);
+      },
+      error: (error) => {
+        console.log(error);
+      },
+    });
+  }
+
   ngOnInit(): void {
-    const savedQuestionnaire = localStorage.getItem('questionnaire');
+    const savedQuestionnaire = sessionStorage.getItem('questionnaire');
     if (savedQuestionnaire) {
       this.uiQuestionnaire = JSON.parse(savedQuestionnaire);
     } else {
+      const now = new Date();
+      const offset = -now.getTimezoneOffset(); // Get timezone offset in minutes
+      const sign = offset >= 0 ? '+' : '-'; // Determine the sign for the offset
+      const hoursOffset = String(Math.abs(Math.floor(offset / 60))).padStart(
+        2,
+        '0'
+      ); // Hours part
+      const minutesOffset = String(Math.abs(offset % 60)).padStart(2, '0'); // Minutes part
+
+      const formattedDate = `${now.getFullYear()}-${String(
+        now.getMonth() + 1
+      ).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}T${String(
+        now.getHours()
+      ).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(
+        now.getSeconds()
+      ).padStart(2, '0')}${sign}${hoursOffset}:${minutesOffset}`;
+
       this.uiQuestionnaire = {
         questionnaire: {
           title: '',
-          experimental: true,
           status: 'draft',
-          date: new Date().toLocaleString(),
+          date: formattedDate,
           publisher: 'Author',
           description: '',
           item: [],
@@ -75,6 +114,7 @@ export class QConstructorComponent implements OnInit {
         },
         type: QuestionType.OneChoice,
       };
+      this.saveToSessionStorage();
     }
 
     // Automatically set the first option as selected
@@ -92,6 +132,7 @@ export class QConstructorComponent implements OnInit {
       type: 'question',
       text: '',
       answerOption: [],
+      extension: [{ url: 'question-type', valueString: '' }],
     });
 
     // Scroll to the bottom of the container
@@ -102,22 +143,25 @@ export class QConstructorComponent implements OnInit {
       });
     }, 0);
 
-    this.saveToLocalStorage();
+    this.saveToSessionStorage();
   }
 
   onQuestionChange(question: QuestionnaireItem) {
-    this.saveToLocalStorage();
+    this.saveToSessionStorage();
   }
 
-  saveToLocalStorage() {
-    localStorage.setItem('questionnaire', JSON.stringify(this.uiQuestionnaire));
+  saveToSessionStorage() {
+    sessionStorage.setItem(
+      'questionnaire',
+      JSON.stringify(this.uiQuestionnaire)
+    );
   }
 
   deleteQuestion(question: QuestionnaireItem) {
     const index = this.questions.indexOf(question);
     if (index > -1) {
       this.questions.splice(index, 1);
-      this.saveToLocalStorage();
+      this.saveToSessionStorage();
     } else {
       console.log('Failed to remove question!');
     }
@@ -132,7 +176,7 @@ export class QConstructorComponent implements OnInit {
       valueString: ``,
     });
 
-    this.saveToLocalStorage();
+    this.saveToSessionStorage();
   }
 
   deleteOption(
@@ -146,7 +190,7 @@ export class QConstructorComponent implements OnInit {
       question.answerOption.splice(index, 1);
     }
 
-    this.saveToLocalStorage();
+    this.saveToSessionStorage();
   }
 
   addConditionalQuestion(parentQuestion: QuestionnaireItem) {
@@ -157,5 +201,28 @@ export class QConstructorComponent implements OnInit {
       answerOption: [],
       enableWhen: [{ question: parentQuestion.linkId, operator: 'exists' }],
     });
+  }
+
+  onSubmit() {
+    const uiQuestionnaire: UiQuestionnaire = JSON.parse(
+      sessionStorage.getItem('questionnaire')!
+    );
+    const user: User = JSON.parse(sessionStorage.getItem('user')!);
+    if (!user) {
+      console.log('User is invalid!');
+    }
+
+    uiQuestionnaire.questionnaire.status = 'active';
+
+    this.constructorService
+      .addByEmail(uiQuestionnaire.questionnaire)
+      .subscribe({
+        next: (data) => {
+          console.log(data);
+        },
+        error: (err) => {
+          console.log(err);
+        },
+      });
   }
 }
