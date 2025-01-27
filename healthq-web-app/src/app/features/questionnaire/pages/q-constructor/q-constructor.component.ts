@@ -14,6 +14,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import { FormsModule } from '@angular/forms';
 import {
+  Extension,
   Questionnaire,
   QuestionnaireItem,
   QuestionnaireItemAnswerOption,
@@ -21,7 +22,6 @@ import {
 } from 'fhir/r5';
 import { v4 as uuidv4 } from 'uuid';
 import { QuestionType } from '../../../../shared/enums/question-types';
-import { UiQuestionnaire } from '../../../../shared/ui/ui-questionnaire';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
@@ -57,9 +57,9 @@ export class QConstructorComponent implements OnInit {
 
   questionnaireTitle: string = 'Some Survey Title';
 
-  uiQuestionnaire: UiQuestionnaire;
-
   questions: QuestionnaireItem[];
+
+  questionnaire: Questionnaire;
 
   selectedQuestionType: string;
 
@@ -83,7 +83,7 @@ export class QConstructorComponent implements OnInit {
   ngOnInit(): void {
     const savedQuestionnaire = sessionStorage.getItem('questionnaire');
     if (savedQuestionnaire) {
-      this.uiQuestionnaire = JSON.parse(savedQuestionnaire);
+      this.questionnaire = JSON.parse(savedQuestionnaire);
     } else {
       const now = new Date();
       const offset = -now.getTimezoneOffset(); // Get timezone offset in minutes
@@ -102,19 +102,15 @@ export class QConstructorComponent implements OnInit {
         now.getSeconds()
       ).padStart(2, '0')}${sign}${hoursOffset}:${minutesOffset}`;
 
-      this.uiQuestionnaire = {
-        questionnaire: {
-          title: '',
-          status: 'draft',
-          date: formattedDate,
-          publisher: 'Author',
-          description: '',
-          item: [],
-          resourceType: 'Questionnaire',
-        },
-        type: QuestionType.OneChoice,
+      this.questionnaire = {
+        title: '',
+        status: 'draft',
+        date: formattedDate,
+        publisher: 'Author',
+        description: '',
+        item: [],
+        resourceType: 'Questionnaire',
       };
-      this.saveToSessionStorage();
     }
 
     // Automatically set the first option as selected
@@ -123,7 +119,7 @@ export class QConstructorComponent implements OnInit {
     }
 
     // @ts-ignore
-    this.questions = this.uiQuestionnaire.questionnaire.item;
+    this.questions = this.questionnaire.item;
   }
 
   addQuestion() {
@@ -146,15 +142,15 @@ export class QConstructorComponent implements OnInit {
     this.saveToSessionStorage();
   }
 
-  onQuestionChange(question: QuestionnaireItem) {
+  onQuestionTypeChange(question: any, event: any) {
+    const selectedType = event.value;
+    const questionTypeExtension = this.getQuestionTypeExtension(question);
+    questionTypeExtension.valueString = selectedType;
     this.saveToSessionStorage();
   }
 
   saveToSessionStorage() {
-    sessionStorage.setItem(
-      'questionnaire',
-      JSON.stringify(this.uiQuestionnaire)
-    );
+    sessionStorage.setItem('questionnaire', JSON.stringify(this.questionnaire));
   }
 
   deleteQuestion(question: QuestionnaireItem) {
@@ -204,25 +200,34 @@ export class QConstructorComponent implements OnInit {
   }
 
   onSubmit() {
-    const uiQuestionnaire: UiQuestionnaire = JSON.parse(
-      sessionStorage.getItem('questionnaire')!
-    );
     const user: User = JSON.parse(sessionStorage.getItem('user')!);
     if (!user) {
       console.log('User is invalid!');
     }
 
-    uiQuestionnaire.questionnaire.status = 'active';
+    this.questionnaire.status = 'active';
 
-    this.constructorService
-      .addByEmail(uiQuestionnaire.questionnaire)
-      .subscribe({
-        next: (data) => {
-          console.log(data);
-        },
-        error: (err) => {
-          console.log(err);
-        },
-      });
+    this.constructorService.addByEmail(this.questionnaire).subscribe({
+      next: (data) => {
+        console.log(data);
+      },
+      error: (err) => {
+        console.log(err);
+      },
+    });
+  }
+
+  getQuestionTypeExtension(question: QuestionnaireItem): any {
+    return (
+      question.extension?.find((ext: any) => ext.url === 'question-type') || {}
+    );
+  }
+
+  getQuestionTypeValue(question: QuestionnaireItem): any {
+    const result: Extension = question.extension?.find(
+      (ext: Extension) => ext.url === 'question-type'
+    ) || { url: '' };
+
+    return result.valueString;
   }
 }

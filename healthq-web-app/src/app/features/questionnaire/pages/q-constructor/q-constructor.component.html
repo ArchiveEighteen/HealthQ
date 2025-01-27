@@ -4,7 +4,7 @@
       <mat-label>Survey title</mat-label>
       <input
         matInput
-        [(ngModel)]="uiQuestionnaire.questionnaire.title"
+        [(ngModel)]="questionnaire.title"
         (keyup.enter)="saveToSessionStorage()"
         (blur)="saveToSessionStorage()"
       />
@@ -43,8 +43,7 @@
           <mat-label>Question type</mat-label>
           <span class="spacer"></span>
           <mat-select
-            [(ngModel)]="question.type"
-            (selectionChange)="onQuestionChange(question)"
+            (selectionChange)="onQuestionTypeChange(question, $event)"
           >
             <mat-option *ngFor="let type of questionTypes" [value]="type[0]">
               {{ type[1] }}
@@ -55,7 +54,7 @@
       <mat-divider></mat-divider>
 
       <mat-card-content class="question-content">
-        <ng-container [ngSwitch]="question.type">
+        <ng-container [ngSwitch]="getQuestionTypeValue(question)">
           <!-- One choice -->
           <ng-container *ngSwitchCase="'OneChoice'">
             <div *ngFor="let option of question.answerOption" class="option">
