@@ -21,7 +21,6 @@ import {
 } from 'fhir/r5';
 import { v4 as uuidv4 } from 'uuid';
 import { QuestionType } from '../../../../shared/enums/question-types';
-import { UiQuestionnaire } from '../../../../shared/ui/ui-questionnaire';
 import { AuthService } from '../../../../core/auth/auth.service';
 
 @Component({
