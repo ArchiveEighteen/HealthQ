@@ -17,8 +17,18 @@ export class AuthService {
   private isLoggedInSubject = new BehaviorSubject<boolean>(true);
   public isLoggedIn$ = this.isLoggedInSubject.asObservable();
 
-  constructor(private http: HttpClient, private cookieService: CookieService) {
-    this.checkAuthenticated();
+  constructor(private http: HttpClient) {
+    this.checkAuthenticated().then(
+      isLoggedIn => {
+        if(isLoggedIn) {
+          http.get(this.url + '/GetUser', {withCredentials: true}).subscribe({
+            next: (data) => {sessionStorage.setItem('user', JSON.stringify(data));},
+            error: (err) => {console.log(err);}
+            }
+          )
+        }
+      }
+    )
   }
 
   checkAuthenticated(): Promise<boolean> {

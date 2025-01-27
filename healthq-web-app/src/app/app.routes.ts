@@ -5,6 +5,8 @@ import { QConstructorComponent } from './features/questionnaire/pages/q-construc
 import { QuestionnaireComponent } from './features/questionnaire/pages/questionnaire/questionnaire.component';
 import { authGuard } from './core/auth/auth.guard';
 import { DMainPageComponent } from './features/actors/doctor/pages/d-main-page/d-main-page.component';
+import {PMainPageComponent} from './features/actors/patient/pages/p-main-page/p-main-page.component';
+import {patientGuard} from './features/actors/patient/patient.guard';
 
 export const routes: Routes = [
   {
@@ -17,6 +19,12 @@ export const routes: Routes = [
     component: DMainPageComponent,
     canActivate: [authGuard],
     title: 'Doctor Main Page',
+  },
+  {
+    path: 'patient',
+    component: PMainPageComponent,
+    canActivate: [authGuard, patientGuard],
+    title: 'Patient Main Page',
   },
   {
     path: 'constructor',
