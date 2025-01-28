@@ -12,6 +12,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import {
@@ -41,6 +42,7 @@ import { AuthService } from '../../../../../core/auth/auth.service';
     MatTooltipModule,
     MatMenuModule,
     MatSidenavModule,
+    MatListModule,
     RouterModule,
   ],
   templateUrl: './d-main-page.component.html',

@@ -5,15 +5,17 @@ import { QConstructorComponent } from './features/questionnaire/pages/q-construc
 import { QuestionnaireComponent } from './features/questionnaire/pages/questionnaire/questionnaire.component';
 import { authGuard } from './core/auth/auth.guard';
 import { DMainPageComponent } from './features/actors/doctor/pages/d-main-page/d-main-page.component';
-import {PMainPageComponent} from './features/actors/patient/pages/p-main-page/p-main-page.component';
-import {patientGuard} from './features/actors/patient/patient.guard';
-import {RedirectComponent} from './core/auth/redirect/redirect.component';
+import { PMainPageComponent } from './features/actors/patient/pages/p-main-page/p-main-page.component';
+import { patientGuard } from './features/actors/patient/patient.guard';
+import { RedirectComponent } from './core/auth/redirect/redirect.component';
+import { DTemplatesPageComponent } from './features/actors/doctor/pages/d-templates-page/d-templates-page.component';
+import { DPatientsPageComponent } from './features/actors/doctor/pages/d-patients-page/d-patients-page.component';
 
 export const routes: Routes = [
   {
     path: '',
     redirectTo: 'redirect',
-    pathMatch: 'full'
+    pathMatch: 'full',
   },
   {
     path: 'redirect',
@@ -25,6 +27,18 @@ export const routes: Routes = [
     component: DMainPageComponent,
     canActivate: [authGuard],
     title: 'Doctor Main Page',
+  },
+  {
+    path: 'Doctor/templates',
+    component: DTemplatesPageComponent,
+    canActivate: [authGuard],
+    title: 'Doctor Templates Page',
+  },
+  {
+    path: 'Doctor/patients',
+    component: DPatientsPageComponent,
+    canActivate: [authGuard],
+    title: 'Doctor Patients Page',
   },
   {
     path: 'Patient',
