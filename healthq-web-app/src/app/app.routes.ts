@@ -5,18 +5,32 @@ import { QConstructorComponent } from './features/questionnaire/pages/q-construc
 import { QuestionnaireComponent } from './features/questionnaire/pages/questionnaire/questionnaire.component';
 import { authGuard } from './core/auth/auth.guard';
 import { DMainPageComponent } from './features/actors/doctor/pages/d-main-page/d-main-page.component';
+import {PMainPageComponent} from './features/actors/patient/pages/p-main-page/p-main-page.component';
+import {patientGuard} from './features/actors/patient/patient.guard';
+import {RedirectComponent} from './core/auth/redirect/redirect.component';
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: '/constructor',
-    pathMatch: 'full',
+    redirectTo: 'redirect',
+    pathMatch: 'full'
   },
   {
-    path: 'doctor',
+    path: 'redirect',
+    component: RedirectComponent,
+    title: 'Redirect Page',
+  },
+  {
+    path: 'Doctor',
     component: DMainPageComponent,
     canActivate: [authGuard],
     title: 'Doctor Main Page',
+  },
+  {
+    path: 'Patient',
+    component: PMainPageComponent,
+    canActivate: [authGuard, patientGuard],
+    title: 'Patient Main Page',
   },
   {
     path: 'constructor',
