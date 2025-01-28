@@ -1,4 +1,29 @@
-<mat-drawer-container class="side-nav">
-  <mat-drawer mode="side" opened>Drawer content</mat-drawer>
-  <mat-drawer-content>Main content</mat-drawer-content>
-</mat-drawer-container>
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav mode="side" opened class="sidenav">
+    <mat-list>
+      <mat-list-item>
+        <button
+          mat-button
+          [routerLink]="'/patients'"
+          routerLinkActive="active-button"
+        >
+          <mat-icon>personal_injury</mat-icon>
+          <span>Patients</span>
+        </button>
+      </mat-list-item>
+      <mat-list-item>
+        <button
+          mat-button
+          [routerLink]="'/templates'"
+          routerLinkActive="active-button"
+        >
+          <mat-icon>star</mat-icon>
+          <span>Templates</span>
+        </button>
+      </mat-list-item>
+    </mat-list>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <router-outlet> </router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>

@@ -35,12 +35,10 @@ public class QuestionnaireController : ControllerBase
             return StatusCode(500, "Internal Server Error");
         }
     }
-
-    [HttpPost]
-    public async Task<ActionResult> AddByEmail([FromBody] JsonElement questionnaireJson)
+ 
+    [HttpPost("{email}")]
+    public async Task<ActionResult> AddByEmail(string email, [FromBody] JsonElement questionnaireJson)
     {
-        const string email = "john@doe.com";
-
         try
         {
             var parser = new FhirJsonParser();

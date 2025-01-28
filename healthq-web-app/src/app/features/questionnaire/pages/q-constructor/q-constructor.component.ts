@@ -28,6 +28,8 @@ import { environment } from '../../../../../environments/environment';
 import { User } from '../../../../core/auth/user.model';
 import { QConstructorService } from '../../q-constructor.service';
 import { QuestionnaireComponent } from '../questionnaire/questionnaire.component';
+import { routes } from '../../../../app.routes';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-q-constructor',
@@ -68,7 +70,8 @@ export class QConstructorComponent implements OnInit {
   constructor(
     private service: AuthService,
     private http: HttpClient,
-    private constructorService: QConstructorService
+    private constructorService: QConstructorService,
+    private router: Router
   ) {
     service.get().subscribe({
       next: (data) => {
@@ -207,14 +210,18 @@ export class QConstructorComponent implements OnInit {
 
     this.questionnaire.status = 'active';
 
-    this.constructorService.addByEmail(this.questionnaire).subscribe({
-      next: (data) => {
-        console.log(data);
-      },
-      error: (err) => {
-        console.log(err);
-      },
-    });
+    this.constructorService
+      .addByEmail(user.email, this.questionnaire)
+      .subscribe({
+        next: (data) => {
+          console.log(data);
+        },
+        error: (err) => {
+          console.log(err);
+        },
+      });
+
+    this.router.navigate(['/Doctor']);
   }
 
   getQuestionTypeExtension(question: QuestionnaireItem): any {
