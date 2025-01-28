@@ -19,6 +19,8 @@ import {GenderEnum} from '../../../../shared/enums/gender-enum';
 import {UserRoleEnum} from '../../../../shared/enums/user-role-enum';
 import {NgForOf} from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
+import {User} from '../../user.model';
+import {routes} from '../../../../app.routes';
 
 @Component({
   selector: 'app-register',
@@ -60,12 +62,12 @@ export class RegisterComponent {
   errorMessage: string = "";
 
   constructor(public service: AuthService, private router: Router, public route: ActivatedRoute) {
-    service.formData.userType = "Administrator";
+    service.formData.userType = UserRoleEnum.Patient;
     service.formData.password = "123456";
     service.formData.firstName = "John";
     service.formData.lastName = "Doe";
     service.formData.email = "john@doe.com";
-    service.formData.gender = "Male";
+    service.formData.gender = GenderEnum.Male;
     service.formData.birthDate = new Date(2005, 1, 6, 0, 0, 0, 0);
     service.formData.username = "CoolJohn";
     service.formData.phoneNumber = "0674527417";
@@ -91,7 +93,8 @@ export class RegisterComponent {
       this.service.register().subscribe({
         next: data =>{
           console.log(data);
-          this.router.navigate(['/']);
+          sessionStorage.setItem('user', JSON.stringify(data));
+          this.router.navigate([`/${(data as User).userType}`])
         },
         error: error => {
           console.log(error);
