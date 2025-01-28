@@ -12,8 +12,8 @@ export class QConstructorService {
 
   constructor(private http: HttpClient) {}
 
-  addByEmail(questionnaire: Questionnaire) {
-    return this.http.post(this.url + '/AddByEmail', questionnaire, {
+  addByEmail(email: string, questionnaire: Questionnaire) {
+    return this.http.post(this.url + '/AddByEmail/' + email, questionnaire, {
       withCredentials: true,
     });
   }
