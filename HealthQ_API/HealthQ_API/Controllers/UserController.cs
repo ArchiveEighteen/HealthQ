@@ -1,10 +1,10 @@
-﻿using HealthQ_API.DTOs;
-using HealthQ_API.Entities;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using HealthQ_API.DTOs;
 using HealthQ_API.Security;
 using HealthQ_API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace HealthQ_API.Controllers;
 
@@ -31,6 +31,28 @@ public class UserController : ControllerBase
         catch (OperationCanceledException)
         {
             return StatusCode(500, "Internal Server Error");
+        }
+    }
+
+    [HttpGet]
+    public async Task<ActionResult> GetUser(CancellationToken ct)
+    {
+        try
+        {
+            var email = (User.Identity as ClaimsIdentity)!.FindFirst(ClaimTypes.Email)?.Value;
+            if (string.IsNullOrEmpty(email)) return Unauthorized();
+
+            var user = await _userService.GetUserByEmailAsync(email, ct);
+
+            return Ok(user);
+        }
+        catch (OperationCanceledException)
+        {
+            return StatusCode(500, "Internal Server Error");
+        }
+        catch (Exception e)
+        {
+            return StatusCode(StatusCodes.Status409Conflict, $"{{\"message\":\"{e.Message}\"}}");
         }
     }
 
