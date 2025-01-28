@@ -106,7 +106,7 @@ public class UserService
         if(existingUser.PasswordHash != HashingUtility.HashPassword(user.Password!, existingUser.PasswordSalt).Hash)
             throw new Exception("Wrong password");
         
-        return user;
+        return (await GetUserByEmailAsync(user.Email, ct))!;
     }
 
     public async Task DeleteUserAsync(string email, CancellationToken ct)
