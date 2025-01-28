@@ -8,12 +8,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatRadioButton } from '@angular/material/radio';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
 import { FormsModule } from '@angular/forms';
+import { RouterModule, Routes } from '@angular/router';
 import {
   Questionnaire,
   QuestionnaireItem,
@@ -41,6 +42,8 @@ import { AuthService } from '../../../../../core/auth/auth.service';
     MatTooltipModule,
     MatMenuModule,
     MatSidenavModule,
+    MatListModule,
+    RouterModule,
   ],
   templateUrl: './d-main-page.component.html',
   styleUrl: './d-main-page.component.scss',

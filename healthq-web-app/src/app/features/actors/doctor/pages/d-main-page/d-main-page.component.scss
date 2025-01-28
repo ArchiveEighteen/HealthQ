@@ -1,9 +1,21 @@
-.side-nav {
-  width: auto;
-  height: 200px;
-  margin: 10px;
-  border: 1px solid #555;
-  /* The background property is added to clearly distinguish the borders between drawer and main
-     content */
-  background: #eee;
+@use "@angular/material" as mat;
+
+.sidenav-container {
+  width: 100vw;
+  height: 95vh;
+
+  @include mat.sidenav-overrides(
+    (
+      container-shape: "full",
+
+      container-background-color: var(--mat-sys-secondary-container),
+      container-text-color: var(--mat-sys-on-secondary-container),
+      container-width: 20vh,
+      content-background-color: var(--mat-sys-surface-container-lowest),
+    )
+  );
+}
+
+.active-button {
+  opacity: 0.5;
 }

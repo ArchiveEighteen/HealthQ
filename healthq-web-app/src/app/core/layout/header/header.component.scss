@@ -7,3 +7,12 @@
 .button-icon {
   margin: 0 !important;
 }
+
+.header {
+  background-color: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+}
+
+.header .button-icon {
+  color: var(--mat-sys-on-primary);
+}
