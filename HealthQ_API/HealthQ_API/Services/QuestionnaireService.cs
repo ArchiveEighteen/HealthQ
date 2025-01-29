@@ -26,7 +26,7 @@ public class QuestionnaireService
 
     public async Task<UserQuestionnaire> AddSurveyAsync(string userEmail, QuestionnaireModel questionnaire)
     {
-        if( await _context.UserQuestionnaires.Where(uq => uq.QuestionnaireId == questionnaire.Id || uq.UserId == userEmail).AnyAsync())
+        if( await _context.UserQuestionnaires.Where(uq => uq.QuestionnaireId == questionnaire.Id && uq.UserId == userEmail).AnyAsync())
             throw new Exception($"Questionnaire bound to user {userEmail} with id {questionnaire.Id} already exists");
 
         await _context.Questionnaires.AddAsync(questionnaire);

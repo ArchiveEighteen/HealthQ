@@ -8,7 +8,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatRadioButton } from '@angular/material/radio';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
@@ -26,10 +25,10 @@ import { AuthService } from '../../../../core/auth/auth.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
 import { User } from '../../../../core/auth/user.model';
-import { QConstructorService } from '../../q-constructor.service';
 import { QuestionnaireComponent } from '../questionnaire/questionnaire.component';
 import { routes } from '../../../../app.routes';
 import { Router } from '@angular/router';
+import { QuestionnaireService } from '../../questionaire.service';
 
 @Component({
   selector: 'app-q-constructor',
@@ -70,7 +69,7 @@ export class QConstructorComponent implements OnInit {
   constructor(
     private service: AuthService,
     private http: HttpClient,
-    private constructorService: QConstructorService,
+    private constructorService: QuestionnaireService,
     private router: Router
   ) {
     service.get().subscribe({
@@ -222,6 +221,7 @@ export class QConstructorComponent implements OnInit {
       });
 
     this.router.navigate(['/Doctor']);
+    sessionStorage.removeItem('questionnaire');
   }
 
   getQuestionTypeExtension(question: QuestionnaireItem): any {

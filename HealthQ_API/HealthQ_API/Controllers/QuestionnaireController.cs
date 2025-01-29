@@ -21,8 +21,8 @@ public class QuestionnaireController : ControllerBase
         _questionnaireService = questionnaireService;
     }
     
-    [HttpGet]
-    public async Task<ActionResult> GetByEmail([FromBody] string email)
+    [HttpGet("{email}")]
+    public async Task<ActionResult> GetByEmail(string email)
     {
         try
         {
@@ -42,7 +42,6 @@ public class QuestionnaireController : ControllerBase
         try
         {
             var parser = new FhirJsonParser();
-            var serializer = new FhirJsonSerializer();
             
             var questionnaire = await parser.ParseAsync<Questionnaire>(questionnaireJson.GetRawText());
             

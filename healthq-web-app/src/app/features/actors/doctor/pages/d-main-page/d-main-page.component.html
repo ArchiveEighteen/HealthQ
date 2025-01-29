@@ -4,7 +4,7 @@
       <mat-list-item>
         <button
           mat-button
-          [routerLink]="'/patients'"
+          [routerLink]="'/Doctor/patients'"
           routerLinkActive="active-button"
         >
           <mat-icon>personal_injury</mat-icon>
@@ -14,11 +14,21 @@
       <mat-list-item>
         <button
           mat-button
-          [routerLink]="'/templates'"
+          [routerLink]="'/Doctor/templates'"
           routerLinkActive="active-button"
         >
           <mat-icon>star</mat-icon>
           <span>Templates</span>
+        </button>
+      </mat-list-item>
+      <mat-list-item>
+        <button
+          mat-button
+          [routerLink]="'/Doctor/constructor'"
+          routerLinkActive="active-button"
+        >
+          <mat-icon>handyman</mat-icon>
+          <span>Constructor</span>
         </button>
       </mat-list-item>
     </mat-list>

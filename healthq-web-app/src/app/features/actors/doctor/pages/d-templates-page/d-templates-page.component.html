@@ -1,1 +1,9 @@
-<p>d-templates-page works!</p>
+@for (questionnaire of questionnaires; track $index) {
+<app-d-template class="template-card" [questionnaire]="questionnaire">
+</app-d-template>
+}
+
+<button mat-flat-button class="create-template-button">
+  <mat-icon>add</mat-icon>
+  <span>Create new template</span>
+</button>
