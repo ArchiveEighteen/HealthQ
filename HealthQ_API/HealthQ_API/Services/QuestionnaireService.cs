@@ -24,6 +24,22 @@ public class QuestionnaireService
         
         return questionnaireStrings;
     }
+    
+    public async Task<List<string>> GetAllDoctorPatientSurveysAsync(string doctorEmail, string patientEmail)
+    {
+        var doctorQuestionnaireIds = await _context.Questionnaires
+            .Where(q => q.OwnerId == doctorEmail)
+            .Select(q => q.Id)
+            .ToListAsync();
+
+        var patientQuestionnaires = await _context.PatientQuestionnaire
+            .Where(pq => pq.PatientId == patientEmail && doctorQuestionnaireIds.Contains(pq.QuestionnaireId))
+            .Select(pq => pq.Questionnaire)
+            .Select(q => q.QuestionnaireContent)
+            .ToListAsync();
+
+        return patientQuestionnaires;
+    }
 
     public async Task<QuestionnaireModel?> AddSurveyAsync(QuestionnaireModel? questionnaire)
     {

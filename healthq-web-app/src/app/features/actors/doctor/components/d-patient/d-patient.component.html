@@ -1,12 +1,38 @@
 <mat-card appearance="outlined" class="card-container">
   <mat-card-header>
-    <mat-card-title>{{ patient.email }}</mat-card-title>
+    <mat-card-title>{{
+      patient.firstName + " " + patient.lastName + " (" + patient.email + ")"
+    }}</mat-card-title>
     <mat-card-subtitle>{{ patient.gender }}</mat-card-subtitle>
   </mat-card-header>
+  <mat-card-content> </mat-card-content>
+  <mat-card-actions class="card-actions">
+    <button
+      mat-button
+      (click)="onQuestionnairesClick()"
+      [ngClass]="{ 'selected-button': questionnairesToggle == true }"
+    >
+      <mat-icon>assignment</mat-icon>
+      <span>Questionnaires</span>
+    </button>
+    <button mat-button>
+      <mat-icon>medications</mat-icon>
+      <span>Medications</span>
+    </button>
+  </mat-card-actions>
   <mat-card-content>
-    <p>{{ patient.firstName }}</p>
-    <p>
-      {{ patient.lastName }}
-    </p>
+    @if(questionnairesToggle === true) { @for (questionnaire of questionnaires;
+    track $index) {
+    <app-d-template class="template-card" [questionnaire]="questionnaire">
+    </app-d-template>
+    } } @if (questionnaires.length === 0) {
+    <p>No questionnaires assigned</p>
+    }
   </mat-card-content>
+  <mat-card-actions class="card-actions">
+    <button mat-button (click)="onAssignNewClicked()">
+      <mat-icon>add</mat-icon>
+      <span>Assign new</span>
+    </button>
+  </mat-card-actions>
 </mat-card>

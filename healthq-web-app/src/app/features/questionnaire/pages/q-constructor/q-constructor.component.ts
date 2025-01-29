@@ -236,9 +236,7 @@ export class QConstructorComponent implements OnInit {
       this.constructorService
         .addByEmail(user.email, this.questionnaire)
         .subscribe({
-          next: (data) => {
-            console.log(data);
-          },
+          next: (data) => {},
           error: (err) => {
             console.log(err);
           },
