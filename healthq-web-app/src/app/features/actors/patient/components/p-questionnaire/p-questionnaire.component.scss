@@ -1,0 +1,12 @@
+.card-container {
+  width: 100%;
+}
+
+.card-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.assigned { background: white; }
+.finished { background: lightgreen; }
+.outdated { background: lightgray; }

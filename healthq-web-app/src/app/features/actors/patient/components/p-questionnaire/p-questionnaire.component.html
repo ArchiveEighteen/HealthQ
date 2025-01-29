@@ -1,0 +1,14 @@
+<mat-card appearance="outlined" class="card-container"
+          (click)="onClick()"
+          [ngClass]="{
+          'assigned': questionnaire.status === 'active',
+          'finished': questionnaire.status === 'retired',
+          'outdated': questionnaire.status === 'draft' }">
+  <mat-card-header>
+    <mat-card-title>{{ questionnaire.title }}</mat-card-title>
+    <mat-card-subtitle>{{ questionnaire.publisher }}</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <p>{{ questionnaire.date }}</p>
+  </mat-card-content>
+</mat-card>

@@ -14,6 +14,6 @@ export class PServiceService {
 
   getQuestionnaires(){
     let email: string = (JSON.parse(sessionStorage.getItem('user')!) as User).email;
-    return this.http.get<Questionnaire[]>(this.url + '/GetQuestionnaires/' + email);
+    return this.http.get<Questionnaire[]>(this.url + '/GetQuestionnaires/' + email, {withCredentials: true});
   }
 }

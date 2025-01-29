@@ -17,6 +17,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<PatientService>();
 builder.Services.AddScoped<QuestionnaireService>();
 builder.Services.AddScoped<PatientQuestionnaireService>();
 builder.Services.AddScoped<DoctorPatientService>();
