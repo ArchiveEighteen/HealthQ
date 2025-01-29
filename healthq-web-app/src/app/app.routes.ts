@@ -53,18 +53,6 @@ export const routes: Routes = [
     ],
   },
   {
-    path: 'Doctor/templates',
-    component: DTemplatesPageComponent,
-    canActivate: [authGuard],
-    title: 'Doctor Templates Page',
-  },
-  {
-    path: 'Doctor/patients',
-    component: DPatientsPageComponent,
-    canActivate: [authGuard],
-    title: 'Doctor Patients Page',
-  },
-  {
     path: 'Patient',
     component: PMainPageComponent,
     canActivate: [authGuard, patientGuard],
