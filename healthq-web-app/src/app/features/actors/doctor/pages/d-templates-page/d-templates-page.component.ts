@@ -39,7 +39,6 @@ import { DTemplateComponent } from '../../components/d-template/d-template.compo
     MatSidenavModule,
     MatListModule,
     RouterModule,
-    DTemplateComponent,
   ],
   templateUrl: './d-templates-page.component.html',
   styleUrl: './d-templates-page.component.scss',
