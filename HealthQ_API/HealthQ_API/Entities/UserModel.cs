@@ -58,9 +58,6 @@ public class UserModel
     [Column("user_type")]
     public required EUserType UserType { get; set; }
 
-    
-    public ICollection<PatientQuestionnaire> PatientQuestionnaire { get; set; } = new List<PatientQuestionnaire>();
-
     public DoctorModel? Doctor { get; set; }
     public PatientModel? Patient { get; set; }
 }

@@ -7,10 +7,12 @@ namespace HealthQ_API.Entities.Auxiliary;
 public class PatientQuestionnaire
 {
     [MaxLength(254)]
-    public string? PatientEmail { get; set; }
+    [Required]
+    public required string PatientId { get; set; }
     
-    public Guid QuestionnaireId { get; set; }
+    [Required]
+    public required Guid QuestionnaireId { get; set; }
     
-    public UserModel User { get; set; }
-    public QuestionnaireModel Questionnaire { get; set; }
+    public PatientModel Patient { get; set; } = null!;
+    public QuestionnaireModel Questionnaire { get; set; } = null!;
 }

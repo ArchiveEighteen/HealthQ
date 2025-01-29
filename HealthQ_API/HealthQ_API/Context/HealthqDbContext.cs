@@ -55,21 +55,15 @@ public sealed class HealthqDbContext : DbContext
                 .WithMany(q => q.Patients)
                 .UsingEntity<PatientQuestionnaire>(
                     r => r
-                        .HasOne<QuestionnaireModel>()
+                        .HasOne<QuestionnaireModel>(pq => pq.Questionnaire)
                         .WithMany(q => q.PatientQuestionnaires)
                         .HasForeignKey(pq => pq.QuestionnaireId),
                     l => l
-                        .HasOne<PatientModel>()
+                        .HasOne<PatientModel>(pq => pq.Patient)
                         .WithMany(p => p.PatientQuestionnaires)
-                        .HasForeignKey(pq => pq.PatientEmail));
+                        .HasForeignKey(pq => pq.PatientId));
 
         });
-        
-        // DoctorPatient
-        // modelBuilder.Entity<DoctorPatient>(entity =>
-        // {
-        //     entity.HasKey(dp => new { dp.DoctorEmail, dp.PatientEmail });
-        // });
 
         // DoctorModel Many to Many with PatientModel
         modelBuilder.Entity<DoctorModel>(entity =>
@@ -79,13 +73,13 @@ public sealed class HealthqDbContext : DbContext
                 .WithMany(p => p.Doctors)
                 .UsingEntity<DoctorPatient>(
                     r => r
-                        .HasOne<PatientModel>()
+                        .HasOne<PatientModel>(dp => dp.Patient)
                         .WithMany(p => p.DoctorPatients)
-                        .HasForeignKey(dp => dp.PatientEmail),
+                        .HasForeignKey(dp => dp.PatientId),
                     l => l
-                        .HasOne<DoctorModel>()
+                        .HasOne<DoctorModel>(dp => dp.Doctor)
                         .WithMany(p => p.DoctorPatients)
-                        .HasForeignKey(dp => dp.DoctorEmail));
+                        .HasForeignKey(dp => dp.DoctorId));
         });
 
         //QuestionnaireModel
