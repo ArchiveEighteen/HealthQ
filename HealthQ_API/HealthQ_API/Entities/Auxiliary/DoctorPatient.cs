@@ -12,7 +12,7 @@ public class DoctorPatient
     [MaxLength(254)]
     public string? PatientEmail { get; set; }
     
-    public required UserModel Doctor { get; set; }
+    public required DoctorModel Doctor { get; set; }
     
-    public required UserModel Patient { get; set; }
+    public required PatientModel Patient { get; set; }
 }

@@ -27,18 +27,20 @@ export const routes: Routes = [
     component: DMainPageComponent,
     canActivate: [authGuard],
     title: 'Doctor Main Page',
-  },
-  {
-    path: 'Doctor/templates',
-    component: DTemplatesPageComponent,
-    canActivate: [authGuard],
-    title: 'Doctor Templates Page',
-  },
-  {
-    path: 'Doctor/patients',
-    component: DPatientsPageComponent,
-    canActivate: [authGuard],
-    title: 'Doctor Patients Page',
+    children: [
+      {
+        path: 'templates',
+        component: DTemplatesPageComponent,
+        canActivate: [authGuard],
+        title: 'Doctor Templates Page',
+      },
+      {
+        path: 'patients',
+        component: DPatientsPageComponent,
+        canActivate: [authGuard],
+        title: 'Doctor Patients Page',
+      },
+    ]
   },
   {
     path: 'Patient',

@@ -69,15 +69,15 @@ export class RegisterComponent {
     private router: Router,
     public route: ActivatedRoute
   ) {
-    // service.formData.userType = UserRoleEnum.Patient;
-    // service.formData.password = "123456";
-    // service.formData.firstName = "John";
-    // service.formData.lastName = "Doe";
-    // service.formData.email = "john@doe.com";
-    // service.formData.gender = GenderEnum.Male;
-    // service.formData.birthDate = new Date(2005, 1, 6, 0, 0, 0, 0);
-    // service.formData.username = "CoolJohn";
-    // service.formData.phoneNumber = "0674527417";
+    service.formData.userType = UserRoleEnum.Patient;
+    service.formData.password = "123456";
+    service.formData.firstName = "John";
+    service.formData.lastName = "Doe";
+    service.formData.email = "john@doe.com";
+    service.formData.gender = GenderEnum.Male;
+    service.formData.birthDate = new Date(2005, 1, 6, 0, 0, 0, 0);
+    service.formData.username = "CoolJohn";
+    service.formData.phoneNumber = "0674527417";
   }
 
   changeButtonVisibility(event: MouseEvent) {

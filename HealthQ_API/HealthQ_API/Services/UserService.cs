@@ -64,17 +64,11 @@ public class UserService
         
         var (hash, salt) = HashingUtility.HashPassword(user.Password!);
 
-        EGender userGender;
-        EUserType userType;
         
-        if (Enum.TryParse<EGender>(user.Gender, out var receivedGender))
-            userGender = receivedGender;
-        else
+        if (!Enum.TryParse<EGender>(user.Gender, out var gender))
             throw new InvalidCastException("Invalid gender value");
 
-        if (Enum.TryParse<EUserType>(user.UserType, out var receivedUserType))
-            userType = receivedUserType;
-        else
+        if (!Enum.TryParse<EUserType>(user.UserType, out var role))
             throw new InvalidCastException("Invalid user type value");
         
         var userModel = new UserModel
@@ -84,15 +78,23 @@ public class UserService
             FirstName = user.FirstName,
             LastName = user.LastName,
             BirthDate = DateOnly.FromDateTime(user.BirthDate),
-            Gender = userGender,
+            Gender = gender,
             PhoneNumber = user.PhoneNumber,
-            UserType = userType,
+            UserType = role,
             PasswordHash = hash,
             PasswordSalt = salt,
 
         };
-        _context.Users.Add(userModel);
+        await _context.Users.AddAsync(userModel, ct);
+
+        if (role == EUserType.Patient)
+            await _context.Patients.AddAsync(new PatientModel { UserEmail = user.Email }, ct);
+        else if (role == EUserType.Doctor)
+        {
+            await _context.Doctors.AddAsync(new DoctorModel { UserEmail = user.Email }, ct);
+        }
         await _context.SaveChangesAsync(ct);
+        
         user.Password = "";
         return user;
     }
