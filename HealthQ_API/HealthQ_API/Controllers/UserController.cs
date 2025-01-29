@@ -67,7 +67,7 @@ public class UserController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(500, "Internal Server Error");
+            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
         }
     }    
     

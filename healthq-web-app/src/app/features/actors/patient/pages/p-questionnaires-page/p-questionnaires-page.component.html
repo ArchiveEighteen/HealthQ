@@ -30,21 +30,14 @@
       <mat-option *ngFor="let doctor of doctors" [value]="doctor">{{ doctor }}</mat-option>
     </mat-select>
   </mat-form-field>
-    <button mat-icon-button type="submit" class="search-button">
-      <mat-icon>search</mat-icon>
-    </button>
 
 </mat-toolbar>
 
 <div class="questionnaire-list">
-  <div
+  <app-p-questionnaire
     class="questionnaire"
     *ngFor="let q of questionnaires"
-    [ngClass]="{ 'assigned': q.status === 'active', 'finished': q.status === 'retired', 'outdated': q.status === 'draft' }"
-    (click)="openSurvey('someId')"
+    [questionnaire]="q"
   >
-    <h3>{{ q.name }}</h3>
-    <p>{{ q.publisher }}</p>
-    <span>{{ q.date }}</span>
-  </div>
+  </app-p-questionnaire>
 </div>
