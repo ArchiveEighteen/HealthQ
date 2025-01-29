@@ -23,7 +23,7 @@ public class QuestionnaireModel
     [Required]
     [Column("owner_email")]
     [MaxLength(254)]
-    public string OwnerEmail { get; set; }
+    public string OwnerId { get; set; }
     
     public DoctorModel Owner { get; set; }
     public ICollection<PatientModel> Patients { get; set; } = new List<PatientModel>();

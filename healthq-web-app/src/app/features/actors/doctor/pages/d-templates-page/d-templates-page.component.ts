@@ -14,7 +14,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { Questionnaire } from 'fhir/r5';
 import { QuestionnaireService } from '../../../../questionnaire/questionaire.service';
 import { User } from '../../../../../core/auth/user.model';
@@ -47,7 +47,10 @@ import { DTemplateComponent } from '../../components/d-template/d-template.compo
 export class DTemplatesPageComponent implements OnInit {
   questionnaires: Questionnaire[] = [];
 
-  constructor(private constructorService: QuestionnaireService) {}
+  constructor(
+    private constructorService: QuestionnaireService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     const user: User = JSON.parse(sessionStorage.getItem('user')!);
@@ -68,6 +71,12 @@ export class DTemplatesPageComponent implements OnInit {
       error: (err) => {
         console.log(err);
       },
+    });
+  }
+
+  onCreateClick() {
+    this.router.navigate(['Doctor', 'constructor'], {
+      queryParams: { isTemplate: true, patientEmail: null },
     });
   }
 }

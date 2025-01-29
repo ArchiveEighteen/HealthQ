@@ -10,7 +10,7 @@ public sealed class HealthqDbContext : DbContext
     public DbSet<UserModel> Users { get; set; }
     public DbSet<DoctorModel> Doctors { get; set; }
     public DbSet<PatientModel> Patients { get; set; }
-    public DbSet<QuestionnaireModel> Questionnaires { get; set; }
+    public DbSet<QuestionnaireModel?> Questionnaires { get; set; }
     public DbSet<PatientQuestionnaire> PatientQuestionnaire { get; set; }
     public DbSet<DoctorPatient> DoctorPatients { get; set; }
     
@@ -88,7 +88,7 @@ public sealed class HealthqDbContext : DbContext
             entity
                 .HasOne(q => q.Owner)
                 .WithMany(o => o.Questionnaires)
-                .HasForeignKey(q => q.OwnerEmail);
+                .HasForeignKey(q => q.OwnerId);
 
         });
 

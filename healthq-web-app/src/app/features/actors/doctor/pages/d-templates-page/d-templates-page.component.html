@@ -3,7 +3,11 @@
 </app-d-template>
 }
 
-<button mat-flat-button class="create-template-button">
+<button
+  mat-flat-button
+  class="create-template-button"
+  (click)="onCreateClick()"
+>
   <mat-icon>add</mat-icon>
   <span>Create new template</span>
 </button>

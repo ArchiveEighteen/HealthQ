@@ -27,7 +27,7 @@ import { environment } from '../../../../../environments/environment';
 import { User } from '../../../../core/auth/user.model';
 import { QuestionnaireComponent } from '../questionnaire/questionnaire.component';
 import { routes } from '../../../../app.routes';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { QuestionnaireService } from '../../questionaire.service';
 
 @Component({
@@ -66,11 +66,16 @@ export class QConstructorComponent implements OnInit {
 
   url: string = environment.apiBaseUrl + '/Questionnaire';
 
+  // Route query params
+  isTemplate?: boolean = false;
+  patientEmail?: string;
+
   constructor(
     private service: AuthService,
     private http: HttpClient,
     private constructorService: QuestionnaireService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     service.get().subscribe({
       next: (data) => {
@@ -83,6 +88,11 @@ export class QConstructorComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe((params) => {
+      this.isTemplate = params['isTemplate'];
+      this.patientEmail = params['patientEmail'];
+    });
+
     const savedQuestionnaire = sessionStorage.getItem('questionnaire');
     if (savedQuestionnaire) {
       this.questionnaire = JSON.parse(savedQuestionnaire);
@@ -207,11 +217,14 @@ export class QConstructorComponent implements OnInit {
       console.log('User is invalid!');
     }
 
-    this.questionnaire.status = 'active';
+    if (this.isTemplate) {
+      this.questionnaire.status = 'draft';
+    } else {
+      this.questionnaire.status = 'active';
+    }
 
-    this.constructorService
-      .addByEmail(user.email, this.questionnaire)
-      .subscribe({
+    if (this.questionnaire.id) {
+      this.constructorService.updateById(this.questionnaire).subscribe({
         next: (data) => {
           console.log(data);
         },
@@ -219,9 +232,33 @@ export class QConstructorComponent implements OnInit {
           console.log(err);
         },
       });
+    } else {
+      this.constructorService
+        .addByEmail(user.email, this.questionnaire)
+        .subscribe({
+          next: (data) => {
+            console.log(data);
+          },
+          error: (err) => {
+            console.log(err);
+          },
+        });
+    }
 
-    this.router.navigate(['/Doctor']);
-    sessionStorage.removeItem('questionnaire');
+    if (this.patientEmail && this.patientEmail !== '') {
+      this.constructorService
+        .assignToPatient(this.patientEmail, this.questionnaire)
+        .subscribe({
+          next: (data) => {
+            console.log(data);
+          },
+          error: (err) => {
+            console.log(err);
+          },
+        });
+    }
+
+    this.router.navigate(['..']);
   }
 
   getQuestionTypeExtension(question: QuestionnaireItem): any {
@@ -236,5 +273,9 @@ export class QConstructorComponent implements OnInit {
     ) || { url: '' };
 
     return result.valueString;
+  }
+
+  ngOnDestroy() {
+    sessionStorage.removeItem('questionnaire');
   }
 }

@@ -18,6 +18,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<QuestionnaireService>();
+builder.Services.AddScoped<PatientQuestionnaireService>();
 
 builder.Services.AddCors(options =>
 {
