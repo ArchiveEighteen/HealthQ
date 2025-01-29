@@ -109,7 +109,7 @@ export class QConstructorComponent implements OnInit {
         title: '',
         status: 'draft',
         date: formattedDate,
-        publisher: 'Author',
+        publisher: (JSON.parse(sessionStorage.getItem('user')!) as User).email,
         description: '',
         item: [],
         resourceType: 'Questionnaire',

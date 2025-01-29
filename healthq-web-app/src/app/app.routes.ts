@@ -10,6 +10,10 @@ import { patientGuard } from './features/actors/patient/patient.guard';
 import { RedirectComponent } from './core/auth/redirect/redirect.component';
 import { DTemplatesPageComponent } from './features/actors/doctor/pages/d-templates-page/d-templates-page.component';
 import { DPatientsPageComponent } from './features/actors/doctor/pages/d-patients-page/d-patients-page.component';
+import {
+  PQuestionnairesPageComponent
+} from './features/actors/patient/pages/p-questionnaires-page/p-questionnaires-page.component';
+import {PDoctorsPageComponent} from './features/actors/patient/pages/p-doctors-page/p-doctors-page.component';
 
 export const routes: Routes = [
   {
@@ -47,6 +51,20 @@ export const routes: Routes = [
     component: PMainPageComponent,
     canActivate: [authGuard, patientGuard],
     title: 'Patient Main Page',
+    children: [
+      {
+        path: 'questionnaires',
+        component: PQuestionnairesPageComponent,
+        canActivate: [authGuard],
+        title: 'My Questionnaires',
+      },
+      {
+        path: 'doctors',
+        component: PDoctorsPageComponent,
+        canActivate: [authGuard],
+        title: 'My Doctors',
+      },
+    ]
   },
   {
     path: 'constructor',
