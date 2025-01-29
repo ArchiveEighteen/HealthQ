@@ -31,11 +31,26 @@ public class DoctorController : ControllerBase
     }
     
     [HttpGet("{email}")]
-    public async Task<ActionResult> GetDoctorByEmail(string email)
+    public async Task<ActionResult> GetDoctorQuestionnaires(string email)
     {
         try
         {
             var questionnaires = await _questionnaireService.GetAllDoctorSurveysAsync(email);
+            
+            return Ok(questionnaires);
+        }
+        catch (OperationCanceledException)
+        {
+            return StatusCode(500, "Internal Server Error");
+        }
+    }
+    
+    [HttpGet("{doctorEmail}/{patientEmail}")]
+    public async Task<ActionResult> GetDoctorPatientQuestionnaires(string doctorEmail, string patientEmail)
+    {
+        try
+        {
+            var questionnaires = await _questionnaireService.GetAllDoctorPatientSurveysAsync(doctorEmail, patientEmail);
             
             return Ok(questionnaires);
         }

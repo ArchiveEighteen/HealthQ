@@ -21,10 +21,23 @@ export class QuestionnaireService {
     });
   }
 
-  getDoctorByEmail(email: string) {
-    return this.http.get(this.url + '/GetDoctorByEmail/' + email, {
+  getDoctorQuestionnaires(email: string) {
+    return this.http.get(this.url + '/GetDoctorQuestionnaires/' + email, {
       withCredentials: true,
     });
+  }
+
+  getDoctorPatientQuestionnaires(doctorEmail: string, patientEmail: string) {
+    return this.http.get(
+      this.url +
+        '/GetDoctorPatientQuestionnaires/' +
+        doctorEmail +
+        '/' +
+        patientEmail,
+      {
+        withCredentials: true,
+      }
+    );
   }
 
   updateById(questionnaire: Questionnaire) {
@@ -35,7 +48,7 @@ export class QuestionnaireService {
 
   assignToPatient(patientEmail: string, questionnaire: Questionnaire) {
     return this.http.put(
-      this.url + '/UpdateById/' + patientEmail,
+      this.url + '/AssignToPatient/' + patientEmail,
       questionnaire,
       {
         withCredentials: true,
