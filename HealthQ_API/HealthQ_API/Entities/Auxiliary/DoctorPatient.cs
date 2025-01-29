@@ -7,12 +7,14 @@ namespace HealthQ_API.Entities.Auxiliary;
 public class DoctorPatient
 {
     [MaxLength(254)]
-    public string? DoctorEmail { get; set; }
+    [Required]
+    public required string DoctorId { get; set; }
     
     [MaxLength(254)]
-    public string? PatientEmail { get; set; }
+    [Required]
+    public required string PatientId { get; set; }
     
-    public required UserModel Doctor { get; set; }
+    public required DoctorModel Doctor { get; set; } = null!;
     
-    public required UserModel Patient { get; set; }
+    public required PatientModel Patient { get; set; } = null!;
 }

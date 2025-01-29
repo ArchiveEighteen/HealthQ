@@ -1,6 +1,7 @@
 ﻿using HealthQ_API.Context;
 using HealthQ_API.Entities;
 using HealthQ_API.Entities.Auxiliary;
+using Hl7.Fhir.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace HealthQ_API.Services;
@@ -14,31 +15,29 @@ public class QuestionnaireService
         _context = context;
     }
 
-    public async Task<List<string>> GetAllSurveysAsync(string userEmail)
+    public async Task<List<string>> GetAllDoctorSurveysAsync(string doctorEmail)
     {
-        var questionnaireStrings = await _context.UserQuestionnaires
-            .Where(uq => uq.User.Email == userEmail)
-            .Select(uq => uq.Questionnaire.QuestionnaireContent)
-            .ToListAsync();
-
+        var questionnaireStrings =  await _context.Questionnaires
+                .Where(q => q.OwnerId == doctorEmail)
+                .Select(q => q.QuestionnaireContent)
+                .ToListAsync();
+        
         return questionnaireStrings;
     }
 
-    public async Task<UserQuestionnaire> AddSurveyAsync(string userEmail, QuestionnaireModel questionnaire)
+    public async Task<QuestionnaireModel?> AddSurveyAsync(QuestionnaireModel? questionnaire)
     {
-        if( await _context.UserQuestionnaires.Where(uq => uq.QuestionnaireId == questionnaire.Id || uq.UserId == userEmail).AnyAsync())
-            throw new Exception($"Questionnaire bound to user {userEmail} with id {questionnaire.Id} already exists");
-
         await _context.Questionnaires.AddAsync(questionnaire);
-
-        var userQuestionnaire = new UserQuestionnaire
-        {
-            User = await _context.Users.FindAsync(userEmail),
-            Questionnaire = questionnaire,
-        };
-        
-        await _context.UserQuestionnaires.AddAsync(userQuestionnaire);
         await _context.SaveChangesAsync();
-        return userQuestionnaire;
+        
+        return await _context.Questionnaires.FindAsync(questionnaire?.Id);
+    }
+    
+    public async Task<QuestionnaireModel?> UpdateSurveyAsync(QuestionnaireModel? questionnaire)
+    {
+        _context.Questionnaires.Update(questionnaire);
+        await _context.SaveChangesAsync();
+        
+        return await _context.Questionnaires.FindAsync(questionnaire?.Id);
     }
 }

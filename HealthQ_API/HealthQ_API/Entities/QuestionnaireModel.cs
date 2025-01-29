@@ -20,5 +20,12 @@ public class QuestionnaireModel
     [Column("questionnaire_content")]
     public required string QuestionnaireContent { get; set; }
     
-    public ICollection<UserQuestionnaire> UserQuestionnaires { get; set; } = new List<UserQuestionnaire>();
+    [Required]
+    [Column("owner_email")]
+    [MaxLength(254)]
+    public string OwnerId { get; set; }
+    
+    public DoctorModel Owner { get; set; }
+    public ICollection<PatientModel> Patients { get; set; } = new List<PatientModel>();
+    public ICollection<PatientQuestionnaire> PatientQuestionnaires { get; set; } = new List<PatientQuestionnaire>();
 }

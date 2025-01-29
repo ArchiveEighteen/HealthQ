@@ -15,15 +15,6 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
-import {
-  Questionnaire,
-  QuestionnaireItem,
-  QuestionnaireItemAnswerOption,
-  QuestionnaireItemEnableWhen,
-} from 'fhir/r5';
-import { v4 as uuidv4 } from 'uuid';
-import { QuestionType } from '../../../../../shared/enums/question-types';
-import { AuthService } from '../../../../../core/auth/auth.service';
 
 @Component({
   selector: 'app-d-main-page',

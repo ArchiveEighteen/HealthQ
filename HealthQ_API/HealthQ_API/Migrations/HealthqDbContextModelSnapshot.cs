@@ -29,35 +29,59 @@ namespace HealthQ_API.Migrations
 
             modelBuilder.Entity("HealthQ_API.Entities.Auxiliary.DoctorPatient", b =>
                 {
-                    b.Property<string>("DoctorEmail")
+                    b.Property<string>("DoctorId")
                         .HasMaxLength(254)
                         .HasColumnType("character varying(254)");
 
-                    b.Property<string>("PatientEmail")
+                    b.Property<string>("PatientId")
                         .HasMaxLength(254)
                         .HasColumnType("character varying(254)");
 
-                    b.HasKey("DoctorEmail", "PatientEmail");
+                    b.HasKey("DoctorId", "PatientId");
 
-                    b.HasIndex("PatientEmail");
+                    b.HasIndex("PatientId");
 
                     b.ToTable("doctor_patient", "public");
                 });
 
-            modelBuilder.Entity("HealthQ_API.Entities.Auxiliary.UserQuestionnaire", b =>
+            modelBuilder.Entity("HealthQ_API.Entities.Auxiliary.PatientQuestionnaire", b =>
                 {
-                    b.Property<string>("UserId")
-                        .HasMaxLength(250)
-                        .HasColumnType("character varying(250)");
+                    b.Property<string>("PatientId")
+                        .HasMaxLength(254)
+                        .HasColumnType("character varying(254)");
 
                     b.Property<Guid>("QuestionnaireId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("UserId", "QuestionnaireId");
+                    b.HasKey("PatientId", "QuestionnaireId");
 
                     b.HasIndex("QuestionnaireId");
 
-                    b.ToTable("user_questionnaire", "public");
+                    b.ToTable("patient_questionnaire", "public");
+                });
+
+            modelBuilder.Entity("HealthQ_API.Entities.DoctorModel", b =>
+                {
+                    b.Property<string>("UserEmail")
+                        .HasMaxLength(254)
+                        .HasColumnType("character varying(254)")
+                        .HasColumnName("user_email");
+
+                    b.HasKey("UserEmail");
+
+                    b.ToTable("doctors", "public");
+                });
+
+            modelBuilder.Entity("HealthQ_API.Entities.PatientModel", b =>
+                {
+                    b.Property<string>("UserEmail")
+                        .HasMaxLength(254)
+                        .HasColumnType("character varying(254)")
+                        .HasColumnName("user_email");
+
+                    b.HasKey("UserEmail");
+
+                    b.ToTable("patients", "public");
                 });
 
             modelBuilder.Entity("HealthQ_API.Entities.QuestionnaireModel", b =>
@@ -67,12 +91,20 @@ namespace HealthQ_API.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<string>("OwnerEmail")
+                        .IsRequired()
+                        .HasMaxLength(254)
+                        .HasColumnType("character varying(254)")
+                        .HasColumnName("owner_email");
+
                     b.Property<string>("QuestionnaireContent")
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("questionnaire_content");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OwnerEmail");
 
                     b.ToTable("questionnaires", "public");
                 });
@@ -139,15 +171,15 @@ namespace HealthQ_API.Migrations
 
             modelBuilder.Entity("HealthQ_API.Entities.Auxiliary.DoctorPatient", b =>
                 {
-                    b.HasOne("HealthQ_API.Entities.UserModel", "Doctor")
-                        .WithMany("Patients")
-                        .HasForeignKey("DoctorEmail")
+                    b.HasOne("HealthQ_API.Entities.DoctorModel", "Doctor")
+                        .WithMany("DoctorPatients")
+                        .HasForeignKey("DoctorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HealthQ_API.Entities.UserModel", "Patient")
-                        .WithMany("Doctors")
-                        .HasForeignKey("PatientEmail")
+                    b.HasOne("HealthQ_API.Entities.PatientModel", "Patient")
+                        .WithMany("DoctorPatients")
+                        .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -156,37 +188,78 @@ namespace HealthQ_API.Migrations
                     b.Navigation("Patient");
                 });
 
-            modelBuilder.Entity("HealthQ_API.Entities.Auxiliary.UserQuestionnaire", b =>
+            modelBuilder.Entity("HealthQ_API.Entities.Auxiliary.PatientQuestionnaire", b =>
                 {
+                    b.HasOne("HealthQ_API.Entities.PatientModel", "Patient")
+                        .WithMany("PatientQuestionnaires")
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("HealthQ_API.Entities.QuestionnaireModel", "Questionnaire")
-                        .WithMany("UserQuestionnaires")
+                        .WithMany("PatientQuestionnaires")
                         .HasForeignKey("QuestionnaireId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HealthQ_API.Entities.UserModel", "User")
-                        .WithMany("UserQuestionnaires")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Patient");
 
                     b.Navigation("Questionnaire");
+                });
+
+            modelBuilder.Entity("HealthQ_API.Entities.DoctorModel", b =>
+                {
+                    b.HasOne("HealthQ_API.Entities.UserModel", "User")
+                        .WithOne("Doctor")
+                        .HasForeignKey("HealthQ_API.Entities.DoctorModel", "UserEmail");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("HealthQ_API.Entities.PatientModel", b =>
+                {
+                    b.HasOne("HealthQ_API.Entities.UserModel", "User")
+                        .WithOne("Patient")
+                        .HasForeignKey("HealthQ_API.Entities.PatientModel", "UserEmail");
 
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("HealthQ_API.Entities.QuestionnaireModel", b =>
                 {
-                    b.Navigation("UserQuestionnaires");
+                    b.HasOne("HealthQ_API.Entities.DoctorModel", "Owner")
+                        .WithMany("Questionnaires")
+                        .HasForeignKey("OwnerEmail")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("HealthQ_API.Entities.DoctorModel", b =>
+                {
+                    b.Navigation("DoctorPatients");
+
+                    b.Navigation("Questionnaires");
+                });
+
+            modelBuilder.Entity("HealthQ_API.Entities.PatientModel", b =>
+                {
+                    b.Navigation("DoctorPatients");
+
+                    b.Navigation("PatientQuestionnaires");
+                });
+
+            modelBuilder.Entity("HealthQ_API.Entities.QuestionnaireModel", b =>
+                {
+                    b.Navigation("PatientQuestionnaires");
                 });
 
             modelBuilder.Entity("HealthQ_API.Entities.UserModel", b =>
                 {
-                    b.Navigation("Doctors");
+                    b.Navigation("Doctor");
 
-                    b.Navigation("Patients");
-
-                    b.Navigation("UserQuestionnaires");
+                    b.Navigation("Patient");
                 });
 #pragma warning restore 612, 618
         }
