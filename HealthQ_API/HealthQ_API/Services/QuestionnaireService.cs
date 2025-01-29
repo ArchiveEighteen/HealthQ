@@ -17,7 +17,7 @@ public class QuestionnaireService
     public async Task<List<string>> GetAllSurveysAsync(string userEmail)
     {
         var questionnaireStrings = await _context.PatientQuestionnaire
-            .Where(uq => uq.PatientEmail == userEmail)
+            .Where(uq => uq.PatientId == userEmail)
             .Select(uq => uq.Questionnaire.QuestionnaireContent)
             .ToListAsync();
 
@@ -26,15 +26,15 @@ public class QuestionnaireService
 
     public async Task<PatientQuestionnaire> AddSurveyAsync(string userEmail, QuestionnaireModel questionnaire)
     {
-        if( await _context.PatientQuestionnaire.Where(uq => uq.QuestionnaireId == questionnaire.Id || uq.PatientEmail == userEmail).AnyAsync())
+        if( await _context.PatientQuestionnaire.Where(uq => uq.QuestionnaireId == questionnaire.Id || uq.PatientId == userEmail).AnyAsync())
             throw new Exception($"Questionnaire bound to user {userEmail} with id {questionnaire.Id} already exists");
 
         await _context.Questionnaires.AddAsync(questionnaire);
 
         var userQuestionnaire = new PatientQuestionnaire
         {
-            User = await _context.Users.FindAsync(userEmail),
-            Questionnaire = questionnaire,
+            PatientId = userEmail,
+            QuestionnaireId = questionnaire.Id,
         };
         
         await _context.PatientQuestionnaire.AddAsync(userQuestionnaire);
