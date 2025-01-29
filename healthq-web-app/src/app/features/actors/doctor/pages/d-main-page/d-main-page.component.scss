@@ -19,3 +19,10 @@
 .active-button {
   opacity: 0.5;
 }
+
+button {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  text-align: left;
+}

@@ -44,7 +44,25 @@ export const routes: Routes = [
         canActivate: [authGuard],
         title: 'Doctor Patients Page',
       },
-    ]
+      {
+        path: 'constructor',
+        component: QConstructorComponent,
+        canActivate: [authGuard],
+        title: 'Constructor',
+      },
+    ],
+  },
+  {
+    path: 'Doctor/templates',
+    component: DTemplatesPageComponent,
+    canActivate: [authGuard],
+    title: 'Doctor Templates Page',
+  },
+  {
+    path: 'Doctor/patients',
+    component: DPatientsPageComponent,
+    canActivate: [authGuard],
+    title: 'Doctor Patients Page',
   },
   {
     path: 'Patient',
@@ -65,12 +83,6 @@ export const routes: Routes = [
         title: 'My Doctors',
       },
     ]
-  },
-  {
-    path: 'constructor',
-    component: QConstructorComponent,
-    canActivate: [authGuard],
-    title: 'Constructor',
   },
   {
     path: 'questionnaire',

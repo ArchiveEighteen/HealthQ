@@ -1,1 +1,12 @@
-<p>d-patient works!</p>
+<mat-card appearance="outlined" class="card-container">
+  <mat-card-header>
+    <mat-card-title>{{ patient.email }}</mat-card-title>
+    <mat-card-subtitle>{{ patient.gender }}</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <p>{{ patient.firstName }}</p>
+    <p>
+      {{ patient.lastName }}
+    </p>
+  </mat-card-content>
+</mat-card>

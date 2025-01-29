@@ -88,7 +88,7 @@ public sealed class HealthqDbContext : DbContext
             entity
                 .HasOne(q => q.Owner)
                 .WithMany(o => o.Questionnaires)
-                .HasForeignKey(q => q.OwnerEmail);
+                .HasForeignKey(q => q.OwnerId);
 
         });
 
