@@ -21,8 +21,8 @@ export class QuestionnaireService {
     });
   }
 
-  getByEmail(email: string) {
-    return this.http.get(this.url + '/GetByEmail/' + email, {
+  getDoctorByEmail(email: string) {
+    return this.http.get(this.url + '/GetDoctorByEmail/' + email, {
       withCredentials: true,
     });
   }
@@ -41,5 +41,11 @@ export class QuestionnaireService {
         withCredentials: true,
       }
     );
+  }
+
+  getAllDoctorPatients(email: string) {
+    return this.http.get(this.url + '/GetAllDoctorPatients/' + email, {
+      withCredentials: true,
+    });
   }
 }

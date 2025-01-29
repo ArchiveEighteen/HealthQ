@@ -39,6 +39,7 @@ import { DTemplateComponent } from '../../components/d-template/d-template.compo
     MatSidenavModule,
     MatListModule,
     RouterModule,
+    DTemplateComponent,
   ],
   templateUrl: './d-templates-page.component.html',
   styleUrl: './d-templates-page.component.scss',
@@ -57,7 +58,7 @@ export class DTemplatesPageComponent implements OnInit {
       console.log('User is invalid!');
     }
 
-    this.constructorService.getByEmail(user.email).subscribe({
+    this.constructorService.getDoctorByEmail(user.email).subscribe({
       next: (data) => {
         if (Array.isArray(data)) {
           data.forEach((d) => {

@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using HealthQ_API.DTOs;
 using HealthQ_API.Entities;
 using HealthQ_API.Entities.Auxiliary;
 using HealthQ_API.Services;
@@ -16,23 +17,48 @@ namespace HealthQ_API.Controllers;
 public class DoctorController : ControllerBase
 {
     private readonly QuestionnaireService _questionnaireService;
-    
     private readonly PatientQuestionnaireService _patientQuestionnaireService;
+    private readonly DoctorPatientService _doctorPatientService;
+    private readonly UserService _userService;
 
-    public DoctorController(QuestionnaireService questionnaireService, PatientQuestionnaireService patientQuestionnaireService)
+    public DoctorController(QuestionnaireService questionnaireService, PatientQuestionnaireService patientQuestionnaireService, 
+        DoctorPatientService doctorPatientService, UserService userService)
     {
         _questionnaireService = questionnaireService;
         _patientQuestionnaireService = patientQuestionnaireService;
+        _doctorPatientService = doctorPatientService;
+        _userService = userService;
     }
     
     [HttpGet("{email}")]
-    public async Task<ActionResult> GetByEmail(string email)
+    public async Task<ActionResult> GetDoctorByEmail(string email)
     {
         try
         {
             var questionnaires = await _questionnaireService.GetAllDoctorSurveysAsync(email);
             
             return Ok(questionnaires);
+        }
+        catch (OperationCanceledException)
+        {
+            return StatusCode(500, "Internal Server Error");
+        }
+    }
+    
+    [HttpGet("{email}")]
+    public async Task<ActionResult> GetAllDoctorPatients(string email)
+    {
+        try
+        {
+            var patientsIds = await _doctorPatientService.GetAllDoctorPatientsAsync(email);
+            
+            var users = new List<UserDTO?>();
+            foreach (var patientId in patientsIds)
+            {
+                users.Add(await _userService.GetUserByEmailAsync(patientId, CancellationToken.None));
+            }
+
+            return Ok(users);
         }
         catch (OperationCanceledException)
         {
