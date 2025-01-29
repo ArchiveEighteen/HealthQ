@@ -27,9 +27,7 @@ export class DPatientsPageComponent implements OnInit {
     this.constructorService.getAllDoctorPatients(user.email).subscribe({
       next: (data) => {
         if (Array.isArray(data)) {
-          data.forEach((d) => {
-            this.patients.push(JSON.parse(d));
-          });
+          this.patients = data;
         }
 
         console.log(this.patients);

@@ -1,3 +1,5 @@
+@use "@angular/material" as mat;
+
 .card-container {
   width: 100%;
 }
@@ -5,4 +7,8 @@
 .card-actions {
   display: flex;
   gap: 1rem;
+}
+
+.icon-button {
+  color: var(--mat-sys-primary);
 }

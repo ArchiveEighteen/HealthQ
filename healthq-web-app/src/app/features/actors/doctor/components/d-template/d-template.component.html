@@ -11,6 +11,11 @@
     </p>
   </mat-card-content>
   <mat-card-actions class="card-actions">
-    <button mat-flat-button (click)="onEditClick()">Edit</button>
+    <button mat-icon-button (click)="onEditClick()" class="icon-button">
+      <mat-icon>edit</mat-icon>
+    </button>
+    <button mat-icon-button class="icon-button">
+      <mat-icon>delete</mat-icon>
+    </button>
   </mat-card-actions>
 </mat-card>

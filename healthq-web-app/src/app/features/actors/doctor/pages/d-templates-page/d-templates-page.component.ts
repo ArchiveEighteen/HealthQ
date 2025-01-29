@@ -58,7 +58,7 @@ export class DTemplatesPageComponent implements OnInit {
       console.log('User is invalid!');
     }
 
-    this.constructorService.getDoctorByEmail(user.email).subscribe({
+    this.constructorService.getDoctorQuestionnaires(user.email).subscribe({
       next: (data) => {
         if (Array.isArray(data)) {
           data.forEach((d) => {
