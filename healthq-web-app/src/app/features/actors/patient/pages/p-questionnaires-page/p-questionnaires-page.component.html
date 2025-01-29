@@ -1,1 +1,50 @@
-<p>p-questionnaires-page works!</p>
+<mat-toolbar class="header">
+  <mat-form-field  appearance="outline" class="form-field">
+    <mat-label>Search</mat-label>
+    <input matInput placeholder="Questionnaire Name..."
+           [(ngModel)]="searchQuery" (input)="applyFilters()" />
+  </mat-form-field>
+
+  <mat-form-field  appearance="outline" class="form-field">
+    <mat-label>Status</mat-label>
+    <mat-select [(value)]="selectedStatus" (selectionChange)="applyFilters()">
+      <mat-option value="">All</mat-option>
+      <mat-option value="active">Assigned</mat-option>
+      <mat-option value="retired">Finished</mat-option>
+      <mat-option value="draft">Outdated</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="form-field">
+    <mat-label>Sort by Date</mat-label>
+    <mat-select [(value)]="selectedSort" (selectionChange)="applyFilters()">
+      <mat-option value="newest">First new</mat-option>
+      <mat-option value="oldest">First old</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="form-field">
+    <mat-label>Doctor</mat-label>
+    <mat-select [(value)]="selectedDoctor" (selectionChange)="applyFilters()">
+      <mat-option value="">All</mat-option>
+      <mat-option *ngFor="let doctor of doctors" [value]="doctor">{{ doctor }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+    <button mat-icon-button type="submit" class="search-button">
+      <mat-icon>search</mat-icon>
+    </button>
+
+</mat-toolbar>
+
+<div class="questionnaire-list">
+  <div
+    class="questionnaire"
+    *ngFor="let q of questionnaires"
+    [ngClass]="{ 'assigned': q.status === 'active', 'finished': q.status === 'retired', 'outdated': q.status === 'draft' }"
+    (click)="openSurvey('someId')"
+  >
+    <h3>{{ q.name }}</h3>
+    <p>{{ q.publisher }}</p>
+    <span>{{ q.date }}</span>
+  </div>
+</div>
