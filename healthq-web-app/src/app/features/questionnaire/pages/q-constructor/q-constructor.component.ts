@@ -236,25 +236,27 @@ export class QConstructorComponent implements OnInit {
       this.constructorService
         .addByEmail(user.email, this.questionnaire)
         .subscribe({
-          next: (data) => {},
+          next: (data) => {
+            if (this.patientEmail && this.patientEmail !== '') {
+              this.constructorService
+                .assignToPatient(this.patientEmail, this.questionnaire)
+                .subscribe({
+                  next: (data) => {
+                    console.log(data);
+                  },
+                  error: (err) => {
+                    console.log(err);
+                  },
+                });
+            }
+          },
           error: (err) => {
             console.log(err);
           },
         });
     }
 
-    if (this.patientEmail && this.patientEmail !== '') {
-      this.constructorService
-        .assignToPatient(this.patientEmail, this.questionnaire)
-        .subscribe({
-          next: (data) => {
-            console.log(data);
-          },
-          error: (err) => {
-            console.log(err);
-          },
-        });
-    }
+
 
     this.router.navigate(['..']);
   }
