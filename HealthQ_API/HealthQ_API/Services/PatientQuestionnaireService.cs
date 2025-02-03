@@ -20,6 +20,6 @@ public class PatientQuestionnaireService
         await _context.PatientQuestionnaire.AddAsync(patientQuestionnaire);
         await _context.SaveChangesAsync();
         
-        return await _context.Questionnaires.FindAsync(patientQuestionnaire);
+        return await _context.Questionnaires.FindAsync(patientQuestionnaire.QuestionnaireId);
     }
 }

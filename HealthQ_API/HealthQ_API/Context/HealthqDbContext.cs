@@ -38,13 +38,15 @@ public sealed class HealthqDbContext : DbContext
                 .HasOne(u => u.Doctor)
                 .WithOne(d => d.User)
                 .HasForeignKey<DoctorModel>(d => d.UserEmail)
-                .IsRequired(false);
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Cascade);
             
             entity
                 .HasOne(u => u.Patient)
                 .WithOne(d => d.User)
                 .HasForeignKey<PatientModel>(d => d.UserEmail)
-                .IsRequired(false);
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         // PatientModel Many to Many with QuestionnaireModel
@@ -57,11 +59,13 @@ public sealed class HealthqDbContext : DbContext
                     r => r
                         .HasOne<QuestionnaireModel>(pq => pq.Questionnaire)
                         .WithMany(q => q.PatientQuestionnaires)
-                        .HasForeignKey(pq => pq.QuestionnaireId),
+                        .HasForeignKey(pq => pq.QuestionnaireId)
+                        .OnDelete(DeleteBehavior.Cascade),
                     l => l
                         .HasOne<PatientModel>(pq => pq.Patient)
                         .WithMany(p => p.PatientQuestionnaires)
-                        .HasForeignKey(pq => pq.PatientId));
+                        .HasForeignKey(pq => pq.PatientId)
+                        .OnDelete(DeleteBehavior.Cascade));
 
         });
 
@@ -75,11 +79,13 @@ public sealed class HealthqDbContext : DbContext
                     r => r
                         .HasOne<PatientModel>(dp => dp.Patient)
                         .WithMany(p => p.DoctorPatients)
-                        .HasForeignKey(dp => dp.PatientId),
+                        .HasForeignKey(dp => dp.PatientId)
+                        .OnDelete(DeleteBehavior.Cascade),
                     l => l
                         .HasOne<DoctorModel>(dp => dp.Doctor)
                         .WithMany(p => p.DoctorPatients)
-                        .HasForeignKey(dp => dp.DoctorId));
+                        .HasForeignKey(dp => dp.DoctorId)
+                        .OnDelete(DeleteBehavior.Cascade));
         });
 
         //QuestionnaireModel
@@ -88,7 +94,8 @@ public sealed class HealthqDbContext : DbContext
             entity
                 .HasOne(q => q.Owner)
                 .WithMany(o => o.Questionnaires)
-                .HasForeignKey(q => q.OwnerId);
+                .HasForeignKey(q => q.OwnerId)
+                .OnDelete(DeleteBehavior.Cascade);
 
         });
 

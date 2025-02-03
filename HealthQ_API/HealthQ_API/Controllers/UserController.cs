@@ -14,10 +14,12 @@ namespace HealthQ_API.Controllers;
 public class UserController : ControllerBase
 {
     private readonly UserService _userService;
+    private readonly DoctorPatientService _doctorPatientService;
 
-    public UserController(UserService userService)
+    public UserController(UserService userService, DoctorPatientService doctorPatientService)
     {
         _userService = userService;
+        _doctorPatientService = doctorPatientService;
     }
 
     [HttpGet]
@@ -101,7 +103,6 @@ public class UserController : ControllerBase
                 Expires = DateTime.UtcNow.AddHours(1), // Token expiry
             };
             HttpContext.Response.Cookies.Append("auth_token", accessToken, cookieOptions);
-            
             return Ok(createdUser);
         }
         catch (OperationCanceledException)
@@ -119,7 +120,7 @@ public class UserController : ControllerBase
     }
 
     [AllowAnonymous]
-    [HttpPut]
+    [HttpPost]
     public async Task<ActionResult> Login(UserDTO user, CancellationToken ct)
     {
         try
@@ -148,6 +149,17 @@ public class UserController : ControllerBase
             return StatusCode(StatusCodes.Status409Conflict, $"{{\"message\":\"{e.Message}\"}}");
         }
     }
+
+    [HttpDelete]
+    public async Task<ActionResult> Logout()
+    {
+        
+        HttpContext.Response.Cookies.Delete("auth_token");
+        await _doctorPatientService.DeleteDoctorPatientsAsync();
+        
+        return Ok();
+    }
+    
 
     [HttpDelete("{email}")]
     public async Task<ActionResult> Delete(string email, CancellationToken ct)

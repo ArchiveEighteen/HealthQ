@@ -3,6 +3,7 @@ using HealthQ_API.Entities;
 using HealthQ_API.Entities.Auxiliary;
 using Hl7.Fhir.Model;
 using Microsoft.EntityFrameworkCore;
+using Task = System.Threading.Tasks.Task;
 
 namespace HealthQ_API.Services;
 
@@ -23,6 +24,19 @@ public class DoctorPatientService
             .ToListAsync();
         
         return result;
+    }
+
+    public async Task DeleteDoctorPatientsAsync()
+    {
+        try
+        {
+            _context.DoctorPatients.RemoveRange(await _context.DoctorPatients.ToListAsync());
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine(e); // TODO handle exception
+        }
     }
     
     

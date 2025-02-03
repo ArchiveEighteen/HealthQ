@@ -10,6 +10,7 @@ export const authGuard = async () => {
   console.log("Authentication check: ", isAuthenticated);
 
   if(isAuthenticated) {
+    authService.retrieveUsername();
     return true;
   }
   return router.parseUrl('/login');

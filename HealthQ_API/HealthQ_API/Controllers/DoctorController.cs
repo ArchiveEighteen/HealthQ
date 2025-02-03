@@ -170,7 +170,7 @@ public class DoctorController : ControllerBase
             };
 
             var result = await _patientQuestionnaireService.AssignPatientAsync(patientQuestionnaire);
-            return Ok(result);
+            return Ok(result?.QuestionnaireContent);
         }
         catch (OperationCanceledException)
         {

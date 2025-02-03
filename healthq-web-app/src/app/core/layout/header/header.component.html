@@ -1,12 +1,24 @@
 <mat-toolbar class="header">
   <span class="title">HealthQ</span>
   <span class="spacer"></span>
-  <div>
-    <button mat-icon-button>
+  <div class="button-container">
+    <button mat-mini-fab class="notification-button"> <!-- Added class -->
       <mat-icon class="button-icon">notifications</mat-icon>
     </button>
-    <button mat-icon-button>
+    <button mat-fab extended class="account-button" [matMenuTriggerFor]="accountMenu">
+      <span>{{ this.authService.username }}</span>
       <mat-icon class="button-icon">account_circle</mat-icon>
     </button>
+
+    <mat-menu #accountMenu="matMenu" class="account-menu">
+      <button mat-menu-item>
+        <mat-icon>settings</mat-icon>
+        <span>Account Settings</span>
+      </button>
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        <span>Log Out</span>
+      </button>
+    </mat-menu>
   </div>
 </mat-toolbar>
