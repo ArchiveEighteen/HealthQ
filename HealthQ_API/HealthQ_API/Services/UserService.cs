@@ -16,99 +16,49 @@ public class UserService
         _context = context;
     }
 
-    public async Task<IEnumerable<UserDTO>> GetAllUsersAsync(CancellationToken ct)
+    public async Task<IEnumerable<UserModel>> GetAllUsersAsync(CancellationToken ct)
     {
-        var users = await _context.Users.ToListAsync(ct);
-        return users.Select(user => new UserDTO
-            {
-                Email = user.Email,
-                Username = user.Username,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                PhoneNumber = user.PhoneNumber,
-                BirthDate = user.BirthDate.ToDateTime(new TimeOnly(0, 0)),
-                Gender = user.Gender.ToString(),
-                UserType = user.UserType.ToString(),
-                Password = ""
-            })
-            .ToList();
+        return await _context.Users.ToListAsync(ct);
     }
 
-    public async Task<UserDTO?> GetUserByEmailAsync(string email, CancellationToken ct)
+    public async Task<UserModel?> GetUserByEmailAsync(string email, CancellationToken ct)
     {
-        var user = await _context.Users.FindAsync([email], cancellationToken: ct);
-
-        if (user == null)
-            return null;
-
-        var userDto = new UserDTO
-        {
-            Email = user.Email,
-            Username = user.Username,
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            PhoneNumber = user.PhoneNumber,
-            BirthDate = user.BirthDate.ToDateTime(new TimeOnly(0, 0)),
-            Gender = user.Gender.ToString(),
-            UserType = user.UserType.ToString(),
-            Password = ""
-        };
-        
-        return userDto;
+        return await _context.Users.FindAsync([email], cancellationToken: ct);
     }
 
-    public async Task<UserDTO> CreateUserAsync(UserDTO user, CancellationToken ct)
+    public async Task<UserModel> CreateUserAsync(UserModel user, string password, CancellationToken ct)
     {
         if( await GetUserByEmailAsync(user.Email, ct) != null)
             throw new Exception($"User with email {user.Email} already exists");
         
-        var (hash, salt) = HashingUtility.HashPassword(user.Password!);
-
+        var (hash, salt) = HashingUtility.HashPassword(password);
         
-        if (!Enum.TryParse<EGender>(user.Gender, out var gender))
-            throw new InvalidCastException("Invalid gender value");
+        user.PasswordHash = hash;
+        user.PasswordSalt = salt;
 
-        if (!Enum.TryParse<EUserType>(user.UserType, out var role))
-            throw new InvalidCastException("Invalid user type value");
-        
-        var userModel = new UserModel
-        {
-            Email = user.Email,
-            Username = user.Username,
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            BirthDate = DateOnly.FromDateTime(user.BirthDate),
-            Gender = gender,
-            PhoneNumber = user.PhoneNumber,
-            UserType = role,
-            PasswordHash = hash,
-            PasswordSalt = salt,
+        await _context.Users.AddAsync(user, ct);
 
-        };
-        await _context.Users.AddAsync(userModel, ct);
-
-        if (role == EUserType.Patient)
+        if (user.UserType == EUserType.Patient)
             await _context.Patients.AddAsync(new PatientModel { UserEmail = user.Email }, ct);
-        else if (role == EUserType.Doctor)
+        else if (user.UserType == EUserType.Doctor)
         {
             await _context.Doctors.AddAsync(new DoctorModel { UserEmail = user.Email }, ct);
         }
         await _context.SaveChangesAsync(ct);
         
-        user.Password = "";
         return user;
     }
 
-    public async Task<UserDTO> VerifyUserAsync(UserDTO user, CancellationToken ct)
+    public async Task<UserModel> VerifyUserAsync(string userEmail, string password, CancellationToken ct)
     {
-        var existingUser = await _context.Users.FindAsync([user.Email], cancellationToken: ct);
+        var existingUser = await _context.Users.FindAsync([userEmail], cancellationToken: ct);
         if (existingUser == null)
-            throw new Exception($"User with email {user.Email} does not exist");
+            throw new Exception($"User with email {userEmail} does not exist");
 
-        if(existingUser.PasswordHash != HashingUtility.HashPassword(user.Password!, existingUser.PasswordSalt).Hash)
+        if(existingUser.PasswordHash != HashingUtility.HashPassword(password, existingUser.PasswordSalt).Hash)
             throw new Exception("Wrong password");
         
-        return (await GetUserByEmailAsync(user.Email, ct))!;
+        return (await GetUserByEmailAsync(userEmail, ct))!;
     }
 
     public async Task DeleteUserAsync(string email, CancellationToken ct)
@@ -119,5 +69,12 @@ public class UserService
             _context.Users.Remove(user);
             await _context.SaveChangesAsync(ct);
         }
+    }
+
+    public async Task<UserModel> UpdateUserAsync(UserModel user,CancellationToken ct)
+    {
+        _context.Users.Update(user);
+        await _context.SaveChangesAsync(ct);
+        return user;
     }
 }

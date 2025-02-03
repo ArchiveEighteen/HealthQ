@@ -61,19 +61,33 @@ public class DoctorController : ControllerBase
     }
     
     [HttpGet("{email}")]
-    public async Task<ActionResult> GetAllDoctorPatients(string email)
+    public async Task<ActionResult> GetAllDoctorPatients(string email, CancellationToken ct)
     {
         try
         {
             var patientsIds = await _doctorPatientService.GetAllDoctorPatientsAsync(email);
             
-            var users = new List<UserDTO?>();
+            var usersDto = new List<UserDTO?>();
             foreach (var patientId in patientsIds)
             {
-                users.Add(await _userService.GetUserByEmailAsync(patientId, CancellationToken.None));
+                var user = await _userService.GetUserByEmailAsync(patientId, ct);
+                if(user == null) continue;
+                
+                usersDto.Add(new UserDTO
+                {
+                    Email = user.Email,
+                    Username = user.Username,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    PhoneNumber = user.PhoneNumber,
+                    BirthDate = user.BirthDate.ToDateTime(new TimeOnly(0, 0)),
+                    Gender = user.Gender.ToString(),
+                    UserType = user.UserType.ToString(),
+                    Password = ""
+                });
             }
 
-            return Ok(users);
+            return Ok(usersDto);
         }
         catch (OperationCanceledException)
         {

@@ -25,19 +25,6 @@ public class DoctorPatientService
         
         return result;
     }
-
-    public async Task DeleteDoctorPatientsAsync()
-    {
-        try
-        {
-            _context.DoctorPatients.RemoveRange(await _context.DoctorPatients.ToListAsync());
-            await _context.SaveChangesAsync();
-        }
-        catch (Exception e)
-        {
-            Console.Error.WriteLine(e); // TODO handle exception
-        }
-    }
     
     
 }

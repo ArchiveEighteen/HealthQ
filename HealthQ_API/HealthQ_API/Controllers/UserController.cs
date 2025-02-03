@@ -1,6 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using HealthQ_API.DTOs;
+using HealthQ_API.Entities;
 using HealthQ_API.Security;
 using HealthQ_API.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -28,11 +29,25 @@ public class UserController : ControllerBase
         try
         {
             var users = await _userService.GetAllUsersAsync(ct);
-            return Ok(users);
+            
+            var usersDto = users.Select(user => new UserDTO
+                {
+                    Email = user.Email,
+                    Username = user.Username,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    PhoneNumber = user.PhoneNumber,
+                    BirthDate = user.BirthDate.ToDateTime(new TimeOnly(0, 0)),
+                    Gender = user.Gender.ToString(),
+                    UserType = user.UserType.ToString(),
+                    Password = ""
+                })
+                .ToList();
+            return Ok(usersDto);
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(500, "Internal Server Error");
+            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
         }
     }
 
@@ -45,12 +60,28 @@ public class UserController : ControllerBase
             if (string.IsNullOrEmpty(email)) return Unauthorized();
 
             var user = await _userService.GetUserByEmailAsync(email, ct);
+            
+            if (user == null)
+                return NotFound();
 
-            return Ok(user);
+            var userDto = new UserDTO
+            {
+                Email = user.Email,
+                Username = user.Username,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                PhoneNumber = user.PhoneNumber,
+                BirthDate = user.BirthDate.ToDateTime(new TimeOnly(0, 0)),
+                Gender = user.Gender.ToString(),
+                UserType = user.UserType.ToString(),
+                Password = ""
+            };
+
+            return Ok(userDto);
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(500, "Internal Server Error");
+            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
         }
         catch (Exception e)
         {
@@ -65,7 +96,21 @@ public class UserController : ControllerBase
         {
             var user = await _userService.GetUserByEmailAsync(email, ct);
             if (user == null) return NotFound();
-            return Ok(user);
+
+            var userDto = new UserDTO
+            {
+                Email = user.Email,
+                Username = user.Username,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                PhoneNumber = user.PhoneNumber,
+                BirthDate = user.BirthDate.ToDateTime(new TimeOnly(0, 0)),
+                Gender = user.Gender.ToString(),
+                UserType = user.UserType.ToString(),
+                Password = ""
+            };
+            
+            return Ok(userDto);
         }
         catch (OperationCanceledException)
         {
@@ -91,19 +136,53 @@ public class UserController : ControllerBase
     {
         try
         {
-            var createdUser = await _userService.CreateUserAsync(user, ct);
+            if (!Enum.TryParse<EGender>(user.Gender, out var gender))
+                throw new InvalidCastException("Invalid gender value");
+
+            if (!Enum.TryParse<EUserType>(user.UserType, out var role))
+                throw new InvalidCastException("Invalid user type value");
+        
+            var userModel = new UserModel
+            {
+                Email = user.Email,
+                Username = user.Username,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                BirthDate = DateOnly.FromDateTime(user.BirthDate),
+                Gender = gender,
+                PhoneNumber = user.PhoneNumber,
+                UserType = role,
+                PasswordHash = "",
+                PasswordSalt = ""
+
+            };
+            var createdUser = await _userService.CreateUserAsync(userModel, user.Password!, ct);
             
             var accessToken = JwtUtility.GenerateToken(createdUser.Email);
             var cookieOptions = new CookieOptions
             {
-                HttpOnly = true, // Prevents JavaScript from accessing it (Mitigates XSS)
-                Secure = true,   // TODO: set to 'true' after release
-                SameSite = SameSiteMode.Lax, // Helps prevent CSRF attacks + allows cross-origin requests
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Lax,
                 Path = "/",
-                Expires = DateTime.UtcNow.AddHours(1), // Token expiry
+                Expires = DateTime.UtcNow.AddHours(1)
             };
             HttpContext.Response.Cookies.Append("auth_token", accessToken, cookieOptions);
-            return Ok(createdUser);
+            
+            var responseDto = new UserDTO
+            {
+                Email = createdUser.Email,
+                Username = createdUser.Username,
+                FirstName = createdUser.FirstName,
+                LastName = createdUser.LastName,
+                PhoneNumber = createdUser.PhoneNumber,
+                BirthDate = createdUser.BirthDate.ToDateTime(new TimeOnly(0, 0)),
+                Gender = createdUser.Gender.ToString(),
+                UserType = createdUser.UserType.ToString(),
+                Password = ""
+            };
+            
+            return Ok(responseDto);
         }
         catch (OperationCanceledException)
         {
@@ -125,24 +204,37 @@ public class UserController : ControllerBase
     {
         try
         {
-            var updatedUser = await _userService.VerifyUserAsync(user, ct);
+            var updatedUser = await _userService.VerifyUserAsync(user.Email, user.Password!, ct);
             
             var accessToken = JwtUtility.GenerateToken(updatedUser.Email);
             var cookieOptions = new CookieOptions
             {
-                HttpOnly = true, // Prevents JavaScript from accessing it (Mitigates XSS)
-                Secure = true,   // TODO: set to 'true' after release
-                SameSite = SameSiteMode.Lax, // Helps prevent CSRF attacks + allows cross-origin requests
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Lax,
                 Path = "/",
-                Expires = DateTime.UtcNow.AddHours(1), // Token expiry
+                Expires = DateTime.UtcNow.AddHours(1)
             };
             HttpContext.Response.Cookies.Append("auth_token", accessToken, cookieOptions);
             
-            return Ok(updatedUser);
+            var responseDto = new UserDTO
+            {
+                Email = updatedUser.Email,
+                Username = updatedUser.Username,
+                FirstName = updatedUser.FirstName,
+                LastName = updatedUser.LastName,
+                PhoneNumber = updatedUser.PhoneNumber,
+                BirthDate = updatedUser.BirthDate.ToDateTime(new TimeOnly(0, 0)),
+                Gender = updatedUser.Gender.ToString(),
+                UserType = updatedUser.UserType.ToString(),
+                Password = ""
+            };
+            
+            return Ok(responseDto);
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(500, "Internal Server Error");
+            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
         }
         catch (Exception e)
         {
@@ -150,24 +242,76 @@ public class UserController : ControllerBase
         }
     }
 
+    [HttpPut]
+    public async Task<ActionResult> UpdateUser([FromBody] UserDTO user, CancellationToken ct)
+    {
+        try
+        {
+            var userModel = await _userService.GetUserByEmailAsync(user.Email, ct);
+            
+            if(userModel == null) return NotFound();
+            
+            userModel.Username = user.Username;
+            userModel.FirstName = user.FirstName;
+            userModel.LastName = user.LastName;
+            userModel.BirthDate = DateOnly.FromDateTime(user.BirthDate);
+            userModel.Gender = Enum.Parse<EGender>(user.Gender);
+            userModel.PhoneNumber = user.PhoneNumber;
+            userModel.UserType = Enum.Parse<EUserType>(user.UserType);
+
+            var updatedUserModel = await _userService.UpdateUserAsync(userModel, ct);
+
+            var userDto = new UserDTO
+            {
+                Email = updatedUserModel.Email,
+                Username = updatedUserModel.Username,
+                FirstName = updatedUserModel.FirstName,
+                LastName = updatedUserModel.LastName,
+                PhoneNumber = updatedUserModel.PhoneNumber,
+                BirthDate = updatedUserModel.BirthDate.ToDateTime(new TimeOnly(0, 0)),
+                Gender = updatedUserModel.Gender.ToString(),
+                UserType = updatedUserModel.UserType.ToString(),
+                Password = ""
+            };
+            
+            return Ok(userDto);
+        }
+        catch (OperationCanceledException)
+        {
+            
+            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
+        }
+        catch (Exception e)
+        {
+            return StatusCode(StatusCodes.Status409Conflict, $"{{\"message\":\"{e.Message}\"}}");
+        }
+        
+    }
+
     [HttpDelete]
-    public async Task<ActionResult> Logout()
+    public Task<ActionResult> Logout()
     {
         
         HttpContext.Response.Cookies.Delete("auth_token");
-        await _doctorPatientService.DeleteDoctorPatientsAsync();
         
-        return Ok();
+        return Task.FromResult<ActionResult>(Ok());
     }
     
 
     [HttpDelete("{email}")]
     public async Task<ActionResult> Delete(string email, CancellationToken ct)
     {
-        var user = await _userService.GetUserByEmailAsync(email, ct);
-        if (user == null) return NotFound();
+        try
+        {
+            var user = await _userService.GetUserByEmailAsync(email, ct);
+            if (user == null) return NotFound();
 
-        await _userService.DeleteUserAsync(email, ct);
-        return NoContent();
+            await _userService.DeleteUserAsync(email, ct);
+            return NoContent();
+        }
+        catch (OperationCanceledException)
+        {
+            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
+        }
     }
 }
