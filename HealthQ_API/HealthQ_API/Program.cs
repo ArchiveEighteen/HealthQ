@@ -1,6 +1,8 @@
 using System.Text;
 using HealthQ_API.Context;
+using HealthQ_API.DTOs;
 using HealthQ_API.Entities;
+using HealthQ_API.Profiles;
 using HealthQ_API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -16,11 +18,13 @@ builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers();
 
+builder.Services.AddScoped<PasswordService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<PatientService>();
 builder.Services.AddScoped<QuestionnaireService>();
 builder.Services.AddScoped<PatientQuestionnaireService>();
 builder.Services.AddScoped<DoctorPatientService>();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 builder.Services.AddCors(options =>
 {

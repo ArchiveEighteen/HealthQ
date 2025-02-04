@@ -31,11 +31,11 @@ public class DoctorController : ControllerBase
     }
     
     [HttpGet("{email}")]
-    public async Task<ActionResult> GetDoctorQuestionnaires(string email)
+    public async Task<ActionResult> GetDoctorQuestionnaires(string email, CancellationToken ct)
     {
         try
         {
-            var questionnaires = await _questionnaireService.GetAllDoctorSurveysAsync(email);
+            var questionnaires = await _questionnaireService.GetAllDoctorSurveysAsync(email, ct);
             
             return Ok(questionnaires);
         }
@@ -46,11 +46,12 @@ public class DoctorController : ControllerBase
     }
     
     [HttpGet("{doctorEmail}/{patientEmail}")]
-    public async Task<ActionResult> GetDoctorPatientQuestionnaires(string doctorEmail, string patientEmail)
+    public async Task<ActionResult> GetDoctorPatientQuestionnaires(string doctorEmail, string patientEmail, CancellationToken ct)
     {
         try
         {
-            var questionnaires = await _questionnaireService.GetAllDoctorPatientSurveysAsync(doctorEmail, patientEmail);
+            var questionnaires = 
+                await _questionnaireService.GetAllDoctorPatientSurveysAsync(doctorEmail, patientEmail, ct);
             
             return Ok(questionnaires);
         }
@@ -73,18 +74,7 @@ public class DoctorController : ControllerBase
                 var user = await _userService.GetUserByEmailAsync(patientId, ct);
                 if(user == null) continue;
                 
-                usersDto.Add(new UserDTO
-                {
-                    Email = user.Email,
-                    Username = user.Username,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    PhoneNumber = user.PhoneNumber,
-                    BirthDate = user.BirthDate.ToDateTime(new TimeOnly(0, 0)),
-                    Gender = user.Gender.ToString(),
-                    UserType = user.UserType.ToString(),
-                    Password = ""
-                });
+                usersDto.Add(user);
             }
 
             return Ok(usersDto);
@@ -96,7 +86,7 @@ public class DoctorController : ControllerBase
     }
  
     [HttpPost]
-    public async Task<ActionResult> AddByEmail([FromBody] JsonElement questionnaireJson)
+    public async Task<ActionResult> AddByEmail([FromBody] JsonElement questionnaireJson, CancellationToken ct)
     {
         try
         {
@@ -116,7 +106,7 @@ public class DoctorController : ControllerBase
                 Id = Guid.Parse(questionnaire.Id),
             };
 
-            var userQuestionnaire = await _questionnaireService.AddSurveyAsync(questionnaireModel);
+            var userQuestionnaire = await _questionnaireService.AddSurveyAsync(questionnaireModel, ct);
             return Ok(userQuestionnaire);
         }
         catch (OperationCanceledException)

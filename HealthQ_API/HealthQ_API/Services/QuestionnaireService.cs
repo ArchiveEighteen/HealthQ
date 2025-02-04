@@ -1,6 +1,7 @@
 ﻿using HealthQ_API.Context;
 using HealthQ_API.Entities;
 using HealthQ_API.Entities.Auxiliary;
+using HealthQ_API.Repositories;
 using Hl7.Fhir.Model;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,48 +9,32 @@ namespace HealthQ_API.Services;
 
 public class QuestionnaireService
 {
-    private readonly HealthqDbContext _context;
+    private readonly IQuestionnaireRepository _questionnaireRepository;
 
-    public QuestionnaireService(HealthqDbContext context)
+    public QuestionnaireService(
+        IQuestionnaireRepository questionnaireRepository)
     {
-        _context = context;
+        _questionnaireRepository = questionnaireRepository;
     }
 
-    public async Task<List<string>> GetAllDoctorSurveysAsync(string doctorEmail)
+    public async Task<IEnumerable<string>> GetAllDoctorSurveysAsync(string doctorEmail, CancellationToken ct)
     {
-        var questionnaireStrings =  await _context.Questionnaires
-                .Where(q => q.OwnerId == doctorEmail)
-                .Select(q => q.QuestionnaireContent)
-                .ToListAsync();
-        
-        return questionnaireStrings;
+        return (await _questionnaireRepository.GetQuestionnairesByOwnerAsync(doctorEmail, ct))
+            .Select(x => x.QuestionnaireContent).ToList();
     }
     
-    public async Task<List<string>> GetAllDoctorPatientSurveysAsync(string doctorEmail, string patientEmail)
+    public async Task<IEnumerable<string>> GetAllDoctorPatientSurveysAsync(string doctorEmail, string patientEmail, CancellationToken ct)
     {
-        var doctorQuestionnaireIds = await _context.Questionnaires
-            .Where(q => q.OwnerId == doctorEmail)
-            .Select(q => q.Id)
-            .ToListAsync();
-
-        var patientQuestionnaires = await _context.PatientQuestionnaire
-            .Where(pq => pq.PatientId == patientEmail && doctorQuestionnaireIds.Contains(pq.QuestionnaireId))
-            .Select(pq => pq.Questionnaire)
-            .Select(q => q.QuestionnaireContent)
-            .ToListAsync();
-
-        return patientQuestionnaires;
+        return (await _questionnaireRepository.GetQuestionnairesByDoctorAndPatientAsync(doctorEmail, patientEmail, ct))
+            .Select(x => x.QuestionnaireContent).ToList();
     }
 
-    public async Task<QuestionnaireModel?> AddSurveyAsync(QuestionnaireModel? questionnaire)
+    public async Task<QuestionnaireModel?> AddSurveyAsync(QuestionnaireModel questionnaire, CancellationToken ct)
     {
-        await _context.Questionnaires.AddAsync(questionnaire);
-        await _context.SaveChangesAsync();
-        
-        return await _context.Questionnaires.FindAsync(questionnaire?.Id);
+        await _questionnaireRepository.CreateQuestionnaireAsync(questionnaire, ct);
     }
     
-    public async Task<QuestionnaireModel?> UpdateSurveyAsync(QuestionnaireModel? questionnaire)
+    public async Task<QuestionnaireModel?> UpdateSurveyAsync(QuestionnaireModel questionnaire)
     {
         _context.Questionnaires.Update(questionnaire);
         await _context.SaveChangesAsync();
