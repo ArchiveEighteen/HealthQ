@@ -27,7 +27,7 @@ import { User } from '../../user.model';
 import { routes } from '../../../../app.routes';
 
 @Component({
-  selector: 'app-register',
+  selector: 'app-profile',
   providers: [provideNativeDateAdapter()],
   imports: [
     MatToolbarModule,
@@ -53,65 +53,52 @@ import { routes } from '../../../../app.routes';
     MatIconButton,
     MatIcon,
   ],
-  templateUrl: './register.component.html',
-  styleUrl: './register.component.scss',
+  templateUrl: './profile.component.html',
+  styleUrl: './profile.component.scss',
 })
-export class RegisterComponent {
+export class ProfileComponent {
   EGender = Object.entries(GenderEnum);
   EUserRole = Object.entries(UserRoleEnum);
   readonly _currentDate = new Date();
-  hidePassword = signal(true);
-  confirmPassword = '';
   errorMessage: string = '';
 
   constructor(
     public service: AuthService,
-    private router: Router,
-    public route: ActivatedRoute
-  ) {
-    service.formData.userType = UserRoleEnum.Patient;
-    service.formData.password = "123456";
-    service.formData.firstName = "John";
-    service.formData.lastName = "Doe";
-    service.formData.email = "john@doe.com";
-    service.formData.gender = GenderEnum.Male;
-    service.formData.birthDate = new Date(2005, 1, 6, 0, 0, 0, 0);
-    service.formData.username = "CoolJohn";
-    service.formData.phoneNumber = "0674527417";
+    private router: Router)
+  {
+    let user = sessionStorage.getItem('user');
+    if (user) {
+      service.formData.userType = JSON.parse(user).userType;
+      service.formData.firstName = JSON.parse(user).firstName;
+      service.formData.lastName = JSON.parse(user).lastName;
+      service.formData.email = JSON.parse(user).email;
+      service.formData.gender = JSON.parse(user).gender;
+      service.formData.birthDate = JSON.parse(user).birthDate;
+      service.formData.username = JSON.parse(user).username;
+      service.formData.phoneNumber = JSON.parse(user).phoneNumber;
+    }else{
+      console.log("User not found");
+    }
   }
 
-  changeButtonVisibility(event: MouseEvent) {
-    this.hidePassword.set(!this.hidePassword());
-    event.stopPropagation();
-  }
-  isPasswordMatch(
-    event: FocusEvent,
-    password: NgModel,
-    confirmPassword: NgModel
-  ) {
-    if (password.value != confirmPassword.value) {
-      password.control.setErrors({ mismatch: true });
-      confirmPassword.control.setErrors({ mismatch: true });
-    } else {
-      password.control.setErrors(null);
-      confirmPassword.control.setErrors(null);
-    }
-    event.stopPropagation();
-  }
   onSubmit(form: NgForm) {
     this.service.formSubmitted = true;
     if (form.valid) {
-      this.service.register().subscribe({
+      this.service.updateUser().subscribe({
         next: (data) => {
           console.log(data);
-          this.service.formData = new User();
           sessionStorage.setItem('user', JSON.stringify(data));
-          this.router.navigate([`/${(data as User).userType}`]);
         },
         error: (error) => {
           console.log(error);
         },
       });
     }
+  }
+
+  logout(){
+    this.service.logout()
+      .then(() => this.router.navigate(['/login']))
+      .catch(err => console.log("Logout error:", err));
   }
 }

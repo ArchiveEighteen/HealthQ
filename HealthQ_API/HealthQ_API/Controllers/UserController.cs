@@ -15,16 +15,13 @@ namespace HealthQ_API.Controllers;
 public class UserController : ControllerBase
 {
     private readonly UserService _userService;
-    private readonly IMapper _mapper;
     private readonly AuthService _authService;
 
     public UserController(
         UserService userService,
-        IMapper mapper,
         AuthService authService)
     {
         _userService = userService;
-        _mapper = mapper;
         _authService = authService;
     }
 
@@ -50,12 +47,8 @@ public class UserController : ControllerBase
             var email = (User.Identity as ClaimsIdentity)!.FindFirst(ClaimTypes.Email)?.Value;
             if (string.IsNullOrEmpty(email))
                 return Unauthorized();
-
-            var user = await _userService.GetUserByEmailAsync(email, ct);
-            if (user == null)
-                return NotFound();
-
-            var userDto = _mapper.Map<UserDTO>(user);
+            
+            var userDto = await _userService.GetUserByEmailAsync(email, ct);
 
             return Ok(userDto);
         }
@@ -74,10 +67,7 @@ public class UserController : ControllerBase
     {
         try
         {
-            var user = await _userService.GetUserByEmailAsync(email, ct);
-            if (user == null) return NotFound();
-
-            var userDto = _mapper.Map<UserDTO>(user);
+            var userDto = await _userService.GetUserByEmailAsync(email, ct);
             
             return Ok(userDto);
         }
@@ -133,18 +123,13 @@ public class UserController : ControllerBase
     {
         try
         {
-            var userModel = await _userService.GetUserByEmailAsync(user.Email, ct);
-            if(userModel== null)
-                return NotFound();
+            var verifiedUser = await _userService.VerifyUserAsync(user, ct);
             
-            if(!_passwordService.VerifyPasswordAsync(userModel, user.Password!, ct))
-                return Unauthorized();
+            var accessToken = _authService.GenerateToken(verifiedUser.Email);
+            var cookieOptions = _authService.GetCookieOptions(verifiedUser.Email);
+            HttpContext.Response.Cookies.Append("auth_token", accessToken, cookieOptions);
             
-            _authService.
-            
-            var responseDto = _mapper.Map<UserDTO>(userModel);
-            
-            return Ok(responseDto);
+            return Ok(verifiedUser);
         }
         catch (OperationCanceledException)
         {
@@ -192,9 +177,6 @@ public class UserController : ControllerBase
     {
         try
         {
-            var user = await _userService.GetUserByEmailAsync(email, ct);
-            if (user == null) return NotFound();
-
             await _userService.DeleteUserAsync(email, ct);
             return NoContent();
         }

@@ -40,8 +40,10 @@ public class UserService
     public async Task<UserDTO?> GetUserByEmailAsync(string email, CancellationToken ct)
     {
         var userModel = await _userRepository.GetUserAsync(email, ct);
+        if (userModel == null)
+            throw new NullReferenceException("User not found");
         
-        return userModel == null ?  null : _mapper.Map<UserDTO>(userModel);
+        return _mapper.Map<UserDTO>(userModel);
     }
 
     public async Task<UserDTO> CreateUserAsync(UserDTO user, CancellationToken ct)
@@ -68,8 +70,24 @@ public class UserService
         return user;
     }
 
+    public async Task<UserDTO> VerifyUserAsync(UserDTO user, CancellationToken ct)
+    {
+        var userModel = await _userRepository.GetUserAsync(user.Email, ct);
+        if (userModel == null)
+            throw new Exception("User doesn't exist");
+
+        if (!_passwordService.VerifyPasswordAsync(userModel, user.Password!, ct))
+            throw new Exception("Password does not match");
+        
+        return _mapper.Map<UserDTO>(userModel);
+    }
+    
     public async Task DeleteUserAsync(string email, CancellationToken ct)
     {
+        var user = await _userRepository.GetUserAsync(email, ct);
+        if (user == null)
+            throw new NullReferenceException("User not found");
+
         await _userRepository.DeleteUserAsync(email, ct);
     }
 
@@ -79,11 +97,15 @@ public class UserService
         if (userModel == null)
             throw new NullReferenceException("User not found");
         
-        var userToUpdate = _mapper.Map<UserModel>(user);
-        userToUpdate.PasswordHash = userModel.PasswordHash;
-        userToUpdate.PasswordSalt = userModel.PasswordSalt;
+        userModel.Username = user.Username;
+        userModel.FirstName = user.FirstName;
+        userModel.LastName = user.LastName;
+        userModel.Gender = Enum.Parse<EGender>(user.Gender);
+        userModel.BirthDate = DateOnly.FromDateTime(user.BirthDate);
+        userModel.PhoneNumber = user.PhoneNumber;
+        userModel.UserType = Enum.Parse<EUserType>(user.UserType);
         
-        await _userRepository.UpdateUserAsync(userToUpdate, ct);
+        await _userRepository.UpdateUserAsync(userModel, ct);
         return user;
     }
 }

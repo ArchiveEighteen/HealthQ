@@ -1,5 +1,6 @@
 ﻿using HealthQ_API.Context;
 using HealthQ_API.Entities;
+using HealthQ_API.Entities.Auxiliary;
 using Hl7.Fhir.Model;
 using Microsoft.EntityFrameworkCore;
 using Task = System.Threading.Tasks.Task;
@@ -70,4 +71,13 @@ public class QuestionnaireRepository : IQuestionnaireRepository
             await _context.SaveChangesAsync(ct);
         }
     }
+
+    public async Task CreatePatientQuestionnaireAsync(PatientQuestionnaire patientQuestionnaire,
+        CancellationToken ct)
+    {
+
+        await _context.PatientQuestionnaire.AddAsync(patientQuestionnaire, ct);
+        await _context.SaveChangesAsync(ct);
+    }
+
 }

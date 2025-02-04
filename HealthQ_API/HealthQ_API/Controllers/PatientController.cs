@@ -13,16 +13,13 @@ public class PatientController : ControllerBase
 {
     private readonly UserService _userService;
     private readonly QuestionnaireService _questionnaireService;
-    private readonly PatientService _patientService;
 
     public PatientController(
         UserService userService, 
-        QuestionnaireService questionnaireService, 
-        PatientService patientService)
+        QuestionnaireService questionnaireService)
     {
         _userService = userService;
         _questionnaireService = questionnaireService;
-        _patientService = patientService;
     }
 
     [HttpGet("{email}")]
@@ -30,14 +27,7 @@ public class PatientController : ControllerBase
     {
         try
         {
-            var patient = await _patientService.GetPatientAsync(email, ct);
-            if (patient == null) return NotFound();
-            
-            FhirJsonParser parser = new FhirJsonParser();
-            
-            var questionnaires = patient.Questionnaires
-                .Select(q => parser.Parse<Questionnaire>(q.QuestionnaireContent))
-                .ToList();
+            var questionnaires = await _questionnaireService.GetQuestionnairesByPatientAsync(email, ct);
             
             return Ok(questionnaires);
 

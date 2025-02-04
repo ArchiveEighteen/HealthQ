@@ -8,7 +8,7 @@ public class UserRepository : IUserRepository
 {
     private readonly HealthqDbContext _context;
 
-    UserRepository(HealthqDbContext context)
+    public UserRepository(HealthqDbContext context)
     {
         _context = context;
     }

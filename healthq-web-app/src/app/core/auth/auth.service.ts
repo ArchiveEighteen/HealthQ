@@ -42,6 +42,10 @@ export class AuthService {
       .post(this.url + '/Register', this.formData, { withCredentials: true })
   }
 
+  updateUser() {
+    return this.http.put(this.url + '/UpdateUser', this.formData, { withCredentials: true })
+  }
+
   login() {
     console.log(JSON.stringify(this.formData));
     return this.http

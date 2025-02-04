@@ -1,4 +1,5 @@
 ﻿using HealthQ_API.Entities;
+using HealthQ_API.Entities.Auxiliary;
 using Hl7.Fhir.Model;
 using Task = System.Threading.Tasks.Task;
 
@@ -15,5 +16,7 @@ public interface IQuestionnaireRepository
     public Task UpdateQuestionnaireAsync(QuestionnaireModel questionnaire, CancellationToken ct);
     public Task CreateQuestionnaireAsync(QuestionnaireModel questionnaire, CancellationToken ct);
     public Task DeleteQuestionnaireAsync(Guid id, CancellationToken ct);
+    
+    public Task CreatePatientQuestionnaireAsync(PatientQuestionnaire patientQuestionnaire, CancellationToken ct);
     
 }

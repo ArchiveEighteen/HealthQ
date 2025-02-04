@@ -16,8 +16,8 @@
 }
 
 .header {
-  display: flex;               // Makes toolbar flexible
-  align-items: center;         // Vertically center content
+  display: flex;
+  align-items: center;
   background-color: var(--mat-sys-primary);
   color: var(--mat-sys-on-primary);
   height: 7vh;
@@ -28,18 +28,27 @@
   color: var(--mat-sys-on-primary);
 }
 
+.main-page-button{
+  background-color: transparent;
+  font-size: var(--mat-sys-headline-large-size);
+}
+
+.title{
+  color: var(--mat-sys-on-primary);
+}
+
 .account-button,
 .notification-button{
   display: flex;               // Aligns icon and text horizontally
   align-items: center;         // Vertically centers icon and text
   justify-content: center; // Adds space between icon and text
   color: var(--mat-sys-on-primary);
-  background-color: var(--mat-sys-primary);
+  background-color: transparent;
+  box-shadow: none !important;
 }
 
 .account-button {
   gap: 8px;
-  background-color: var(--mat-sys-primary);
   font-size: var(--mat-sys-headline-small);
 }
 
@@ -48,7 +57,7 @@
   background-color: var(--mat-sys-secondary-fixed-dim);
 }
 
-.account-menu {
+.profile-menu {
   min-width: 180px;
   padding: 4px 0;
 

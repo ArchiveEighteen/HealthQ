@@ -5,12 +5,12 @@ import { MatButtonModule } from '@angular/material/button';
 import {FormsModule} from '@angular/forms';
 import {AuthService} from '../../auth/auth.service';
 import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
-import {Router} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [MatToolbarModule, MatIconModule, MatButtonModule, FormsModule, MatMenu, MatMenuItem, MatMenuTrigger],
+  imports: [MatToolbarModule, MatIconModule, MatButtonModule, FormsModule, MatMenu, MatMenuItem, MatMenuTrigger, RouterLink],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
 })
@@ -25,5 +25,9 @@ export class HeaderComponent {
     this.authService.logout()
       .then(() => this.router.navigate(['/login']))
       .catch(err => console.log("Logout error:", err));
+  }
+
+  openProfileSettings() {
+    this.router.navigate(['/profile']);
   }
 }

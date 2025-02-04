@@ -18,6 +18,13 @@ public class DoctorRepository : IDoctorRepository
         return await _context.Doctors.FindAsync([email], cancellationToken: ct);
     }
 
+    public async Task<DoctorModel?> GetDoctorWithPatientsAsync(string email, CancellationToken ct)
+    {
+        return await _context.Doctors
+            .Include(d => d.Patients)
+            .FirstOrDefaultAsync(d => d.UserEmail == email, ct);
+    }
+
     public async Task<IEnumerable<DoctorModel>> GetAllDoctorsAsync(CancellationToken ct)
     {
         return await _context.Doctors.ToListAsync(ct);
