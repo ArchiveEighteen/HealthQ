@@ -1,59 +1,112 @@
-﻿using HealthQ_API.Context;
+﻿using System.Text.Json;
+using HealthQ_API.Context;
 using HealthQ_API.Entities;
 using HealthQ_API.Entities.Auxiliary;
+using HealthQ_API.Repositories;
 using Hl7.Fhir.Model;
+using Hl7.Fhir.Serialization;
 using Microsoft.EntityFrameworkCore;
 
 namespace HealthQ_API.Services;
 
 public class QuestionnaireService
 {
-    private readonly HealthqDbContext _context;
+    private readonly IQuestionnaireRepository _questionnaireRepository;
+    private readonly IPatientRepository _patientRepository;
 
-    public QuestionnaireService(HealthqDbContext context)
+    public QuestionnaireService(
+        IQuestionnaireRepository questionnaireRepository,
+        IPatientRepository patientRepository)
     {
-        _context = context;
+        _questionnaireRepository = questionnaireRepository;
+        _patientRepository = patientRepository;
     }
 
-    public async Task<List<string>> GetAllDoctorSurveysAsync(string doctorEmail)
+    public async Task<IEnumerable<string>> GetAllDoctorSurveysAsync(string doctorEmail, CancellationToken ct)
     {
-        var questionnaireStrings =  await _context.Questionnaires
-                .Where(q => q.OwnerId == doctorEmail)
-                .Select(q => q.QuestionnaireContent)
-                .ToListAsync();
-        
-        return questionnaireStrings;
-    }
-    
-    public async Task<List<string>> GetAllDoctorPatientSurveysAsync(string doctorEmail, string patientEmail)
-    {
-        var doctorQuestionnaireIds = await _context.Questionnaires
-            .Where(q => q.OwnerId == doctorEmail)
-            .Select(q => q.Id)
-            .ToListAsync();
-
-        var patientQuestionnaires = await _context.PatientQuestionnaire
-            .Where(pq => pq.PatientId == patientEmail && doctorQuestionnaireIds.Contains(pq.QuestionnaireId))
-            .Select(pq => pq.Questionnaire)
-            .Select(q => q.QuestionnaireContent)
-            .ToListAsync();
-
-        return patientQuestionnaires;
-    }
-
-    public async Task<QuestionnaireModel?> AddSurveyAsync(QuestionnaireModel? questionnaire)
-    {
-        await _context.Questionnaires.AddAsync(questionnaire);
-        await _context.SaveChangesAsync();
-        
-        return await _context.Questionnaires.FindAsync(questionnaire?.Id);
+        return (await _questionnaireRepository.GetQuestionnairesByOwnerAsync(doctorEmail, ct))
+            .Select(x => x.QuestionnaireContent).ToList();
     }
     
-    public async Task<QuestionnaireModel?> UpdateSurveyAsync(QuestionnaireModel? questionnaire)
+    public async Task<IEnumerable<string>> GetAllDoctorPatientSurveysAsync(string doctorEmail, string patientEmail, CancellationToken ct)
     {
-        _context.Questionnaires.Update(questionnaire);
-        await _context.SaveChangesAsync();
+        return (await _questionnaireRepository.GetQuestionnairesByDoctorAndPatientAsync(doctorEmail, patientEmail, ct))
+            .Select(x => x.QuestionnaireContent).ToList();
+    }
+
+    public async Task<QuestionnaireModel> AddSurveyAsync(JsonElement questionnaireJson, CancellationToken ct)
+    {
         
-        return await _context.Questionnaires.FindAsync(questionnaire?.Id);
+        var parse = new FhirJsonParser();
+            
+        var questionnaire = await parse.ParseAsync<Questionnaire>(questionnaireJson.GetRawText());
+        if (questionnaire == null)
+            throw new InvalidCastException("Invalid questionnaire structure");
+            
+        var questionnaireModel = new QuestionnaireModel
+        {
+            OwnerId = questionnaire.Publisher,
+            QuestionnaireContent = questionnaireJson.GetRawText(),
+            Id = Guid.Parse(questionnaire.Id),
+        };
+        
+        await _questionnaireRepository.CreateQuestionnaireAsync(questionnaireModel, ct);
+        return questionnaireModel;
+    }
+    
+    public async Task<QuestionnaireModel?> UpdateSurveyAsync(JsonElement questionnaireJson, CancellationToken ct)
+    {
+        var parse = new FhirJsonParser();
+            
+        var questionnaire = await parse.ParseAsync<Questionnaire>(questionnaireJson.GetRawText());
+        if (questionnaire == null)
+            throw new InvalidCastException("Invalid questionnaire structure");
+            
+        var questionnaireModel = new QuestionnaireModel
+        {
+            OwnerId = questionnaire.Publisher,
+            QuestionnaireContent = questionnaireJson.GetRawText(),
+            Id = Guid.Parse(questionnaire.Id),
+        };
+        
+        await _questionnaireRepository.UpdateQuestionnaireAsync(questionnaireModel, ct);
+        return questionnaireModel;
+    }
+    
+    
+    public async Task<QuestionnaireModel?> AssignToPatientAsync(JsonElement questionnaireJson, string patientEmail, CancellationToken ct)
+    {
+        var parse = new FhirJsonParser();
+            
+        var questionnaire = await parse.ParseAsync<Questionnaire>(questionnaireJson.GetRawText());
+        if (questionnaire == null)
+            throw new InvalidCastException("Invalid questionnaire structure");
+
+        var questionnaireId = Guid.Parse(questionnaire.Id);
+        await _questionnaireRepository.CreatePatientQuestionnaireAsync(
+            new PatientQuestionnaire
+            {
+                QuestionnaireId = questionnaireId,
+                PatientId = patientEmail
+            }, 
+            ct);
+        
+        return await _questionnaireRepository.GetQuestionnaireAsync(questionnaireId, ct);
+    }
+
+    public async Task<List<Questionnaire?>> GetQuestionnairesByPatientAsync(string patientEmail, CancellationToken ct)
+    {
+        
+        var patient = await _patientRepository.GetPatientWithQuestionnairesAsync(patientEmail, ct);
+        if (patient == null)
+            throw new NullReferenceException("Patient not found");
+            
+        FhirJsonParser parser = new FhirJsonParser();
+        
+        var questionnaires = patient.Questionnaires
+            .Select(q => parser.Parse<Questionnaire>(q.QuestionnaireContent))
+            .ToList();
+
+        return questionnaires;
     }
 }

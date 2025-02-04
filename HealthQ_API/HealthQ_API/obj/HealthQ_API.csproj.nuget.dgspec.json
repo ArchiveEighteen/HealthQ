@@ -50,6 +50,10 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "dependencies": {
+            "AutoMapper": {
+              "target": "Package",
+              "version": "[13.0.1, )"
+            },
             "Hl7.Fhir.R5": {
               "target": "Package",
               "version": "[6.0.0-alpha1, )"

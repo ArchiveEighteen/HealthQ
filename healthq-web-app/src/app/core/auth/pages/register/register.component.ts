@@ -104,6 +104,7 @@ export class RegisterComponent {
       this.service.register().subscribe({
         next: (data) => {
           console.log(data);
+          this.service.formData = new User();
           sessionStorage.setItem('user', JSON.stringify(data));
           this.router.navigate([`/${(data as User).userType}`]);
         },

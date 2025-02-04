@@ -11,6 +11,7 @@ export class AuthService {
   public url: string = environment.apiBaseUrl + '/User';
   public formData: User = new User();
   public formSubmitted = false;
+  public username = "Username";
 
   constructor(private http: HttpClient) {
   }
@@ -26,6 +27,10 @@ export class AuthService {
             resolve(data.isAuthenticated);
           },
           error: (err) => {
+            if(err.status === 401 && sessionStorage.getItem('user') != null) {
+              sessionStorage.removeItem('user');
+              this.retrieveUsername();
+            }
             resolve(false);
           },
         });
@@ -37,10 +42,33 @@ export class AuthService {
       .post(this.url + '/Register', this.formData, { withCredentials: true })
   }
 
+  updateUser() {
+    return this.http.put(this.url + '/UpdateUser', this.formData, { withCredentials: true })
+  }
+
   login() {
     console.log(JSON.stringify(this.formData));
     return this.http
-      .put(this.url + '/Login', this.formData, { withCredentials: true })
+      .post(this.url + '/Login', this.formData, { withCredentials: true })
+  }
+
+  logout(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.http.delete(this.url + '/Logout', { withCredentials: true }).subscribe({
+        next: () => {
+          if(sessionStorage.getItem('user') != null)
+          {
+            sessionStorage.removeItem('user');
+            this.retrieveUsername();
+            resolve();
+          }
+        },
+        error: (err) => {
+          console.log("Logout error: ", err);
+          reject(err);
+        }
+      })
+    })
   }
 
   //get() method is used like example and should be deleted later along with all it's usages
@@ -57,6 +85,10 @@ export class AuthService {
           resolve ((data as User).userType);
         },
         error: (err) => {
+          if(err.status === 401 && sessionStorage.getItem('user') != null) {
+              sessionStorage.removeItem('user');
+              this.retrieveUsername();
+          }
           resolve(null);
           console.log(err);
         }
@@ -64,9 +96,14 @@ export class AuthService {
     })
   }
 
-  checkUserRole(){
-    let userString = sessionStorage.getItem('user');
-    if(userString === null) return null;
-    return (JSON.parse(userString) as User).userType;
+  retrieveUsername(){
+    let user = sessionStorage.getItem('user');
+    if(user === null){
+      this.username = "Username";
+      console.log('failed to get user from session storage');
+    }
+    else{
+      this.username = JSON.parse(user).username;
+    }
   }
 }

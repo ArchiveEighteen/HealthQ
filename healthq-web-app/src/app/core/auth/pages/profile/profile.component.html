@@ -1,0 +1,102 @@
+<div class="registration-container">
+  <mat-card>
+    <mat-card-header>
+      <h1>Profile</h1>
+    </mat-card-header>
+    <mat-card-content>
+      <form #form="ngForm" (submit)="onSubmit(form)" [class.submitted]="service.formSubmitted" novalidate
+            autocomplete="off">
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Username</mat-label>
+              <input
+                matInput
+                name="username"
+                #username="ngModel"
+                [(ngModel)]="service.formData.username"
+                type="text"
+                required/>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>FirstName</mat-label>
+              <input
+                matInput
+                name="firstName"
+                #firstName="ngModel"
+                [(ngModel)]="service.formData.firstName"
+                type="text"
+                required/>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>LastName</mat-label>
+              <input
+                matInput
+                name="lastName"
+                #lastName="ngModel"
+                [(ngModel)]="service.formData.lastName"
+                type="text"
+                required/>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Birth Date</mat-label>
+              <input
+                matInput
+                [max]="_currentDate"
+                [matDatepicker]="picker"
+                name="birthDate"
+                #birthDate="ngModel"
+                [(ngModel)]="service.formData.birthDate"
+                required>
+              <mat-hint>mm/dd/yyyy</mat-hint>
+              <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Gender</mat-label>
+              <mat-select
+                #gender="ngModel"
+                [(ngModel)]="service.formData.gender"
+                name="gender"
+                required
+              >
+                <mat-option *ngFor="let gender of EGender" [value]="gender[0]"> {{gender[1]}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>PhoneNumber</mat-label>
+              <input
+                matInput
+                name="phoneNumber"
+                #phoneNumber="ngModel"
+                [(ngModel)]="service.formData.phoneNumber"
+                type="phone"
+                required>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Role</mat-label>
+              <mat-select
+                name="userRole"
+                #userRole="ngModel"
+                [(ngModel)]="service.formData.userType"
+                required>
+                <mat-option *ngFor="let role of EUserRole" [value]="role[0]">{{role[1]}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+          <div class="submit-button-container">
+            <button mat-raised-button type="submit" class="submit-button">Save changes</button>
+          </div>
+
+      </form>
+      <div class="login-link">
+        <button mat-button (click)="logout()">Logout</button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

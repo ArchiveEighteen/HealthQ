@@ -1,7 +1,9 @@
-﻿using HealthQ_API.Context;
+﻿using System.Globalization;
+using AutoMapper;
+using HealthQ_API.Context;
 using HealthQ_API.DTOs;
 using HealthQ_API.Entities;
-using HealthQ_API.Security;
+using HealthQ_API.Repositories;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,115 +11,101 @@ namespace HealthQ_API.Services;
 
 public class UserService
 {
-    private readonly HealthqDbContext _context;
+    private readonly IUserRepository _userRepository;
+    private readonly IMapper _mapper;
+    private readonly PasswordService _passwordService;
+    private readonly IDoctorRepository _doctorRepository;
+    private readonly IPatientRepository _patientRepository;
 
-    public UserService(HealthqDbContext context)
+    public UserService(
+        IUserRepository userRepository, 
+        IMapper mapper,
+        PasswordService passwordService,
+        IDoctorRepository doctorRepository,
+        IPatientRepository patientRepository)
     {
-        _context = context;
+        _userRepository = userRepository;
+        _mapper = mapper;
+        _passwordService = passwordService;
+        _doctorRepository = doctorRepository;
+        _patientRepository = patientRepository;
     }
 
     public async Task<IEnumerable<UserDTO>> GetAllUsersAsync(CancellationToken ct)
     {
-        var users = await _context.Users.ToListAsync(ct);
-        return users.Select(user => new UserDTO
-            {
-                Email = user.Email,
-                Username = user.Username,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                PhoneNumber = user.PhoneNumber,
-                BirthDate = user.BirthDate.ToDateTime(new TimeOnly(0, 0)),
-                Gender = user.Gender.ToString(),
-                UserType = user.UserType.ToString(),
-                Password = ""
-            })
+        return (await _userRepository.GetAllUsersAsync(ct)).Select(userModel => _mapper.Map<UserDTO>(userModel))
             .ToList();
     }
 
     public async Task<UserDTO?> GetUserByEmailAsync(string email, CancellationToken ct)
     {
-        var user = await _context.Users.FindAsync([email], cancellationToken: ct);
-
-        if (user == null)
-            return null;
-
-        var userDto = new UserDTO
-        {
-            Email = user.Email,
-            Username = user.Username,
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            PhoneNumber = user.PhoneNumber,
-            BirthDate = user.BirthDate.ToDateTime(new TimeOnly(0, 0)),
-            Gender = user.Gender.ToString(),
-            UserType = user.UserType.ToString(),
-            Password = ""
-        };
+        var userModel = await _userRepository.GetUserAsync(email, ct);
+        if (userModel == null)
+            throw new NullReferenceException("User not found");
         
-        return userDto;
+        return _mapper.Map<UserDTO>(userModel);
     }
 
     public async Task<UserDTO> CreateUserAsync(UserDTO user, CancellationToken ct)
     {
-        if( await GetUserByEmailAsync(user.Email, ct) != null)
-            throw new Exception($"User with email {user.Email} already exists");
+        var userModel = await _userRepository.GetUserAsync(user.Email, ct);
+        if (userModel != null)
+            throw new Exception("User already exists");
         
-        var (hash, salt) = HashingUtility.HashPassword(user.Password!);
+        userModel = _mapper.Map<UserModel>(user);
+        
+        var (hash, salt) = _passwordService.HashPassword(user.Password!);
+        userModel.PasswordHash = hash;
+        userModel.PasswordSalt = salt;
 
-        
-        if (!Enum.TryParse<EGender>(user.Gender, out var gender))
-            throw new InvalidCastException("Invalid gender value");
+        await _userRepository.CreateUserAsync(userModel, ct);
 
-        if (!Enum.TryParse<EUserType>(user.UserType, out var role))
-            throw new InvalidCastException("Invalid user type value");
-        
-        var userModel = new UserModel
+        if (userModel.UserType == EUserType.Patient)
+            await _patientRepository.CreatePatientAsync(new PatientModel { UserEmail = user.Email }, ct);
+        else if (userModel.UserType == EUserType.Doctor)
         {
-            Email = user.Email,
-            Username = user.Username,
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            BirthDate = DateOnly.FromDateTime(user.BirthDate),
-            Gender = gender,
-            PhoneNumber = user.PhoneNumber,
-            UserType = role,
-            PasswordHash = hash,
-            PasswordSalt = salt,
-
-        };
-        await _context.Users.AddAsync(userModel, ct);
-
-        if (role == EUserType.Patient)
-            await _context.Patients.AddAsync(new PatientModel { UserEmail = user.Email }, ct);
-        else if (role == EUserType.Doctor)
-        {
-            await _context.Doctors.AddAsync(new DoctorModel { UserEmail = user.Email }, ct);
+            await _doctorRepository.CreateDoctorAsync(new DoctorModel { UserEmail = user.Email }, ct);
         }
-        await _context.SaveChangesAsync(ct);
         
-        user.Password = "";
         return user;
     }
 
     public async Task<UserDTO> VerifyUserAsync(UserDTO user, CancellationToken ct)
     {
-        var existingUser = await _context.Users.FindAsync([user.Email], cancellationToken: ct);
-        if (existingUser == null)
-            throw new Exception($"User with email {user.Email} does not exist");
+        var userModel = await _userRepository.GetUserAsync(user.Email, ct);
+        if (userModel == null)
+            throw new Exception("User doesn't exist");
 
-        if(existingUser.PasswordHash != HashingUtility.HashPassword(user.Password!, existingUser.PasswordSalt).Hash)
-            throw new Exception("Wrong password");
+        if (!_passwordService.VerifyPasswordAsync(userModel, user.Password!, ct))
+            throw new Exception("Password does not match");
         
-        return (await GetUserByEmailAsync(user.Email, ct))!;
+        return _mapper.Map<UserDTO>(userModel);
     }
-
+    
     public async Task DeleteUserAsync(string email, CancellationToken ct)
     {
-        var user = await _context.Users.FindAsync([email], cancellationToken: ct);
-        if (user != null)
-        {
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync(ct);
-        }
+        var user = await _userRepository.GetUserAsync(email, ct);
+        if (user == null)
+            throw new NullReferenceException("User not found");
+
+        await _userRepository.DeleteUserAsync(email, ct);
+    }
+
+    public async Task<UserDTO?> UpdateUserAsync(UserDTO user,CancellationToken ct)
+    {
+        var userModel = await _userRepository.GetUserAsync(user.Email, ct);
+        if (userModel == null)
+            throw new NullReferenceException("User not found");
+        
+        userModel.Username = user.Username;
+        userModel.FirstName = user.FirstName;
+        userModel.LastName = user.LastName;
+        userModel.Gender = Enum.Parse<EGender>(user.Gender);
+        userModel.BirthDate = DateOnly.FromDateTime(user.BirthDate);
+        userModel.PhoneNumber = user.PhoneNumber;
+        userModel.UserType = Enum.Parse<EUserType>(user.UserType);
+        
+        await _userRepository.UpdateUserAsync(userModel, ct);
+        return user;
     }
 }

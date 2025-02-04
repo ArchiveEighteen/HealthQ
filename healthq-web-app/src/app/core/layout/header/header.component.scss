@@ -1,18 +1,75 @@
 @use "@angular/material" as mat;
 
 .spacer {
-  flex: 1 1 auto;
+  flex: 1;
 }
 
 .button-icon {
   margin: 0 !important;
+  color: var(--mat-sys-on-primary);
+}
+
+.button-container{
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .header {
+  display: flex;
+  align-items: center;
   background-color: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+  height: 7vh;
+  padding: 0 16px;
+}
+
+.header {
   color: var(--mat-sys-on-primary);
 }
 
-.header .button-icon {
+.main-page-button{
+  background-color: transparent;
+  font-size: var(--mat-sys-headline-large-size);
+}
+
+.title{
   color: var(--mat-sys-on-primary);
+}
+
+.account-button,
+.notification-button{
+  display: flex;               // Aligns icon and text horizontally
+  align-items: center;         // Vertically centers icon and text
+  justify-content: center; // Adds space between icon and text
+  color: var(--mat-sys-on-primary);
+  background-color: transparent;
+  box-shadow: none !important;
+}
+
+.account-button {
+  gap: 8px;
+  font-size: var(--mat-sys-headline-small);
+}
+
+.account-button:hover,
+.notification-button:hover{
+  background-color: var(--mat-sys-secondary-fixed-dim);
+}
+
+.profile-menu {
+  min-width: 180px;
+  padding: 4px 0;
+
+  button[mat-menu-item] {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+
+  mat-icon {
+    font-size: 20px;
+  }
 }

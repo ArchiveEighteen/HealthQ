@@ -14,6 +14,7 @@ import {
   PQuestionnairesPageComponent
 } from './features/actors/patient/pages/p-questionnaires-page/p-questionnaires-page.component';
 import {PDoctorsPageComponent} from './features/actors/patient/pages/p-doctors-page/p-doctors-page.component';
+import {ProfileComponent} from './core/auth/pages/profile/profile.component';
 
 export const routes: Routes = [
   {
@@ -87,4 +88,10 @@ export const routes: Routes = [
     component: RegisterComponent,
     title: 'Register',
   },
+  {
+    path: 'profile',
+    component: ProfileComponent,
+    canActivate: [authGuard],
+    title: 'Profile',
+  }
 ];

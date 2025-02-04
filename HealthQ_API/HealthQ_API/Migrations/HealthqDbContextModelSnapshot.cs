@@ -91,7 +91,7 @@ namespace HealthQ_API.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<string>("OwnerEmail")
+                    b.Property<string>("OwnerId")
                         .IsRequired()
                         .HasMaxLength(254)
                         .HasColumnType("character varying(254)")
@@ -104,7 +104,7 @@ namespace HealthQ_API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OwnerEmail");
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("questionnaires", "public");
                 });
@@ -211,7 +211,8 @@ namespace HealthQ_API.Migrations
                 {
                     b.HasOne("HealthQ_API.Entities.UserModel", "User")
                         .WithOne("Doctor")
-                        .HasForeignKey("HealthQ_API.Entities.DoctorModel", "UserEmail");
+                        .HasForeignKey("HealthQ_API.Entities.DoctorModel", "UserEmail")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("User");
                 });
@@ -220,7 +221,8 @@ namespace HealthQ_API.Migrations
                 {
                     b.HasOne("HealthQ_API.Entities.UserModel", "User")
                         .WithOne("Patient")
-                        .HasForeignKey("HealthQ_API.Entities.PatientModel", "UserEmail");
+                        .HasForeignKey("HealthQ_API.Entities.PatientModel", "UserEmail")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("User");
                 });
@@ -229,7 +231,7 @@ namespace HealthQ_API.Migrations
                 {
                     b.HasOne("HealthQ_API.Entities.DoctorModel", "Owner")
                         .WithMany("Questionnaires")
-                        .HasForeignKey("OwnerEmail")
+                        .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

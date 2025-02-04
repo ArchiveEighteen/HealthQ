@@ -1,8 +1,8 @@
 @use "@angular/material" as mat;
 
 .sidenav-container {
-  width: 100vw;
-  height: 95vh;
+  width: 100%;
+  height: 93vh;
 
   @include mat.sidenav-overrides(
       (

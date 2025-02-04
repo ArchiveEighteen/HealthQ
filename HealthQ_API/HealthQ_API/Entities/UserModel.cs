@@ -23,12 +23,12 @@ public class UserModel
     [Required]
     [Column("password_salt")]
     [MaxLength(64)]
-    public required string PasswordSalt { get; set; }
+    public string? PasswordSalt { get; set; }
     
     [Required]
     [Column("password_hash")]
     [MaxLength(128)]
-    public required string PasswordHash { get; set; }
+    public string? PasswordHash { get; set; }
     
     [Required]
     [Column("first_name")]

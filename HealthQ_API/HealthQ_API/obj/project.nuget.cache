@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "nnAv3GoWXQw=",
+  "dgSpecHash": "mt60WCHIqSQ=",
   "success": true,
   "projectFilePath": "E:\\A_Work\\Project.png\\HealthQ_API\\HealthQ_API\\HealthQ_API.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Akmitliviy\\.nuget\\packages\\automapper\\13.0.1\\automapper.13.0.1.nupkg.sha512",
     "C:\\Users\\Akmitliviy\\.nuget\\packages\\hl7.fhir.base\\6.0.0-alpha1\\hl7.fhir.base.6.0.0-alpha1.nupkg.sha512",
     "C:\\Users\\Akmitliviy\\.nuget\\packages\\hl7.fhir.conformance\\6.0.0-alpha1\\hl7.fhir.conformance.6.0.0-alpha1.nupkg.sha512",
     "C:\\Users\\Akmitliviy\\.nuget\\packages\\hl7.fhir.r5\\6.0.0-alpha1\\hl7.fhir.r5.6.0.0-alpha1.nupkg.sha512",

@@ -17,25 +17,23 @@ namespace HealthQ_API.Controllers;
 public class DoctorController : ControllerBase
 {
     private readonly QuestionnaireService _questionnaireService;
-    private readonly PatientQuestionnaireService _patientQuestionnaireService;
-    private readonly DoctorPatientService _doctorPatientService;
+    private readonly DoctorService _doctorService;
     private readonly UserService _userService;
 
-    public DoctorController(QuestionnaireService questionnaireService, PatientQuestionnaireService patientQuestionnaireService, 
-        DoctorPatientService doctorPatientService, UserService userService)
+    public DoctorController(QuestionnaireService questionnaireService, 
+        DoctorService doctorService, UserService userService)
     {
         _questionnaireService = questionnaireService;
-        _patientQuestionnaireService = patientQuestionnaireService;
-        _doctorPatientService = doctorPatientService;
+        _doctorService = doctorService;
         _userService = userService;
     }
     
     [HttpGet("{email}")]
-    public async Task<ActionResult> GetDoctorQuestionnaires(string email)
+    public async Task<ActionResult> GetDoctorQuestionnaires(string email, CancellationToken ct)
     {
         try
         {
-            var questionnaires = await _questionnaireService.GetAllDoctorSurveysAsync(email);
+            var questionnaires = await _questionnaireService.GetAllDoctorSurveysAsync(email, ct);
             
             return Ok(questionnaires);
         }
@@ -46,11 +44,12 @@ public class DoctorController : ControllerBase
     }
     
     [HttpGet("{doctorEmail}/{patientEmail}")]
-    public async Task<ActionResult> GetDoctorPatientQuestionnaires(string doctorEmail, string patientEmail)
+    public async Task<ActionResult> GetDoctorPatientQuestionnaires(string doctorEmail, string patientEmail, CancellationToken ct)
     {
         try
         {
-            var questionnaires = await _questionnaireService.GetAllDoctorPatientSurveysAsync(doctorEmail, patientEmail);
+            var questionnaires = 
+                await _questionnaireService.GetAllDoctorPatientSurveysAsync(doctorEmail, patientEmail, ct);
             
             return Ok(questionnaires);
         }
@@ -61,19 +60,22 @@ public class DoctorController : ControllerBase
     }
     
     [HttpGet("{email}")]
-    public async Task<ActionResult> GetAllDoctorPatients(string email)
+    public async Task<ActionResult> GetAllDoctorPatients(string email, CancellationToken ct)
     {
         try
         {
-            var patientsIds = await _doctorPatientService.GetAllDoctorPatientsAsync(email);
+            var patientsIds = await _doctorService.GetPatientIds(email, ct);
             
-            var users = new List<UserDTO?>();
+            var usersDto = new List<UserDTO?>();
             foreach (var patientId in patientsIds)
             {
-                users.Add(await _userService.GetUserByEmailAsync(patientId, CancellationToken.None));
+                var user = await _userService.GetUserByEmailAsync(patientId, ct);
+                if(user == null) continue;
+                
+                usersDto.Add(user);
             }
 
-            return Ok(users);
+            return Ok(usersDto);
         }
         catch (OperationCanceledException)
         {
@@ -82,27 +84,12 @@ public class DoctorController : ControllerBase
     }
  
     [HttpPost]
-    public async Task<ActionResult> AddByEmail([FromBody] JsonElement questionnaireJson)
+    public async Task<ActionResult> AddByEmail([FromBody] JsonElement questionnaireJson, CancellationToken ct)
     {
         try
         {
-            var parse = new FhirJsonParser();
-            
-            var questionnaire = await parse.ParseAsync<Questionnaire>(questionnaireJson.GetRawText());
 
-            if (questionnaire == null)
-            {
-                return StatusCode(StatusCodes.Status409Conflict, "Invalid questionnaire structure");
-            }
-            
-            var questionnaireModel = new QuestionnaireModel
-            {
-                OwnerId = questionnaire.Publisher,
-                QuestionnaireContent = questionnaireJson.GetRawText(),
-                Id = Guid.Parse(questionnaire.Id),
-            };
-
-            var userQuestionnaire = await _questionnaireService.AddSurveyAsync(questionnaireModel);
+            var userQuestionnaire = await _questionnaireService.AddSurveyAsync(questionnaireJson, ct);
             return Ok(userQuestionnaire);
         }
         catch (OperationCanceledException)
@@ -116,27 +103,11 @@ public class DoctorController : ControllerBase
     }
     
     [HttpPut]
-    public async Task<ActionResult> UpdateById([FromBody] JsonElement questionnaireJson)
+    public async Task<ActionResult> UpdateById([FromBody] JsonElement questionnaireJson, CancellationToken ct)
     {
         try
         {
-            var parse = new FhirJsonParser();
-            
-            var questionnaire = await parse.ParseAsync<Questionnaire>(questionnaireJson.GetRawText());
-
-            if (questionnaire == null)
-            {
-                return StatusCode(StatusCodes.Status409Conflict, "Invalid questionnaire structure");
-            }
-            
-            var questionnaireModel = new QuestionnaireModel
-            {
-                OwnerId = questionnaire.Publisher,
-                QuestionnaireContent = questionnaireJson.GetRawText(),
-                Id = Guid.Parse(questionnaire.Id),
-            };
-
-            var userQuestionnaire = await _questionnaireService.UpdateSurveyAsync(questionnaireModel);
+            var userQuestionnaire = await _questionnaireService.UpdateSurveyAsync(questionnaireJson, ct);
             return Ok(userQuestionnaire);
         }
         catch (OperationCanceledException)
@@ -150,27 +121,14 @@ public class DoctorController : ControllerBase
     }
     
     [HttpPut("{patientEmail}")]
-    public async Task<ActionResult> AssignToPatient(string patientEmail, [FromBody] JsonElement questionnaireJson)
+    public async Task<ActionResult> AssignToPatient(string patientEmail, [FromBody] JsonElement questionnaireJson, CancellationToken ct)
     {
         try
         {
-            var parse = new FhirJsonParser();
+            var result = 
+                await _questionnaireService.AssignToPatientAsync(questionnaireJson, patientEmail, ct);
             
-            var questionnaire = await parse.ParseAsync<Questionnaire>(questionnaireJson.GetRawText());
-
-            if (questionnaire == null)
-            {
-                return StatusCode(StatusCodes.Status409Conflict, "Invalid questionnaire structure");
-            }
-
-            var patientQuestionnaire = new PatientQuestionnaire()
-            {
-                QuestionnaireId = Guid.Parse(questionnaire.Id),
-                PatientId = patientEmail
-            };
-
-            var result = await _patientQuestionnaireService.AssignPatientAsync(patientQuestionnaire);
-            return Ok(result);
+            return Ok(result?.QuestionnaireContent);
         }
         catch (OperationCanceledException)
         {

@@ -2,11 +2,11 @@
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 
-namespace HealthQ_API.Security;
+namespace HealthQ_API.Services;
 
-public static class JwtUtility
+public class AuthService
 {
-    public static string GenerateToken(string email)
+    public string GenerateToken(string email)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = "JwtKeyIGuessJwtKeyIGuessJwtKeyIGuessJwtKeyIGuess"u8.ToArray();
@@ -30,5 +30,17 @@ public static class JwtUtility
         
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
+    }
+
+    public CookieOptions GetCookieOptions(string email)
+    {
+        return new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Lax,
+            Path = "/",
+            Expires = DateTime.UtcNow.AddHours(1)
+        };
     }
 }

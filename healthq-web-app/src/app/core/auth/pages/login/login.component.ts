@@ -51,6 +51,7 @@ export class LoginComponent {
       this.service.login().subscribe({
         next: (data) => {
           console.log(data);
+          this.service.formData = new User();
           sessionStorage.setItem('user', JSON.stringify(data));
           this.router.navigate([`/${(data as User).userType}`])
         },
