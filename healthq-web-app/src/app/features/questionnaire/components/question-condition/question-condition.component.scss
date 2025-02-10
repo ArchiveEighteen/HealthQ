@@ -1,0 +1,11 @@
+.condition-container {
+  display: flex;
+  margin-bottom: 1rem;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.spacer {
+  flex-grow: 1;
+}

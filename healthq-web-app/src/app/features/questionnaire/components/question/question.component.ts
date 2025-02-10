@@ -18,6 +18,7 @@ import {
   Extension,
   QuestionnaireItem,
   QuestionnaireItemAnswerOption,
+  QuestionnaireItemEnableWhen,
 } from 'fhir/r5';
 import { QuestionConditionComponent } from '../question-condition/question-condition.component';
 
@@ -125,5 +126,26 @@ export class QuestionComponent implements OnInit {
 
   onRequiredChange(event: Event) {
     event;
+  }
+
+  onAddConditionClicked() {
+    const initialCondition = this.question.enableWhen.at(0);
+
+    this.question.enableWhen.push({
+      question: initialCondition.question,
+      operator: 'exists',
+    });
+    this.saveToSessionStorage();
+  }
+
+  removeCondition(condition: QuestionnaireItemEnableWhen) {
+    const index = this.question.enableWhen.findIndex((c) => c === condition);
+
+    if (index > -1) {
+      this.question.enableWhen.splice(index, 1);
+      this.saveToSessionStorage();
+    } else {
+      console.log('Failed to remove condition!');
+    }
   }
 }

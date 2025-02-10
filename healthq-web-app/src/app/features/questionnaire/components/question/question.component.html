@@ -151,11 +151,21 @@
       </mat-panel-title>
     </mat-expansion-panel-header>
     @for (condition of question.enableWhen; track $index) {
-    <app-question-condition [condition]="condition"></app-question-condition>
+    <app-question-condition
+      [condition]="condition"
+      [conditionCount]="question.enableWhen.length"
+      (callSave)="saveToSessionStorage()"
+      (callRemove)="removeCondition(condition)"
+    ></app-question-condition>
     }
 
-    <button mat-flat-button>
-      <mat-icon>add</mat-icon><span>Add condition</span>
+    <button
+      mat-flat-button
+      class="add-cond-button"
+      (click)="onAddConditionClicked()"
+    >
+      <mat-icon>add</mat-icon>
+      <span>Add condition</span>
     </button>
   </mat-expansion-panel>
 

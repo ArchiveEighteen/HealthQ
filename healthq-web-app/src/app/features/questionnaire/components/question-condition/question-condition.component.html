@@ -1,15 +1,33 @@
-<div>
-  <mat-form-field>
+<div class="condition-container">
+  <mat-form-field subscriptSizing="dynamic">
     <mat-label>Conditional operator</mat-label>
     <mat-select
       [(ngModel)]="condition.operator"
       (selectionChange)="onConditionalOperatorChange($event)"
     >
       @for(type of conditionalOperators; track $index){
-      <mat-option [value]="type[0]">
+      <mat-option [value]="type[1]">
         {{ type[1] }}
       </mat-option>
       }
     </mat-select>
   </mat-form-field>
+  <mat-form-field subscriptSizing="dynamic">
+    <mat-label>Compare value</mat-label>
+    <input
+      matInput
+      required="true"
+      (keyup.enter)="saveToSessionStorage()"
+      (blur)="saveToSessionStorage()"
+    />
+  </mat-form-field>
+  <span class="spacer"></span>
+  <button
+    mat-icon-button
+    (click)="removeCondition()"
+    matTooltip="Remove condition"
+    [disabled]="conditionCount === 1"
+  >
+    <mat-icon>remove</mat-icon>
+  </button>
 </div>
