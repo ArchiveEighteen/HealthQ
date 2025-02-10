@@ -1,0 +1,15 @@
+<div>
+  <mat-form-field>
+    <mat-label>Conditional operator</mat-label>
+    <mat-select
+      [(ngModel)]="condition.operator"
+      (selectionChange)="onConditionalOperatorChange($event)"
+    >
+      @for(type of conditionalOperators; track $index){
+      <mat-option [value]="type[0]">
+        {{ type[1] }}
+      </mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+</div>

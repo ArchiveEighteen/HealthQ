@@ -29,6 +29,7 @@ import { QuestionnaireComponent } from '../questionnaire/questionnaire.component
 import { routes } from '../../../../app.routes';
 import { ActivatedRoute, Router } from '@angular/router';
 import { QuestionnaireService } from '../../questionaire.service';
+import { QuestionComponent } from '../../components/question/question.component';
 
 @Component({
   selector: 'app-q-constructor',
@@ -47,14 +48,13 @@ import { QuestionnaireService } from '../../questionaire.service';
     MatDividerModule,
     MatTooltipModule,
     MatMenuModule,
+    QuestionComponent,
   ],
   templateUrl: './q-constructor.component.html',
   styleUrl: './q-constructor.component.scss',
 })
 export class QConstructorComponent implements OnInit {
   @ViewChild('questionsContainer') questionsContainer!: ElementRef;
-
-  questionTypes = Object.entries(QuestionType);
 
   questionnaireTitle: string = 'Some Survey Title';
 
@@ -125,22 +125,32 @@ export class QConstructorComponent implements OnInit {
       };
     }
 
-    // Automatically set the first option as selected
-    if (this.questionTypes.length > 0) {
-      this.selectedQuestionType = this.questionTypes[0][0];
-    }
-
-    // @ts-ignore
     this.questions = this.questionnaire.item;
   }
 
   addQuestion() {
+    const uuid = uuidv4();
+
     this.questions.push({
-      linkId: uuidv4(),
-      type: 'question',
+      id: uuid,
+      extension: [
+        {
+          url: 'question-type',
+          valueString: '',
+        },
+      ],
+      modifierExtension: [],
+      linkId: uuid,
+      definition: '',
+      code: [],
+      prefix: '',
       text: '',
+      type: 'question',
+      enableWhen: [],
+      enableBehavior: 'any',
+      required: false,
       answerOption: [],
-      extension: [{ url: 'question-type', valueString: '' }],
+      item: [],
     });
 
     // Scroll to the bottom of the container
@@ -154,61 +164,44 @@ export class QConstructorComponent implements OnInit {
     this.saveToSessionStorage();
   }
 
-  onQuestionTypeChange(question: any, event: any) {
-    const selectedType = event.value;
-    const questionTypeExtension = this.getQuestionTypeExtension(question);
-    questionTypeExtension.valueString = selectedType;
-    this.saveToSessionStorage();
-  }
-
   saveToSessionStorage() {
     sessionStorage.setItem('questionnaire', JSON.stringify(this.questionnaire));
   }
 
-  deleteQuestion(question: QuestionnaireItem) {
-    const index = this.questions.indexOf(question);
-    if (index > -1) {
-      this.questions.splice(index, 1);
+  deleteQuestion(
+    questions: QuestionnaireItem[],
+    targetQuestion: QuestionnaireItem
+  ): boolean {
+    let deleted = false;
+
+    const deleteQuestionRecursively = (
+      questions: QuestionnaireItem[],
+      target: QuestionnaireItem
+    ): boolean => {
+      for (let i = 0; i < questions.length; i++) {
+        const question = questions[i];
+
+        if (question.linkId === targetQuestion.linkId) {
+          questions.splice(i, 1);
+          return true;
+        }
+
+        if (question.item.length > 0) {
+          if (deleteQuestionRecursively(question.item, target)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    };
+
+    deleted = deleteQuestionRecursively(questions, targetQuestion);
+
+    if (deleted) {
       this.saveToSessionStorage();
-    } else {
-      console.log('Failed to remove question!');
-    }
-  }
-
-  addNewOption(question: QuestionnaireItem) {
-    if (!question.answerOption) {
-      question.answerOption = [];
     }
 
-    question.answerOption.push({
-      valueString: ``,
-    });
-
-    this.saveToSessionStorage();
-  }
-
-  deleteOption(
-    question: QuestionnaireItem,
-    option: QuestionnaireItemAnswerOption
-  ) {
-    // @ts-ignore
-    const index = question.answerOption.indexOf(option);
-    if (index > -1) {
-      // @ts-ignore
-      question.answerOption.splice(index, 1);
-    }
-
-    this.saveToSessionStorage();
-  }
-
-  addConditionalQuestion(parentQuestion: QuestionnaireItem) {
-    this.questions.push({
-      linkId: uuidv4(),
-      type: 'question',
-      text: '',
-      answerOption: [],
-      enableWhen: [{ question: parentQuestion.linkId, operator: 'exists' }],
-    });
+    return deleted;
   }
 
   onSubmit() {
@@ -256,23 +249,7 @@ export class QConstructorComponent implements OnInit {
         });
     }
 
-
-
     this.router.navigate(['..']);
-  }
-
-  getQuestionTypeExtension(question: QuestionnaireItem): any {
-    return (
-      question.extension?.find((ext: any) => ext.url === 'question-type') || {}
-    );
-  }
-
-  getQuestionTypeValue(question: QuestionnaireItem): any {
-    const result: Extension = question.extension?.find(
-      (ext: Extension) => ext.url === 'question-type'
-    ) || { url: '' };
-
-    return result.valueString;
   }
 
   ngOnDestroy() {

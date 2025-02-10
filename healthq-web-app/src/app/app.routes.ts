@@ -10,11 +10,9 @@ import { patientGuard } from './features/actors/patient/patient.guard';
 import { RedirectComponent } from './core/auth/redirect/redirect.component';
 import { DTemplatesPageComponent } from './features/actors/doctor/pages/d-templates-page/d-templates-page.component';
 import { DPatientsPageComponent } from './features/actors/doctor/pages/d-patients-page/d-patients-page.component';
-import {
-  PQuestionnairesPageComponent
-} from './features/actors/patient/pages/p-questionnaires-page/p-questionnaires-page.component';
-import {PDoctorsPageComponent} from './features/actors/patient/pages/p-doctors-page/p-doctors-page.component';
-import {ProfileComponent} from './core/auth/pages/profile/profile.component';
+import { PQuestionnairesPageComponent } from './features/actors/patient/pages/p-questionnaires-page/p-questionnaires-page.component';
+import { PDoctorsPageComponent } from './features/actors/patient/pages/p-doctors-page/p-doctors-page.component';
+import { ProfileComponent } from './core/auth/pages/profile/profile.component';
 
 export const routes: Routes = [
   {
@@ -33,6 +31,11 @@ export const routes: Routes = [
     canActivate: [authGuard],
     title: 'Doctor Main Page',
     children: [
+      {
+        path: '',
+        redirectTo: 'patients',
+        pathMatch: 'full',
+      },
       {
         path: 'templates',
         component: DTemplatesPageComponent,
@@ -71,7 +74,7 @@ export const routes: Routes = [
         canActivate: [authGuard],
         title: 'My Doctors',
       },
-    ]
+    ],
   },
   {
     path: 'questionnaire',
@@ -93,5 +96,5 @@ export const routes: Routes = [
     component: ProfileComponent,
     canActivate: [authGuard],
     title: 'Profile',
-  }
+  },
 ];

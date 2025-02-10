@@ -1,0 +1,163 @@
+<mat-card class="question-card">
+  <mat-card-title class="question-title">
+    <mat-form-field class="question-text">
+      <mat-label>Question text</mat-label>
+      <textarea
+        matInput
+        [(ngModel)]="question.text"
+        (keyup.enter)="saveToSessionStorage()"
+        (blur)="saveToSessionStorage()"
+      ></textarea>
+    </mat-form-field>
+    <mat-form-field class="question-type-select">
+      <mat-label>Question type</mat-label>
+      <span class="spacer"></span>
+      <mat-select
+        [(ngModel)]="selectedType"
+        (selectionChange)="onQuestionTypeChange($event)"
+      >
+        @for(type of questionTypes; track $index){
+        <mat-option [value]="type[0]">
+          {{ type[1] }}
+        </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </mat-card-title>
+
+  <mat-divider></mat-divider>
+
+  <mat-card-content class="question-content">
+    <ng-container [ngSwitch]="getQuestionTypeValue()">
+      <!-- One choice -->
+      <ng-container *ngSwitchCase="'OneChoice'">
+        <div *ngFor="let option of question.answerOption" class="option">
+          <mat-icon class="icon radio-icon">radio_button_unchecked</mat-icon>
+          <mat-form-field subscriptSizing="dynamic" class="answer-form-field">
+            <input
+              matInput
+              [(ngModel)]="option.valueString"
+              (keyup.enter)="saveToSessionStorage()"
+              (blur)="saveToSessionStorage()"
+            />
+            <button
+              *ngIf="option.valueString"
+              matSuffix
+              mat-icon-button
+              aria-label="Clear"
+              (click)="option.valueString = ''"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          </mat-form-field>
+          <button
+            mat-icon-button
+            (click)="deleteOption(option)"
+            matTooltip="Remove option"
+          >
+            <mat-icon>remove</mat-icon>
+          </button>
+        </div>
+        <a class="new-option option" (click)="addNewOption()">
+          <mat-icon class="icon radio-icon">radio_button_unchecked</mat-icon>
+          <span>Add option</span>
+        </a>
+      </ng-container>
+
+      <!-- Multiple choice -->
+      <ng-container *ngSwitchCase="'MultipleChoice'">
+        <div *ngFor="let option of question.answerOption" class="option">
+          <mat-icon class="icon check-icon">check_box_outline_blank</mat-icon>
+          <mat-form-field subscriptSizing="dynamic" class="answer-form-field">
+            <input
+              matInput
+              [(ngModel)]="option.valueString"
+              (keyup.enter)="saveToSessionStorage()"
+              (blur)="saveToSessionStorage()"
+            />
+            <button
+              *ngIf="option.valueString"
+              matSuffix
+              mat-icon-button
+              aria-label="Clear"
+              (click)="option.valueString = ''"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          </mat-form-field>
+          <button
+            mat-icon-button
+            (click)="deleteOption(option)"
+            matTooltip="Remove option"
+          >
+            <mat-icon>remove</mat-icon>
+          </button>
+        </div>
+        <a class="new-option option" (click)="addNewOption()">
+          <mat-icon class="icon check-icon">check_box_outline_blank</mat-icon>
+          <span>Add option</span>
+        </a>
+      </ng-container>
+
+      <!-- Text input -->
+      <ng-container *ngSwitchCase="'Text'">
+        <mat-form-field appearance="outline" class="answer-form-field">
+          <mat-label>Answer</mat-label>
+          <textarea matInput disabled="true"></textarea>
+        </mat-form-field>
+      </ng-container>
+
+      <!-- File upload -->
+      <ng-container *ngSwitchCase="'File'">
+        <button mat-raised-button class="upload-button">Upload File</button>
+      </ng-container>
+    </ng-container>
+  </mat-card-content>
+  <mat-divider></mat-divider>
+  <mat-toolbar class="question-toolbar">
+    <mat-slide-toggle labelPosition="before" [(ngModel)]="question.required">
+      Required
+    </mat-slide-toggle>
+
+    <button
+      mat-icon-button
+      matTooltip="Delete question"
+      matTooltipShowDelay="500"
+      (click)="deleteQuestion()"
+    >
+      <mat-icon>delete</mat-icon>
+    </button>
+    @if(conditional === false){
+    <button
+      mat-icon-button
+      matTooltip="More"
+      matTooltipShowDelay="500"
+      [matMenuTriggerFor]="menu"
+    >
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    }
+  </mat-toolbar>
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item (click)="addConditionalQuestion()">
+      <span>Add conditional question</span>
+    </button>
+  </mat-menu>
+  @if(conditional===true) {
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Conditions: {{ question.enableWhen.length }}
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    @for (condition of question.enableWhen; track $index) {
+    <app-question-condition [condition]="condition"></app-question-condition>
+    }
+
+    <button mat-flat-button>
+      <mat-icon>add</mat-icon><span>Add condition</span>
+    </button>
+  </mat-expansion-panel>
+
+  }
+</mat-card>
