@@ -56,8 +56,7 @@ export class QuestionComponent implements OnInit {
   selectedType: string;
 
   ngOnInit(): void {
-    // Initial question type placement
-    this.selectedType = this.questionTypes[0][0];
+    this.selectedType = this.getQuestionTypeValue();
     const defaultEvent = { value: this.selectedType };
     this.onQuestionTypeChange(defaultEvent);
   }

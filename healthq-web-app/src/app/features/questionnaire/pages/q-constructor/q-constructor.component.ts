@@ -136,7 +136,7 @@ export class QConstructorComponent implements OnInit {
       extension: [
         {
           url: 'question-type',
-          valueString: '',
+          valueString: 'OneChoice',
         },
       ],
       modifierExtension: [],

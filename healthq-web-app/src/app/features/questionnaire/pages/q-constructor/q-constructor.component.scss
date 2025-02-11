@@ -45,3 +45,7 @@
   width: 100%;
   max-width: 650px;
 }
+
+.invalid {
+  border: 2px solid var(--mat-sys-error);
+}
