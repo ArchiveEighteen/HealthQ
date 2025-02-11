@@ -4,6 +4,7 @@
       <mat-label>Question text</mat-label>
       <textarea
         matInput
+        required="true"
         [(ngModel)]="question.text"
         (keyup.enter)="saveToSessionStorage()"
         (blur)="saveToSessionStorage()"

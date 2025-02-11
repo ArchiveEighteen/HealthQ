@@ -12,15 +12,18 @@
       }
     </mat-select>
   </mat-form-field>
+  @if(condition.operator !== 'exists'){
   <mat-form-field subscriptSizing="dynamic">
     <mat-label>Compare value</mat-label>
     <input
       matInput
+      [(ngModel)]="condition.answerString"
       required="true"
       (keyup.enter)="saveToSessionStorage()"
       (blur)="saveToSessionStorage()"
     />
   </mat-form-field>
+  }
   <span class="spacer"></span>
   <button
     mat-icon-button

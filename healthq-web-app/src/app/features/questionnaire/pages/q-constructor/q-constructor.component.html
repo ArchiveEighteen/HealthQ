@@ -4,6 +4,7 @@
       <mat-label>Survey title</mat-label>
       <input
         matInput
+        required="true"
         [(ngModel)]="questionnaire.title"
         (keyup.enter)="saveToSessionStorage()"
         (blur)="saveToSessionStorage()"
@@ -21,7 +22,12 @@
       <mat-icon>add</mat-icon>
       <span>Add question</span>
     </button>
-    <button mat-flat-button class="toolbar-button" (click)="onSubmit()">
+    <button
+      mat-flat-button
+      class="toolbar-button"
+      (click)="onSubmit()"
+      [disabled]="!isFormValid()"
+    >
       <mat-icon>check</mat-icon>
       <span>Submit</span>
     </button>

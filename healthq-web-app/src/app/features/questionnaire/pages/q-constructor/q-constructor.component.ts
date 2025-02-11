@@ -203,6 +203,67 @@ export class QConstructorComponent implements OnInit {
     return deleted;
   }
 
+  getQuestionTypeValue(question: QuestionnaireItem): string {
+    const result: Extension = question.extension?.find(
+      (ext: Extension) => ext.url === 'question-type'
+    );
+
+    return result.valueString;
+  }
+
+  isFormValid(): boolean {
+    if (!this.questionnaire.title || this.questionnaire.title.trim() === '') {
+      return false;
+    }
+
+    return this.validateQuestions(this.questions);
+  }
+
+  private validateQuestions(questions: QuestionnaireItem[]): boolean {
+    for (let question of questions) {
+      const questionType = this.getQuestionTypeValue(question);
+
+      if (!question.text || question.text.trim() === '') {
+        return false;
+      }
+
+      if (questionType === 'OneChoice' || questionType === 'MultipleChoice') {
+        if (!question.answerOption || question.answerOption.length < 2) {
+          return false;
+        } else {
+          for (let option of question.answerOption) {
+            if (!option.valueString || option.valueString.trim() === '') {
+              return false;
+            }
+          }
+        }
+      }
+
+      if (question.enableWhen.length > 0) {
+        for (let condition of question.enableWhen) {
+          if (!condition.operator) {
+            return false;
+          } else if (!condition.question) {
+            return false;
+          } else if (
+            !condition.answerString &&
+            condition.operator !== 'exists'
+          ) {
+            return false;
+          }
+        }
+      }
+
+      if (question.item && question.item.length > 0) {
+        if (!this.validateQuestions(question.item)) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
   onSubmit() {
     const user: User = JSON.parse(sessionStorage.getItem('user')!);
     if (!user) {
