@@ -147,7 +147,6 @@ export class QConstructorComponent implements OnInit {
       text: '',
       type: 'question',
       enableWhen: [],
-      enableBehavior: 'any',
       required: false,
       answerOption: [],
       item: [],

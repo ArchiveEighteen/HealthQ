@@ -12,6 +12,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { QuestionType } from '../../../../shared/enums/question-types';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -39,6 +40,7 @@ import { QuestionConditionComponent } from '../question-condition/question-condi
     MatSlideToggleModule,
     MatExpansionModule,
     QuestionConditionComponent,
+    MatButtonToggleModule,
   ],
   templateUrl: './question.component.html',
   styleUrl: './question.component.scss',
@@ -121,6 +123,7 @@ export class QuestionComponent implements OnInit {
       item: [],
       extension: [{ url: 'question-type', valueString: '' }],
       enableWhen: [{ question: this.question.linkId, operator: 'exists' }],
+      enableBehavior: 'all',
     });
   }
 
@@ -147,5 +150,9 @@ export class QuestionComponent implements OnInit {
     } else {
       console.log('Failed to remove condition!');
     }
+  }
+
+  onEnableBehaviorChange() {
+    this.saveToSessionStorage();
   }
 }

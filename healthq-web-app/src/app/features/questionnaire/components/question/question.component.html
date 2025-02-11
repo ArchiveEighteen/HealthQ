@@ -115,8 +115,22 @@
   </mat-card-content>
   <mat-divider></mat-divider>
   <mat-toolbar class="question-toolbar">
+    @if(conditional === true){
+    <div class="enable-behaviour-container">
+      <span class="card-footer-text"> Conditions met: </span>
+      <mat-button-toggle-group
+        name="enableBehaviour"
+        [(ngModel)]="question.enableBehavior"
+        (change)="onEnableBehaviorChange()"
+      >
+        <mat-button-toggle value="all">All</mat-button-toggle>
+        <mat-button-toggle value="any">Any</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+    }
+
     <mat-slide-toggle labelPosition="before" [(ngModel)]="question.required">
-      Required
+      <span class="card-footer-text"> Required: </span>
     </mat-slide-toggle>
 
     <button
