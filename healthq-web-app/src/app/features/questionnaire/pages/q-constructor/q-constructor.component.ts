@@ -1,4 +1,10 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -11,9 +17,21 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
-import { FormsModule } from '@angular/forms';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import {
+  MAT_DATE_LOCALE,
+  provideNativeDateAdapter,
+} from '@angular/material/core';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import {
   Extension,
+  Period,
   Questionnaire,
   QuestionnaireItem,
   QuestionnaireItemAnswerOption,
@@ -29,6 +47,8 @@ import { QuestionnaireComponent } from '../questionnaire/questionnaire.component
 import { routes } from '../../../../app.routes';
 import { ActivatedRoute, Router } from '@angular/router';
 import { QuestionnaireService } from '../../questionaire.service';
+import { QuestionComponent } from '../../components/question/question.component';
+import { QuestionnaireTopics } from '../../../../shared/enums/questionnaire-topics';
 
 @Component({
   selector: 'app-q-constructor',
@@ -47,14 +67,34 @@ import { QuestionnaireService } from '../../questionaire.service';
     MatDividerModule,
     MatTooltipModule,
     MatMenuModule,
+    QuestionComponent,
+    MatDatepickerModule,
+    ReactiveFormsModule,
   ],
   templateUrl: './q-constructor.component.html',
   styleUrl: './q-constructor.component.scss',
+  providers: [provideNativeDateAdapter()],
 })
 export class QConstructorComponent implements OnInit {
   @ViewChild('questionsContainer') questionsContainer!: ElementRef;
 
-  questionTypes = Object.entries(QuestionType);
+  readonly range = new FormGroup({
+    start: new FormControl<Date | null>(new Date(), [
+      Validators.required,
+      this.minDateValidator,
+    ]),
+    end: new FormControl<Date | null>(null),
+  });
+
+  minDateValidator(control: FormControl) {
+    const selectedDate = control.value;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Normalize to midnight for accuracy
+
+    return selectedDate && selectedDate < today
+      ? { minDateInvalid: true }
+      : null;
+  }
 
   questionnaireTitle: string = 'Some Survey Title';
 
@@ -63,6 +103,10 @@ export class QConstructorComponent implements OnInit {
   questionnaire: Questionnaire;
 
   selectedQuestionType: string;
+
+  questionnaireTopics = Object.entries(QuestionnaireTopics);
+
+  questionnairePurpose: string;
 
   url: string = environment.apiBaseUrl + '/Questionnaire';
 
@@ -97,22 +141,7 @@ export class QConstructorComponent implements OnInit {
     if (savedQuestionnaire) {
       this.questionnaire = JSON.parse(savedQuestionnaire);
     } else {
-      const now = new Date();
-      const offset = -now.getTimezoneOffset(); // Get timezone offset in minutes
-      const sign = offset >= 0 ? '+' : '-'; // Determine the sign for the offset
-      const hoursOffset = String(Math.abs(Math.floor(offset / 60))).padStart(
-        2,
-        '0'
-      ); // Hours part
-      const minutesOffset = String(Math.abs(offset % 60)).padStart(2, '0'); // Minutes part
-
-      const formattedDate = `${now.getFullYear()}-${String(
-        now.getMonth() + 1
-      ).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}T${String(
-        now.getHours()
-      ).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(
-        now.getSeconds()
-      ).padStart(2, '0')}${sign}${hoursOffset}:${minutesOffset}`;
+      const formattedDate = this.getDateFormatted();
 
       this.questionnaire = {
         title: '',
@@ -125,22 +154,79 @@ export class QConstructorComponent implements OnInit {
       };
     }
 
-    // Automatically set the first option as selected
-    if (this.questionTypes.length > 0) {
-      this.selectedQuestionType = this.questionTypes[0][0];
+    this.questions = this.questionnaire.item;
+
+    if (this.questionnaire.purpose) {
+      this.questionnairePurpose = this.questionnaire.purpose;
+    } else {
+      this.questionnairePurpose = this.questionnaireTopics[0][1];
+      this.onQuestionPurposeChange();
     }
 
-    // @ts-ignore
-    this.questions = this.questionnaire.item;
+    if (this.questionnaire.effectivePeriod) {
+      this.range.patchValue({
+        start: new Date(this.questionnaire.effectivePeriod.start),
+        end: new Date(this.questionnaire.effectivePeriod.end),
+      });
+    }
+
+    this.range.statusChanges.subscribe((status) => {
+      if (
+        status === 'VALID' &&
+        this.range.value.start &&
+        this.range.value.end
+      ) {
+        this.onPeriodDueSelected();
+      }
+    });
+  }
+
+  getDateFormatted(): string {
+    // const now = new Date();
+    // const offset = -now.getTimezoneOffset(); // Get timezone offset in minutes
+    // const sign = offset >= 0 ? '+' : '-'; // Determine the sign for the offset
+    // const hoursOffset = String(Math.abs(Math.floor(offset / 60))).padStart(
+    //   2,
+    //   '0'
+    // ); // Hours part
+    // const minutesOffset = String(Math.abs(offset % 60)).padStart(2, '0'); // Minutes part
+
+    // const formattedDate = `${now.getFullYear()}-${String(
+    //   now.getMonth() + 1
+    // ).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}T${String(
+    //   now.getHours()
+    // ).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(
+    //   now.getSeconds()
+    // ).padStart(2, '0')}${sign}${hoursOffset}:${minutesOffset}`;
+
+    // return formattedDate;
+
+    const now = new Date();
+    return now.toISOString();
   }
 
   addQuestion() {
+    const uuid = uuidv4();
+
     this.questions.push({
-      linkId: uuidv4(),
-      type: 'question',
+      id: uuid,
+      extension: [
+        {
+          url: 'question-type',
+          valueString: 'OneChoice',
+        },
+      ],
+      modifierExtension: [],
+      linkId: uuid,
+      definition: '',
+      code: [],
+      prefix: '',
       text: '',
+      type: 'question',
+      enableWhen: [],
+      required: false,
       answerOption: [],
-      extension: [{ url: 'question-type', valueString: '' }],
+      item: [],
     });
 
     // Scroll to the bottom of the container
@@ -154,61 +240,126 @@ export class QConstructorComponent implements OnInit {
     this.saveToSessionStorage();
   }
 
-  onQuestionTypeChange(question: any, event: any) {
-    const selectedType = event.value;
-    const questionTypeExtension = this.getQuestionTypeExtension(question);
-    questionTypeExtension.valueString = selectedType;
-    this.saveToSessionStorage();
-  }
-
   saveToSessionStorage() {
     sessionStorage.setItem('questionnaire', JSON.stringify(this.questionnaire));
   }
 
-  deleteQuestion(question: QuestionnaireItem) {
-    const index = this.questions.indexOf(question);
-    if (index > -1) {
-      this.questions.splice(index, 1);
+  deleteQuestion(
+    questions: QuestionnaireItem[],
+    targetQuestion: QuestionnaireItem
+  ): boolean {
+    let deleted = false;
+
+    const deleteQuestionRecursively = (
+      questions: QuestionnaireItem[],
+      target: QuestionnaireItem
+    ): boolean => {
+      for (let i = 0; i < questions.length; i++) {
+        const question = questions[i];
+
+        if (question.linkId === targetQuestion.linkId) {
+          questions.splice(i, 1);
+          return true;
+        }
+
+        if (question.item.length > 0) {
+          if (deleteQuestionRecursively(question.item, target)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    };
+
+    deleted = deleteQuestionRecursively(questions, targetQuestion);
+
+    if (deleted) {
       this.saveToSessionStorage();
-    } else {
-      console.log('Failed to remove question!');
     }
+
+    return deleted;
   }
 
-  addNewOption(question: QuestionnaireItem) {
-    if (!question.answerOption) {
-      question.answerOption = [];
-    }
-
-    question.answerOption.push({
-      valueString: ``,
-    });
-
+  onQuestionPurposeChange() {
+    this.questionnaire.purpose = this.questionnairePurpose;
     this.saveToSessionStorage();
   }
 
-  deleteOption(
-    question: QuestionnaireItem,
-    option: QuestionnaireItemAnswerOption
-  ) {
-    // @ts-ignore
-    const index = question.answerOption.indexOf(option);
-    if (index > -1) {
-      // @ts-ignore
-      question.answerOption.splice(index, 1);
-    }
+  getQuestionTypeValue(question: QuestionnaireItem): string {
+    const result: Extension = question.extension?.find(
+      (ext: Extension) => ext.url === 'question-type'
+    );
 
-    this.saveToSessionStorage();
+    return result.valueString;
   }
 
-  addConditionalQuestion(parentQuestion: QuestionnaireItem) {
-    this.questions.push({
-      linkId: uuidv4(),
-      type: 'question',
-      text: '',
-      answerOption: [],
-      enableWhen: [{ question: parentQuestion.linkId, operator: 'exists' }],
-    });
+  isFormValid(): boolean {
+    if (!this.questionnaire.title || this.questionnaire.title.trim() === '') {
+      return false;
+    }
+
+    if (
+      !this.questionnaire.description ||
+      this.questionnaire.description.trim() === ''
+    ) {
+      return false;
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (!this.range.value.start || !this.range.value.end) {
+      return false;
+    } else if (this.range.value.start < today) {
+      return false;
+    }
+
+    return this.validateQuestions(this.questions);
+  }
+
+  private validateQuestions(questions: QuestionnaireItem[]): boolean {
+    for (let question of questions) {
+      const questionType = this.getQuestionTypeValue(question);
+
+      if (!question.text || question.text.trim() === '') {
+        return false;
+      }
+
+      if (questionType === 'OneChoice' || questionType === 'MultipleChoice') {
+        if (!question.answerOption || question.answerOption.length < 2) {
+          return false;
+        } else {
+          for (let option of question.answerOption) {
+            if (!option.valueString || option.valueString.trim() === '') {
+              return false;
+            }
+          }
+        }
+      }
+
+      if (question.enableWhen.length > 0) {
+        for (let condition of question.enableWhen) {
+          if (!condition.operator) {
+            return false;
+          } else if (!condition.question) {
+            return false;
+          } else if (
+            !condition.answerString &&
+            condition.operator !== 'exists'
+          ) {
+            return false;
+          }
+        }
+      }
+
+      if (question.item && question.item.length > 0) {
+        if (!this.validateQuestions(question.item)) {
+          return false;
+        }
+      }
+    }
+
+    return true;
   }
 
   onSubmit() {
@@ -222,6 +373,8 @@ export class QConstructorComponent implements OnInit {
     } else {
       this.questionnaire.status = 'active';
     }
+
+    this.questionnaire.date = this.getDateFormatted();
 
     if (this.questionnaire.id) {
       this.constructorService.updateById(this.questionnaire).subscribe({
@@ -256,26 +409,18 @@ export class QConstructorComponent implements OnInit {
         });
     }
 
-
-
     this.router.navigate(['..']);
-  }
-
-  getQuestionTypeExtension(question: QuestionnaireItem): any {
-    return (
-      question.extension?.find((ext: any) => ext.url === 'question-type') || {}
-    );
-  }
-
-  getQuestionTypeValue(question: QuestionnaireItem): any {
-    const result: Extension = question.extension?.find(
-      (ext: Extension) => ext.url === 'question-type'
-    ) || { url: '' };
-
-    return result.valueString;
   }
 
   ngOnDestroy() {
     sessionStorage.removeItem('questionnaire');
+  }
+
+  onPeriodDueSelected() {
+    this.questionnaire.effectivePeriod = {
+      start: this.range.value.start.toISOString(),
+      end: this.range.value.end.toISOString(),
+    };
+    this.saveToSessionStorage();
   }
 }
