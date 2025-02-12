@@ -34,6 +34,59 @@
   </mat-toolbar>
 
   <div class="questions-container" #questionsContainer>
+    <mat-card class="description">
+      <div class="description-title">
+        <mat-form-field class="description-text" subscriptSizing="dynamic">
+          <mat-label>Description</mat-label>
+          <textarea
+            matInput
+            required="true"
+            [(ngModel)]="questionnaire.description"
+            (keyup.enter)="saveToSessionStorage()"
+            (blur)="saveToSessionStorage()"
+          ></textarea>
+        </mat-form-field>
+        <mat-form-field
+          class="questionnaire-purpose-select"
+          subscriptSizing="dynamic"
+        >
+          <mat-label>Questionnaire purpose</mat-label>
+          <span class="spacer"></span>
+          <mat-select
+            [(ngModel)]="questionnairePurpose"
+            (selectionChange)="onQuestionPurposeChange()"
+          >
+            @for(topic of questionnaireTopics; track $index){
+            <mat-option [value]="topic[1]">
+              {{ topic[1] }}
+            </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Period due:</mat-label>
+          <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
+            <input
+              matStartDate
+              formControlName="start"
+              placeholder="Start date"
+            />
+            <input matEndDate formControlName="end" placeholder="End date" />
+          </mat-date-range-input>
+          <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+
+          <mat-error *ngIf="range.controls.start.hasError('minDateInvalid')">
+            Start date cannot be in the past
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </mat-card>
+
     @for (question of questions; track $index) {
     <app-question
       class="question"

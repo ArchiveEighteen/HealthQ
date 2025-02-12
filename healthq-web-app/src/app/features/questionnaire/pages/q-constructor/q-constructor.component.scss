@@ -40,6 +40,13 @@
   box-sizing: border-box;
 }
 
+.description {
+  margin: 1rem 0;
+  width: 100%;
+  max-width: 800px;
+  box-sizing: border-box;
+}
+
 .question-cond {
   margin: 1rem 0;
   width: 100%;
@@ -48,4 +55,25 @@
 
 .invalid {
   border: 2px solid var(--mat-sys-error);
+}
+
+.description-title {
+  display: flex;
+  flex-direction: column;
+  margin: 1rem 1rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.description-title .description-text {
+  white-space: normal;
+  word-wrap: break-word;
+  word-break: break-word;
+  display: inline-block;
+  width: 100%;
+}
+
+.questionnaire-purpose-select {
+  width: 100%;
 }
