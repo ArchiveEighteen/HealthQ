@@ -139,4 +139,22 @@ public class DoctorController : ControllerBase
             return StatusCode(StatusCodes.Status409Conflict, $"{{\"message\":\"{e.Message}\"}}");
         }
     }
+
+    [HttpDelete]
+    public async Task<ActionResult> DeleteById([FromBody] JsonElement questionnaireJson)
+    {
+        try
+        {
+            var userQuestionnaire = await _questionnaireService.DeleteSurveyAsync(questionnaireJson, CancellationToken.None);
+            return Ok(userQuestionnaire);
+        }
+        catch (OperationCanceledException)
+        {
+            return StatusCode(500, "Internal Server Error");
+        }
+        catch (Exception e)
+        {
+            return StatusCode(StatusCodes.Status409Conflict, $"{{\"message\":\"{e.Message}\"}}");
+        }
+    }
 }

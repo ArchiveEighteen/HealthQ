@@ -18,7 +18,7 @@ import { Router, RouterModule } from '@angular/router';
 import { Questionnaire } from 'fhir/r5';
 import { QuestionnaireService } from '../../../../questionnaire/questionaire.service';
 import { User } from '../../../../../core/auth/user.model';
-import { DTemplateComponent } from '../../components/d-template/d-template.component';
+import { DQuestionnaireComponent } from '../../components/d-questionnaire/d-questionnaire.component';
 
 @Component({
   selector: 'app-d-templates-page',
@@ -39,7 +39,7 @@ import { DTemplateComponent } from '../../components/d-template/d-template.compo
     MatSidenavModule,
     MatListModule,
     RouterModule,
-    DTemplateComponent,
+    DQuestionnaireComponent,
   ],
   templateUrl: './d-templates-page.component.html',
   styleUrl: './d-templates-page.component.scss',

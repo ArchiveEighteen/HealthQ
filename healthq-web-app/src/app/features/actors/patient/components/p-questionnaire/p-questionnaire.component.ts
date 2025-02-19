@@ -1,16 +1,16 @@
-import {Component, Input} from '@angular/core';
-import {MatButton} from "@angular/material/button";
+import { Component, Input } from '@angular/core';
+import { MatButton } from '@angular/material/button';
 import {
-    MatCard,
-    MatCardActions,
-    MatCardContent,
-    MatCardHeader,
-    MatCardSubtitle,
-    MatCardTitle
-} from "@angular/material/card";
-import {Questionnaire} from 'fhir/r5';
-import {Router} from '@angular/router';
-import {NgClass} from '@angular/common';
+  MatCard,
+  MatCardActions,
+  MatCardContent,
+  MatCardHeader,
+  MatCardSubtitle,
+  MatCardTitle,
+} from '@angular/material/card';
+import { Questionnaire } from 'fhir/r5';
+import { Router } from '@angular/router';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-p-questionnaire',
@@ -22,10 +22,10 @@ import {NgClass} from '@angular/common';
     MatCardHeader,
     MatCardSubtitle,
     MatCardTitle,
-    NgClass
+    NgClass,
   ],
   templateUrl: './p-questionnaire.component.html',
-  styleUrl: './p-questionnaire.component.scss'
+  styleUrl: './p-questionnaire.component.scss',
 })
 export class PQuestionnaireComponent {
   @Input() questionnaire: Questionnaire;
@@ -35,6 +35,6 @@ export class PQuestionnaireComponent {
   onClick() {
     sessionStorage.setItem('questionnaire', JSON.stringify(this.questionnaire));
 
-    this.router.navigate(['./survey']);
+    this.router.navigate(['Patient', 'questionnaire']);
   }
 }

@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 import { User } from '../../../../../core/auth/user.model';
 import { QuestionnaireService } from '../../../../questionnaire/questionaire.service';
 import { Questionnaire } from 'fhir/r5';
-import { DTemplateComponent } from '../d-template/d-template.component';
+import { DQuestionnaireComponent } from '../d-questionnaire/d-questionnaire.component';
 
 @Component({
   selector: 'app-d-patient',
@@ -16,7 +16,7 @@ import { DTemplateComponent } from '../d-template/d-template.component';
     MatCardModule,
     MatButtonModule,
     MatIconModule,
-    DTemplateComponent,
+    DQuestionnaireComponent,
   ],
   templateUrl: './d-patient.component.html',
   styleUrl: './d-patient.component.scss',
@@ -34,6 +34,26 @@ export class DPatientComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.retrieveQuestionnaires();
+  }
+
+  onQuestionnairesClick() {
+    this.questionnairesToggle = !this.questionnairesToggle;
+  }
+
+  onAssignNewClicked() {
+    this.router.navigate(['Doctor', 'constructor'], {
+      queryParams: { isTemplate: false, patientEmail: this.patient.email },
+    });
+  }
+
+  refreshQuestionnaires() {
+    this.retrieveQuestionnaires();
+  }
+
+  retrieveQuestionnaires() {
+    this.questionnaires.splice(0, this.questionnaires.length);
+
     const user: User = JSON.parse(sessionStorage.getItem('user')!);
     if (!user) {
       console.log('User is invalid!');
@@ -55,15 +75,5 @@ export class DPatientComponent implements OnInit {
           console.log(err);
         },
       });
-  }
-
-  onQuestionnairesClick() {
-    this.questionnairesToggle = !this.questionnairesToggle;
-  }
-
-  onAssignNewClicked() {
-    this.router.navigate(['Doctor', 'constructor'], {
-      queryParams: { isTemplate: false, patientEmail: this.patient.email },
-    });
   }
 }

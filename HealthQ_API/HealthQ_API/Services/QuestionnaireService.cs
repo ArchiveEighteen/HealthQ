@@ -109,4 +109,23 @@ public class QuestionnaireService
 
         return questionnaires;
     }
+    
+    public async Task<QuestionnaireModel?> DeleteSurveyAsync(JsonElement questionnaireJson, CancellationToken ct)
+    {
+        var parse = new FhirJsonParser();
+            
+        var questionnaire = await parse.ParseAsync<Questionnaire>(questionnaireJson.GetRawText());
+        if (questionnaire == null)
+            throw new InvalidCastException("Invalid questionnaire structure");
+            
+        var questionnaireModel = new QuestionnaireModel
+        {
+            OwnerId = questionnaire.Publisher,
+            QuestionnaireContent = questionnaireJson.GetRawText(),
+            Id = Guid.Parse(questionnaire.Id),
+        };
+        
+        await _questionnaireRepository.DeleteQuestionnaireAsync(questionnaireModel.Id, ct);
+        return questionnaireModel;
+    }
 }

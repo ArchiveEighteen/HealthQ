@@ -11,10 +11,12 @@
     </p>
   </mat-card-content>
   <mat-card-actions class="card-actions">
-    <button mat-icon-button (click)="onEditClick()" class="icon-button">
+    @if(template){
+    <button mat-icon-button class="icon-button" (click)="onEditClick()">
       <mat-icon>edit</mat-icon>
     </button>
-    <button mat-icon-button class="icon-button">
+    }
+    <button mat-icon-button class="icon-button" (click)="onDeleteClick()">
       <mat-icon>delete</mat-icon>
     </button>
   </mat-card-actions>

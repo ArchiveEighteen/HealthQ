@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DTemplateComponent } from './d-template.component';
+import { DQuestionnaireComponent } from './d-questionnaire.component';
 
-describe('DTemplateComponent', () => {
-  let component: DTemplateComponent;
-  let fixture: ComponentFixture<DTemplateComponent>;
+describe('DQuestionnaireComponent', () => {
+  let component: DQuestionnaireComponent;
+  let fixture: ComponentFixture<DQuestionnaireComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DTemplateComponent]
+      imports: [DQuestionnaireComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(DTemplateComponent);
+    fixture = TestBed.createComponent(DQuestionnaireComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

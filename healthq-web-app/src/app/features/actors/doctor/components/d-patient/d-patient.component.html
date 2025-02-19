@@ -23,8 +23,13 @@
   <mat-card-content>
     @if(questionnairesToggle === true) { @for (questionnaire of questionnaires;
     track $index) {
-    <app-d-template class="template-card" [questionnaire]="questionnaire">
-    </app-d-template>
+    <app-d-questionnaire
+      class="template-card"
+      [questionnaire]="questionnaire"
+      [patientEmail]="patient.email"
+      (questionnaireDeleted)="refreshQuestionnaires()"
+    >
+    </app-d-questionnaire>
     } } @if (questionnaires.length === 0) {
     <p>No questionnaires assigned</p>
     }

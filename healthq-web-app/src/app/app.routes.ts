@@ -74,12 +74,13 @@ export const routes: Routes = [
         canActivate: [authGuard],
         title: 'My Doctors',
       },
+      {
+        path: 'questionnaire',
+        component: QuestionnaireComponent,
+        canActivate: [authGuard],
+        title: 'Questionnaire',
+      },
     ],
-  },
-  {
-    path: 'questionnaire',
-    component: QuestionnaireComponent,
-    title: 'Questionnaire',
   },
   {
     path: 'login',

@@ -61,4 +61,11 @@ export class QuestionnaireService {
       withCredentials: true,
     });
   }
+
+  deleteById(questionnaire: Questionnaire) {
+    return this.http.delete(this.url + '/DeleteById', {
+      body: questionnaire,
+      withCredentials: true,
+    });
+  }
 }

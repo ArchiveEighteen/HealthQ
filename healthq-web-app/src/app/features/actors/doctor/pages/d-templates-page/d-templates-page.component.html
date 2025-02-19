@@ -1,6 +1,10 @@
 @for (questionnaire of questionnaires; track $index) {
-<app-d-template class="template-card" [questionnaire]="questionnaire">
-</app-d-template>
+<app-d-questionnaire
+  class="template-card"
+  [questionnaire]="questionnaire"
+  [template]="true"
+>
+</app-d-questionnaire>
 }
 
 <button
