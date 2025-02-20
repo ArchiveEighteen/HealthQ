@@ -46,7 +46,7 @@ export class DQuestionnaireComponent implements OnChanges {
   onEditClick() {
     sessionStorage.setItem('questionnaire', JSON.stringify(this.questionnaire));
 
-    this.router.navigate(['/Doctor/constructor']);
+    this.router.navigate([' Doctor', 'constructor']);
   }
 
   onDeleteClick() {

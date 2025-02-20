@@ -88,20 +88,20 @@
     </mat-card>
 
     @for (question of questions; track $index) {
-    <app-question
+    <app-constructor-question
       class="question"
       [question]="question"
       (callSave)="saveToSessionStorage()"
       (callDelete)="deleteQuestion(questions, question)"
-    ></app-question>
+    ></app-constructor-question>
     @for (conditional of question.item; track $index) {
-    <app-question
+    <app-constructor-question
       class="question-cond"
       [question]="conditional"
       (callSave)="saveToSessionStorage()"
       (callDelete)="deleteQuestion(questions, conditional)"
       [conditional]="true"
-    ></app-question>
+    ></app-constructor-question>
     } }
   </div>
 </div>

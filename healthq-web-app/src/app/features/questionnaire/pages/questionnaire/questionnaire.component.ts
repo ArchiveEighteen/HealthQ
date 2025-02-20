@@ -29,6 +29,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { QuestionType } from '../../../../shared/enums/question-types';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { QuestionComponent } from '../../components/question/question.component';
 
 @Component({
   selector: 'app-questionnaire',
@@ -46,6 +47,7 @@ import { ActivatedRoute, Router } from '@angular/router';
     MatDividerModule,
     MatTooltipModule,
     MatMenuModule,
+    QuestionComponent,
   ],
   templateUrl: './questionnaire.component.html',
   styleUrl: './questionnaire.component.scss',
@@ -58,9 +60,16 @@ export class QuestionnaireComponent implements OnInit, OnDestroy {
   constructor(private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe((params) => {
-      this.questionnaire = JSON.parse(params['questionnaire']);
-    });
+    const savedQuestionnaire = sessionStorage.getItem('questionnaire');
+    if (savedQuestionnaire) {
+      this.questionnaire = JSON.parse(savedQuestionnaire);
+    } else {
+      console.log('Failed to retrieve questionnaire from session storage');
+    }
+
+    // this.route.queryParams.subscribe((params) => {
+    //   this.questionnaire = JSON.parse(params['questionnaire']);
+    // });
 
     const date = new Date(this.questionnaire.effectivePeriod.end);
 

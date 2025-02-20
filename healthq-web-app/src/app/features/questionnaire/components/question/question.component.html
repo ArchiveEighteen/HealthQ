@@ -1,29 +1,6 @@
 <mat-card class="question-card">
   <mat-card-title class="question-title">
-    <mat-form-field class="question-text">
-      <mat-label>Question text</mat-label>
-      <textarea
-        matInput
-        required="true"
-        [(ngModel)]="question.text"
-        (keyup.enter)="saveToSessionStorage()"
-        (blur)="saveToSessionStorage()"
-      ></textarea>
-    </mat-form-field>
-    <mat-form-field class="question-type-select">
-      <mat-label>Question type</mat-label>
-      <span class="spacer"></span>
-      <mat-select
-        [(ngModel)]="selectedType"
-        (selectionChange)="onQuestionTypeChange($event)"
-      >
-        @for(type of questionTypes; track $index){
-        <mat-option [value]="type[0]">
-          {{ type[1] }}
-        </mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
+    <mat-label class="question-text">{{ question.text }}</mat-label>
   </mat-card-title>
 
   <mat-divider></mat-divider>
@@ -32,72 +9,24 @@
     <ng-container [ngSwitch]="getQuestionTypeValue()">
       <!-- One choice -->
       <ng-container *ngSwitchCase="'OneChoice'">
-        <div *ngFor="let option of question.answerOption" class="option">
-          <mat-icon class="icon radio-icon">radio_button_unchecked</mat-icon>
-          <mat-form-field subscriptSizing="dynamic" class="answer-form-field">
-            <input
-              matInput
-              [(ngModel)]="option.valueString"
-              (keyup.enter)="saveToSessionStorage()"
-              (blur)="saveToSessionStorage()"
-            />
-            <button
-              *ngIf="option.valueString"
-              matSuffix
-              mat-icon-button
-              aria-label="Clear"
-              (click)="option.valueString = ''"
-            >
-              <mat-icon>close</mat-icon>
-            </button>
-          </mat-form-field>
-          <button
-            mat-icon-button
-            (click)="deleteOption(option)"
-            matTooltip="Remove option"
-          >
-            <mat-icon>remove</mat-icon>
-          </button>
-        </div>
-        <a class="new-option option" (click)="addNewOption()">
-          <mat-icon class="icon radio-icon">radio_button_unchecked</mat-icon>
-          <span>Add option</span>
-        </a>
+        <mat-radio-group class="radio-group">
+          @for (option of question.answerOption; track $index) {
+          <mat-radio-button class="radio-button" [value]="option.valueString">{{
+            option.valueString
+          }}</mat-radio-button>
+          }
+        </mat-radio-group>
       </ng-container>
 
       <!-- Multiple choice -->
       <ng-container *ngSwitchCase="'MultipleChoice'">
-        <div *ngFor="let option of question.answerOption" class="option">
-          <mat-icon class="icon check-icon">check_box_outline_blank</mat-icon>
-          <mat-form-field subscriptSizing="dynamic" class="answer-form-field">
-            <input
-              matInput
-              [(ngModel)]="option.valueString"
-              (keyup.enter)="saveToSessionStorage()"
-              (blur)="saveToSessionStorage()"
-            />
-            <button
-              *ngIf="option.valueString"
-              matSuffix
-              mat-icon-button
-              aria-label="Clear"
-              (click)="option.valueString = ''"
-            >
-              <mat-icon>close</mat-icon>
-            </button>
-          </mat-form-field>
-          <button
-            mat-icon-button
-            (click)="deleteOption(option)"
-            matTooltip="Remove option"
-          >
-            <mat-icon>remove</mat-icon>
-          </button>
+        <div class="checkbox-group">
+          @for (option of question.answerOption; track $index) {
+          <mat-checkbox class="checkbox-button" [value]="option.valueString">{{
+            option.valueString
+          }}</mat-checkbox>
+          }
         </div>
-        <a class="new-option option" (click)="addNewOption()">
-          <mat-icon class="icon check-icon">check_box_outline_blank</mat-icon>
-          <span>Add option</span>
-        </a>
       </ng-container>
 
       <!-- Text input -->

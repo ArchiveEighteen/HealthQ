@@ -28,8 +28,8 @@ import { environment } from '../../../../../environments/environment';
 import { User } from '../../../../core/auth/user.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { QuestionnaireService } from '../../questionaire.service';
-import { QuestionComponent } from '../../components/question/question.component';
 import { QuestionnaireTopics } from '../../../../shared/enums/questionnaire-topics';
+import { ConstructorQuestionComponent } from '../../components/constructor-question/constructor-question.component';
 
 @Component({
   selector: 'app-q-constructor',
@@ -48,9 +48,9 @@ import { QuestionnaireTopics } from '../../../../shared/enums/questionnaire-topi
     MatDividerModule,
     MatTooltipModule,
     MatMenuModule,
-    QuestionComponent,
     MatDatepickerModule,
     ReactiveFormsModule,
+    ConstructorQuestionComponent,
   ],
   templateUrl: './q-constructor.component.html',
   styleUrl: './q-constructor.component.scss',
@@ -113,8 +113,11 @@ export class QConstructorComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    let testVar: string = '';
+
     this.route.queryParams.subscribe((params) => {
-      this.isTemplate = params['isTemplate'];
+      testVar = params['isTemplate'];
+      this.isTemplate = params['isTemplate'] === 'true';
       this.patientEmail = params['patientEmail'];
     });
 

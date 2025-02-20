@@ -13,6 +13,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { QuestionType } from '../../../../shared/enums/question-types';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -39,6 +41,8 @@ import { QuestionConditionComponent } from '../question-condition/question-condi
     MatButtonModule,
     MatSlideToggleModule,
     MatExpansionModule,
+    MatRadioModule,
+    MatCheckboxModule,
     QuestionConditionComponent,
     MatButtonToggleModule,
   ],
@@ -84,6 +88,8 @@ export class QuestionComponent implements OnInit {
     const result: Extension = this.question.extension?.find(
       (ext: Extension) => ext.url === 'question-type'
     );
+
+    const stringValue = result.valueString;
 
     return result.valueString;
   }
