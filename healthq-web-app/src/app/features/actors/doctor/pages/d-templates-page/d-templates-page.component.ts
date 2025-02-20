@@ -45,7 +45,7 @@ import { DQuestionnaireComponent } from '../../components/d-questionnaire/d-ques
   styleUrl: './d-templates-page.component.scss',
 })
 export class DTemplatesPageComponent implements OnInit {
-  questionnaires: Questionnaire[] = [];
+  templates: Questionnaire[] = [];
 
   constructor(
     private constructorService: QuestionnaireService,
@@ -53,6 +53,22 @@ export class DTemplatesPageComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.retrieveDoctorTemplates();
+  }
+
+  onCreateClick() {
+    this.router.navigate(['Doctor', 'constructor'], {
+      queryParams: { isTemplate: true, patientEmail: null },
+    });
+  }
+
+  refreshQuestionnaireList() {
+    this.retrieveDoctorTemplates();
+  }
+
+  retrieveDoctorTemplates() {
+    this.templates.splice(0, this.templates.length);
+
     const user: User = JSON.parse(sessionStorage.getItem('user')!);
     if (!user) {
       console.log('User is invalid!');
@@ -62,21 +78,17 @@ export class DTemplatesPageComponent implements OnInit {
       next: (data) => {
         if (Array.isArray(data)) {
           data.forEach((d) => {
-            this.questionnaires.push(JSON.parse(d));
+            const questionnaire: Questionnaire = JSON.parse(d);
+            if (questionnaire.status === 'draft')
+              this.templates.push(JSON.parse(d));
           });
         }
 
-        console.log(this.questionnaires);
+        console.log(this.templates);
       },
       error: (err) => {
         console.log(err);
       },
-    });
-  }
-
-  onCreateClick() {
-    this.router.navigate(['Doctor', 'constructor'], {
-      queryParams: { isTemplate: true, patientEmail: null },
     });
   }
 }

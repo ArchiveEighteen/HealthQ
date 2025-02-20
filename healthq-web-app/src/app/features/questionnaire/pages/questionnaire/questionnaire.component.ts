@@ -28,7 +28,7 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import { QuestionType } from '../../../../shared/enums/question-types';
 import { AuthService } from '../../../../core/auth/auth.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-questionnaire',
@@ -55,16 +55,12 @@ export class QuestionnaireComponent implements OnInit, OnDestroy {
 
   dateDue: string;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    const savedQuestionnaire = sessionStorage.getItem('questionnaire');
-    if (savedQuestionnaire) {
-      this.questionnaire = JSON.parse(savedQuestionnaire);
-    } else {
-      console.log('Unable to get specified questionnaire');
-      this.router.navigate(['..']);
-    }
+    this.route.queryParams.subscribe((params) => {
+      this.questionnaire = JSON.parse(params['questionnaire']);
+    });
 
     const date = new Date(this.questionnaire.effectivePeriod.end);
 

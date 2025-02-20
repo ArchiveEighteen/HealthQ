@@ -131,6 +131,7 @@ export class QConstructorComponent implements OnInit {
         publisher: (JSON.parse(sessionStorage.getItem('user')!) as User).email,
         description: '',
         item: [],
+        extension: [],
         resourceType: 'Questionnaire',
       };
     }
@@ -334,7 +335,7 @@ export class QConstructorComponent implements OnInit {
       console.log('User is invalid!');
     }
 
-    if (this.isTemplate) {
+    if (this.isTemplate === true) {
       this.questionnaire.status = 'draft';
     } else {
       this.questionnaire.status = 'active';

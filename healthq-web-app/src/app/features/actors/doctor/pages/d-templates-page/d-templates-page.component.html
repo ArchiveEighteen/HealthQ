@@ -1,8 +1,9 @@
-@for (questionnaire of questionnaires; track $index) {
+@for (template of templates; track $index) {
 <app-d-questionnaire
   class="template-card"
-  [questionnaire]="questionnaire"
+  [questionnaire]="template"
   [template]="true"
+  (questionnaireDeleted)="refreshQuestionnaireList()"
 >
 </app-d-questionnaire>
 }
