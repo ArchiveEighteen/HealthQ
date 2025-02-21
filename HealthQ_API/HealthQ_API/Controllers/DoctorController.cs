@@ -27,6 +27,31 @@ public class DoctorController : ControllerBase
         _doctorService = doctorService;
         _userService = userService;
     }
+
+    [HttpGet]
+    public async Task<ActionResult> GetAllDoctors( CancellationToken ct)
+    {
+        try
+        {
+            var doctors = await _doctorService.GetAllDoctors( ct);
+            
+            var usersDto = new List<UserDTO?>();
+            foreach (var doctor in doctors)
+            {
+                var user = await _userService.GetUserByEmailAsync(doctor.UserEmail, ct);
+                if(user == null) continue;
+                
+                usersDto.Add(user);
+            }
+
+            return Ok(usersDto);
+        }
+        catch (OperationCanceledException)
+        {
+            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
+        }
+        
+    }
     
     [HttpGet("{email}")]
     public async Task<ActionResult> GetDoctorQuestionnaires(string email, CancellationToken ct)
@@ -39,7 +64,7 @@ public class DoctorController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(500, "Internal Server Error");
+            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
         }
     }
     
@@ -55,7 +80,7 @@ public class DoctorController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(500, "Internal Server Error");
+            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
         }
     }
     
@@ -79,7 +104,7 @@ public class DoctorController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(500, "Internal Server Error");
+            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
         }
     }
  
@@ -94,7 +119,7 @@ public class DoctorController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(500, "Internal Server Error");
+            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
         }
         catch (Exception e)
         {
@@ -112,7 +137,7 @@ public class DoctorController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(500, "Internal Server Error");
+            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
         }
         catch (Exception e)
         {
@@ -132,7 +157,7 @@ public class DoctorController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(500, "Internal Server Error");
+            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
         }
         catch (Exception e)
         {

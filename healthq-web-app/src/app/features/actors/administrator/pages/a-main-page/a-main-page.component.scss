@@ -1,0 +1,29 @@
+@use "@angular/material" as mat;
+
+.sidenav-container {
+  width: 100%;
+  height: 93vh;
+
+  @include mat.sidenav-overrides(
+      (
+        container-shape: "full",
+
+        container-background-color: var(--mat-sys-secondary-container),
+        container-text-color: var(--mat-sys-on-secondary-container),
+        container-width: 20vh,
+        content-background-color: var(--mat-sys-surface-container-lowest),
+      )
+  );
+}
+
+.active-button {
+  opacity: 0.5;
+}
+
+button{
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  text-align: left;
+}
+

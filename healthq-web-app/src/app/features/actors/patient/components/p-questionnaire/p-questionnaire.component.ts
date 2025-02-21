@@ -15,9 +15,7 @@ import {NgClass} from '@angular/common';
 @Component({
   selector: 'app-p-questionnaire',
   imports: [
-    MatButton,
     MatCard,
-    MatCardActions,
     MatCardContent,
     MatCardHeader,
     MatCardSubtitle,

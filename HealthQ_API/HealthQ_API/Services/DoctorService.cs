@@ -12,6 +12,12 @@ public class DoctorService
         _doctorRepository = doctorRepository;
     }
 
+
+    public async Task<IEnumerable<DoctorModel>> GetAllDoctors(CancellationToken ct)
+    {
+        return await _doctorRepository.GetAllDoctorsAsync(ct);
+        
+    }
     public async Task<IEnumerable<string>> GetPatientIds(string doctorEmail, CancellationToken ct)
     {
         var doctor = await _doctorRepository.GetDoctorWithPatientsAsync(doctorEmail, ct);

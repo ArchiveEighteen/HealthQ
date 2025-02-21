@@ -20,7 +20,6 @@ import {PQuestionnaireComponent} from '../../components/p-questionnaire/p-questi
     MatOption,
     MatLabel,
     FormsModule,
-    NgClass,
     NgForOf,
     MatToolbar,
     MatInput,
