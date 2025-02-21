@@ -94,17 +94,15 @@ public class QuestionnaireService
         return await _questionnaireRepository.GetQuestionnaireAsync(questionnaireId, ct);
     }
 
-    public async Task<List<Questionnaire?>> GetQuestionnairesByPatientAsync(string patientEmail, CancellationToken ct)
+    public async Task<List<string>> GetQuestionnairesByPatientAsync(string patientEmail, CancellationToken ct)
     {
         
         var patient = await _patientRepository.GetPatientWithQuestionnairesAsync(patientEmail, ct);
         if (patient == null)
             throw new NullReferenceException("Patient not found");
-            
-        FhirJsonParser parser = new FhirJsonParser();
         
         var questionnaires = patient.Questionnaires
-            .Select(q => parser.Parse<Questionnaire>(q.QuestionnaireContent))
+            .Select(q => q.QuestionnaireContent)
             .ToList();
 
         return questionnaires;
