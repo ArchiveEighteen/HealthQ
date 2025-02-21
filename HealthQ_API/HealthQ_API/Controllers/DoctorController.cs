@@ -18,13 +18,18 @@ public class DoctorController : ControllerBase
 {
     private readonly QuestionnaireService _questionnaireService;
     private readonly DoctorService _doctorService;
+    private readonly AdminService _adminService;
     private readonly UserService _userService;
 
-    public DoctorController(QuestionnaireService questionnaireService, 
-        DoctorService doctorService, UserService userService)
+    public DoctorController(
+        QuestionnaireService questionnaireService, 
+        DoctorService doctorService,
+        AdminService adminService,
+        UserService userService )
     {
         _questionnaireService = questionnaireService;
         _doctorService = doctorService;
+        _adminService = adminService;
         _userService = userService;
     }
 
@@ -144,6 +149,29 @@ public class DoctorController : ControllerBase
             return StatusCode(StatusCodes.Status409Conflict, $"{{\"message\":\"{e.Message}\"}}");
         }
     }
+
+    [HttpPost("{doctorEmail}/{patientEmail}")]
+    public async Task<ActionResult> AssignPatient(string doctorEmail, string patientEmail, CancellationToken ct)
+    {
+        try
+        {
+            await _adminService.AssignPatientToDoctor(doctorEmail, patientEmail, ct);
+
+            return Ok();
+        }
+        catch (OperationCanceledException)
+        {
+            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
+        }
+        catch (NullReferenceException e)
+        {
+            return StatusCode(StatusCodes.Status404NotFound, $"{{\"message\":\"{e.Message}\"}}");
+        }
+        catch (Exception e)
+        {
+            return StatusCode(StatusCodes.Status409Conflict, $"{{\"message\":\"{e.Message}\"}}");
+        }
+    }
     
     [HttpPut("{patientEmail}")]
     public async Task<ActionResult> AssignToPatient(string patientEmail, [FromBody] JsonElement questionnaireJson, CancellationToken ct)
@@ -160,6 +188,28 @@ public class DoctorController : ControllerBase
             return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
         }
         catch (Exception e)
+        {
+            return StatusCode(StatusCodes.Status409Conflict, $"{{\"message\":\"{e.Message}\"}}");
+        }
+    }
+
+    [HttpGet("{email}")]
+    public async Task<ActionResult> GetNotOwnedPatients(string email, CancellationToken ct)
+    {
+        try
+        {
+            var patients = await _doctorService.GetNotOwnedPatients(email, ct);
+            return Ok(patients);
+        }
+        catch(OperationCanceledException)
+        {
+            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
+        }
+        catch (NullReferenceException e)
+        {
+            return StatusCode(StatusCodes.Status404NotFound, $"{{\"message\":\"{e.Message}\"}}");
+        }
+        catch(Exception e)
         {
             return StatusCode(StatusCodes.Status409Conflict, $"{{\"message\":\"{e.Message}\"}}");
         }

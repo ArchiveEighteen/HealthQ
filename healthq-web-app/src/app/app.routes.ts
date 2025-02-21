@@ -91,7 +91,7 @@ export const routes: Routes = [
         title: 'Doctors',
       },
       {
-        path: 'doctor',
+        path: 'doctor/:email',
         component: ADoctorProfilePageComponent,
         canActivate: [authGuard],
         title: 'Doctor',

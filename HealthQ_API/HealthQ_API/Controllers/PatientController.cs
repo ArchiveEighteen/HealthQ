@@ -1,6 +1,4 @@
 ﻿using HealthQ_API.Services;
-using Hl7.Fhir.Model;
-using Hl7.Fhir.Serialization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,7 +14,8 @@ public class PatientController : ControllerBase
 
     public PatientController(
         UserService userService, 
-        QuestionnaireService questionnaireService)
+        QuestionnaireService questionnaireService
+    )
     {
         _userService = userService;
         _questionnaireService = questionnaireService;

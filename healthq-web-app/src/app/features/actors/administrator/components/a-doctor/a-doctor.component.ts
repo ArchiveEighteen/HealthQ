@@ -23,6 +23,6 @@ export class ADoctorComponent {
   onClick() {
     sessionStorage.setItem('doctor', JSON.stringify(this.doctor));
 
-    this.router.navigate(['../doctor']);
+    this.router.navigate(['Administrator/doctor', this.doctor.email]);
   }
 }

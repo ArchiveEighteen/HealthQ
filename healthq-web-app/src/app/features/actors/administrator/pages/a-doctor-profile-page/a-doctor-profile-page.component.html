@@ -1,1 +1,57 @@
-<p>a-doctor-profile-page works!</p>
+<div class="doctor-profile">
+  <!-- Doctor Info Card -->
+  <mat-card class="doctor-card">
+    <div class="doctor-header">
+      <img [src]="doctor" alt="Doctor Photo" class="doctor-photo">
+      <div class="doctor-details">
+        <h2>{{ doctor.firstName + ' ' + doctor.lastName }}</h2>
+        <p class="email">{{ doctor.email }}</p>
+        <p class="description">{{ doctor.phoneNumber }}</p>
+      </div>
+    </div>
+  </mat-card>
+
+  <!-- Patients List -->
+  <mat-card class="patients-section">
+    <h3>Assigned Patients</h3>
+    <mat-table [dataSource]="patients" class="mat-elevation-z8">
+      <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+        <mat-cell *matCellDef="let patient"> {{ patient.firstName + ' ' + patient.lastName }} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="email">
+        <mat-header-cell *matHeaderCellDef> Email </mat-header-cell>
+        <mat-cell *matCellDef="let patient"> {{ patient.email }} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+        <mat-cell *matCellDef="let patient">
+          <button mat-button color="warn" (click)="removePatient(patient.email)">
+            Remove
+          </button>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+  </mat-card>
+
+  <!-- Assign New Patient -->
+  <mat-card class="assign-section">
+    <h3>Assign New Patient</h3>
+    <mat-form-field appearance="fill">
+      <mat-label>Select a patient</mat-label>
+      <mat-select [(ngModel)]="selectedPatientId">
+        <mat-option *ngFor="let patient of allPatients" [value]="patient.email">
+          {{ patient.firstName + ' ' + patient.lastName }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <button mat-raised-button color="primary" (click)="assignPatient()">
+      Assign
+    </button>
+  </mat-card>
+</div>
