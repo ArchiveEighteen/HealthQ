@@ -1,6 +1,4 @@
 ﻿using HealthQ_API.Services;
-using Hl7.Fhir.Model;
-using Hl7.Fhir.Serialization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,36 +7,26 @@ namespace HealthQ_API.Controllers;
 [Authorize]
 [Route("[controller]/[action]")]
 [ApiController]
-public class PatientController : ControllerBase
+public class PatientController : BaseController
 {
     private readonly UserService _userService;
     private readonly QuestionnaireService _questionnaireService;
 
     public PatientController(
         UserService userService, 
-        QuestionnaireService questionnaireService)
+        QuestionnaireService questionnaireService
+    )
     {
         _userService = userService;
         _questionnaireService = questionnaireService;
     }
 
     [HttpGet("{email}")]
-    public async Task<ActionResult> GetQuestionnaires(string email, CancellationToken ct)
-    {
-        try
+    public Task<ActionResult> GetQuestionnaires(string email, CancellationToken ct) =>
+        ExecuteSafely(async () =>
         {
-            var questionnaires = await _questionnaireService.GetQuestionnairesByPatientAsync(email, ct);
-            
-            return Ok(questionnaires);
+                var questionnaires = await _questionnaireService.GetQuestionnairesByPatientAsync(email, ct);
 
-        }
-        catch(OperationCanceledException)
-        {
-            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
-        }
-        catch(Exception e)
-        {
-            return StatusCode(StatusCodes.Status409Conflict, $"{{\"message\":\"{e.Message}\"}}");
-        }
-    }
+                return Ok(questionnaires);
+        });
 }

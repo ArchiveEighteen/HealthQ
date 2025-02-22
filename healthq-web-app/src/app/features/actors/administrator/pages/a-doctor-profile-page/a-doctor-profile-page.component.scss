@@ -1,0 +1,49 @@
+.doctor-profile {
+  width: 60%;
+  margin: auto;
+  padding: 20px;
+}
+
+.doctor-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.doctor-photo {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.doctor-details {
+  flex: 1;
+}
+
+.email {
+  font-size: 16px;
+  color: gray;
+}
+
+.patients-section {
+  margin-top: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+button {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}

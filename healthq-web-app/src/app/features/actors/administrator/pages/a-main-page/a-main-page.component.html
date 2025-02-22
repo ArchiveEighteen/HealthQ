@@ -1,0 +1,19 @@
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav mode="side" opened class="sidenav">
+    <mat-list>
+      <mat-list-item>
+        <button
+          mat-button
+          [routerLink]="'./doctors'"
+          routerLinkActive="active-button"
+        >
+          <mat-icon>chat_bubble_outline</mat-icon>
+          <span>Doctors</span>
+        </button>
+      </mat-list-item>
+    </mat-list>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <router-outlet> </router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>
