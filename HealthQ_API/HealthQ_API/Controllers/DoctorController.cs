@@ -14,7 +14,7 @@ namespace HealthQ_API.Controllers;
 [Authorize]
 [Route("[controller]/[action]")]
 [ApiController]
-public class DoctorController : ControllerBase
+public class DoctorController : BaseController
 {
     private readonly QuestionnaireService _questionnaireService;
     private readonly DoctorService _doctorService;
@@ -22,10 +22,10 @@ public class DoctorController : ControllerBase
     private readonly UserService _userService;
 
     public DoctorController(
-        QuestionnaireService questionnaireService, 
+        QuestionnaireService questionnaireService,
         DoctorService doctorService,
         AdminService adminService,
-        UserService userService )
+        UserService userService)
     {
         _questionnaireService = questionnaireService;
         _doctorService = doctorService;
@@ -34,184 +34,111 @@ public class DoctorController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult> GetAllDoctors( CancellationToken ct)
-    {
-        try
+    public Task<ActionResult> GetAllDoctors(CancellationToken ct) =>
+        ExecuteSafely(async () =>
         {
-            var doctors = await _doctorService.GetAllDoctors( ct);
-            
+            var doctors = await _doctorService.GetAllDoctors(ct);
+
             var usersDto = new List<UserDTO?>();
             foreach (var doctor in doctors)
             {
                 var user = await _userService.GetUserByEmailAsync(doctor.UserEmail, ct);
-                if(user == null) continue;
-                
+                if (user == null) continue;
+
                 usersDto.Add(user);
             }
 
             return Ok(usersDto);
-        }
-        catch (OperationCanceledException)
-        {
-            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
-        }
-        
-    }
-    
+
+        });
+
     [HttpGet("{email}")]
-    public async Task<ActionResult> GetDoctorQuestionnaires(string email, CancellationToken ct)
-    {
-        try
+    public Task<ActionResult> GetDoctorQuestionnaires(string email, CancellationToken ct) =>
+        ExecuteSafely(async () =>
         {
             var questionnaires = await _questionnaireService.GetAllDoctorSurveysAsync(email, ct);
-            
+
             return Ok(questionnaires);
-        }
-        catch (OperationCanceledException)
-        {
-            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
-        }
-    }
-    
+        });
+
     [HttpGet("{doctorEmail}/{patientEmail}")]
-    public async Task<ActionResult> GetDoctorPatientQuestionnaires(string doctorEmail, string patientEmail, CancellationToken ct)
-    {
-        try
+    public Task<ActionResult> GetDoctorPatientQuestionnaires(string doctorEmail, string patientEmail,
+        CancellationToken ct) =>
+        ExecuteSafely(async () =>
         {
-            var questionnaires = 
+            var questionnaires =
                 await _questionnaireService.GetAllDoctorPatientSurveysAsync(doctorEmail, patientEmail, ct);
-            
+
             return Ok(questionnaires);
-        }
-        catch (OperationCanceledException)
-        {
-            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
-        }
-    }
-    
+        });
+
     [HttpGet("{email}")]
-    public async Task<ActionResult> GetAllDoctorPatients(string email, CancellationToken ct)
-    {
-        try
+    public Task<ActionResult> GetAllDoctorPatients(string email, CancellationToken ct) =>
+        ExecuteSafely(async () =>
         {
             var patientsIds = await _doctorService.GetPatientIds(email, ct);
-            
+
             var usersDto = new List<UserDTO?>();
             foreach (var patientId in patientsIds)
             {
                 var user = await _userService.GetUserByEmailAsync(patientId, ct);
-                if(user == null) continue;
-                
+                if (user == null) continue;
+
                 usersDto.Add(user);
             }
 
             return Ok(usersDto);
-        }
-        catch (OperationCanceledException)
-        {
-            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
-        }
-    }
- 
-    [HttpPost]
-    public async Task<ActionResult> AddByEmail([FromBody] JsonElement questionnaireJson, CancellationToken ct)
-    {
-        try
-        {
+        });
 
+    [HttpPost]
+    public Task<ActionResult> AddByEmail([FromBody] JsonElement questionnaireJson, CancellationToken ct) =>
+        ExecuteSafely(async () =>
+        {
             var userQuestionnaire = await _questionnaireService.AddSurveyAsync(questionnaireJson, ct);
             return Ok(userQuestionnaire);
-        }
-        catch (OperationCanceledException)
-        {
-            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
-        }
-        catch (Exception e)
-        {
-            return StatusCode(StatusCodes.Status409Conflict, $"{{\"message\":\"{e.Message}\"}}");
-        }
-    }
-    
+        });
+
     [HttpPut]
-    public async Task<ActionResult> UpdateById([FromBody] JsonElement questionnaireJson, CancellationToken ct)
-    {
-        try
+    public Task<ActionResult> UpdateById([FromBody] JsonElement questionnaireJson, CancellationToken ct) =>
+        ExecuteSafely(async () =>
         {
             var userQuestionnaire = await _questionnaireService.UpdateSurveyAsync(questionnaireJson, ct);
             return Ok(userQuestionnaire);
-        }
-        catch (OperationCanceledException)
-        {
-            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
-        }
-        catch (Exception e)
-        {
-            return StatusCode(StatusCodes.Status409Conflict, $"{{\"message\":\"{e.Message}\"}}");
-        }
-    }
+        });
 
     [HttpPost("{doctorEmail}/{patientEmail}")]
-    public async Task<ActionResult> AssignPatient(string doctorEmail, string patientEmail, CancellationToken ct)
-    {
-        try
+    public Task<ActionResult> AssignPatient(string doctorEmail, string patientEmail, CancellationToken ct) =>
+        ExecuteSafely(async () =>
         {
             await _adminService.AssignPatientToDoctor(doctorEmail, patientEmail, ct);
 
             return Ok();
-        }
-        catch (OperationCanceledException)
-        {
-            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
-        }
-        catch (NullReferenceException e)
-        {
-            return StatusCode(StatusCodes.Status404NotFound, $"{{\"message\":\"{e.Message}\"}}");
-        }
-        catch (Exception e)
-        {
-            return StatusCode(StatusCodes.Status409Conflict, $"{{\"message\":\"{e.Message}\"}}");
-        }
-    }
-    
+        });
+
     [HttpPut("{patientEmail}")]
-    public async Task<ActionResult> AssignToPatient(string patientEmail, [FromBody] JsonElement questionnaireJson, CancellationToken ct)
-    {
-        try
+    public Task<ActionResult> AssignToPatient(string patientEmail, [FromBody] JsonElement questionnaireJson,
+        CancellationToken ct) => 
+        ExecuteSafely(async () =>
         {
-            var result = 
+            var result =
                 await _questionnaireService.AssignToPatientAsync(questionnaireJson, patientEmail, ct);
-            
+
             return Ok(result?.QuestionnaireContent);
-        }
-        catch (OperationCanceledException)
-        {
-            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
-        }
-        catch (Exception e)
-        {
-            return StatusCode(StatusCodes.Status409Conflict, $"{{\"message\":\"{e.Message}\"}}");
-        }
-    }
+        });
 
     [HttpGet("{email}")]
-    public async Task<ActionResult> GetNotOwnedPatients(string email, CancellationToken ct)
-    {
-        try
+    public Task<ActionResult> GetNotOwnedPatients(string email, CancellationToken ct) => 
+        ExecuteSafely(async () =>
         {
             var patients = await _doctorService.GetNotOwnedPatients(email, ct);
             return Ok(patients);
-        }
-        catch(OperationCanceledException)
+        });
+
+    [HttpDelete("{doctorId}/{patientId}")]
+    public Task<ActionResult> DeletePatient(string doctorId, string patientId, CancellationToken ct) => 
+        ExecuteSafely(async () =>
         {
-            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
-        }
-        catch (NullReferenceException e)
-        {
-            return StatusCode(StatusCodes.Status404NotFound, $"{{\"message\":\"{e.Message}\"}}");
-        }
-        catch(Exception e)
-        {
-            return StatusCode(StatusCodes.Status409Conflict, $"{{\"message\":\"{e.Message}\"}}");
-        }
-    }
+            await _doctorService.RemovePatient(doctorId, patientId, ct);
+            return Ok();
+        });
 }

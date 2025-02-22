@@ -57,4 +57,18 @@ public class DoctorService
         
         return doctor.Patients.Select(p => p.UserEmail);
     }
+
+    public async Task RemovePatient(string doctorId, string patientId, CancellationToken ct)
+    {
+        var doctor = await _doctorRepository.GetDoctorWithPatientsAsync(doctorId, ct);
+        if(doctor == null)
+            throw new NullReferenceException("Doctor not found");
+
+        var patient = doctor.Patients.FirstOrDefault(p => p.UserEmail == patientId);
+        if(patient == null)
+            throw new NullReferenceException("Patient not found");
+        
+        doctor.Patients.Remove(patient);
+        await _doctorRepository.UpdateDoctorAsync(doctor, ct);
+    }
 }

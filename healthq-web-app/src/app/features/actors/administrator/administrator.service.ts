@@ -30,7 +30,7 @@ export class AdministratorService {
     return this.http.post(this.url + '/AssignPatient/' + doctorId + '/' + patientId, null, {withCredentials: true});
   }
 
-  removePatient(doctorId: string, patientId: string) {
-    return this.http.delete(this.url + '/RemovePatient/' + doctorId + '/' + patientId);
+  deletePatient(doctorId: string, patientId: string) {
+    return this.http.delete(this.url + '/DeletePatient/' + doctorId + '/' + patientId, {withCredentials: true});
   }
 }

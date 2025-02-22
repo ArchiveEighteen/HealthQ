@@ -92,7 +92,7 @@ export class ADoctorProfilePageComponent implements OnInit {
   }
 
   removePatient(patientId: string) {
-    this.adminService.removePatient(this.doctor.email, patientId).subscribe(() => {
+    this.adminService.deletePatient(this.doctor.email, patientId).subscribe(() => {
       this.loadDoctorsPatients();
       this.loadNotOwnedPatients();
     });

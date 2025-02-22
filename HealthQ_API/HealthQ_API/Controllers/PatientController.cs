@@ -7,7 +7,7 @@ namespace HealthQ_API.Controllers;
 [Authorize]
 [Route("[controller]/[action]")]
 [ApiController]
-public class PatientController : ControllerBase
+public class PatientController : BaseController
 {
     private readonly UserService _userService;
     private readonly QuestionnaireService _questionnaireService;
@@ -22,22 +22,11 @@ public class PatientController : ControllerBase
     }
 
     [HttpGet("{email}")]
-    public async Task<ActionResult> GetQuestionnaires(string email, CancellationToken ct)
-    {
-        try
+    public Task<ActionResult> GetQuestionnaires(string email, CancellationToken ct) =>
+        ExecuteSafely(async () =>
         {
-            var questionnaires = await _questionnaireService.GetQuestionnairesByPatientAsync(email, ct);
-            
-            return Ok(questionnaires);
+                var questionnaires = await _questionnaireService.GetQuestionnairesByPatientAsync(email, ct);
 
-        }
-        catch(OperationCanceledException)
-        {
-            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
-        }
-        catch(Exception e)
-        {
-            return StatusCode(StatusCodes.Status409Conflict, $"{{\"message\":\"{e.Message}\"}}");
-        }
-    }
+                return Ok(questionnaires);
+        });
 }
