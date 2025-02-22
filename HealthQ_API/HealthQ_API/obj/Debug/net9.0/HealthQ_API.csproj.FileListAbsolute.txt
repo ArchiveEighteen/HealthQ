@@ -505,3 +505,4 @@ E:\A_Work\Project.png\HealthQ_API\HealthQ_API\bin\Debug\net9.0\Hl7.Fhir.Base.dll
 E:\A_Work\Project.png\HealthQ_API\HealthQ_API\bin\Debug\net9.0\Hl7.Fhir.Conformance.dll
 E:\A_Work\Project.png\HealthQ_API\HealthQ_API\bin\Debug\net9.0\Hl7.Fhir.R5.dll
 E:\A_Work\Project.png\HealthQ_API\HealthQ_API\bin\Debug\net9.0\AutoMapper.dll
+C:\Users\Danatello\Documents\HealthQ\HealthQ_API\HealthQ_API\bin\Debug\net9.0\AutoMapper.dll

@@ -39,6 +39,11 @@ export const routes: Routes = [
     title: 'Doctor Main Page',
     children: [
       {
+        path: '',
+        redirectTo: 'patients',
+        pathMatch: 'full',
+      },
+      {
         path: 'templates',
         component: DTemplatesPageComponent,
         canActivate: [authGuard],
