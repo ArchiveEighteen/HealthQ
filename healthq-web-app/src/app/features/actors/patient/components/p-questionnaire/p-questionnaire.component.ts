@@ -33,11 +33,8 @@ export class PQuestionnaireComponent {
   constructor(private router: Router) {}
 
   onClick() {
-    sessionStorage.setItem('questionnaire', JSON.stringify(this.questionnaire));
-    this.router.navigate(['Patient', 'questionnaire']);
-
-    // this.router.navigate(['Patient', 'questionnaire'], {
-    //   queryParams: { questionnaire: JSON.stringify(this.questionnaire) },
-    // });
+    this.router.navigate(['Patient', 'questionnaire'], {
+      queryParams: { questionnaire: JSON.stringify(this.questionnaire) },
+    });
   }
 }

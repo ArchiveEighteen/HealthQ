@@ -6,7 +6,7 @@
       mat-flat-button
       class="toolbar-button"
       (click)="onSubmit()"
-      [disabled]="!isFormValid()"
+      [disabled]="!isAnswerFormValid()"
     >
       <mat-icon>check</mat-icon>
       <span>Submit</span>
@@ -20,15 +20,17 @@
           <p><strong>Purpose:</strong> {{ questionnaire.purpose }}</p>
           <p><strong>Submit due:</strong> {{ dateDue }}</p>
         </div>
-        <p class="description-text">{{ questionnaire.description }}</p>
+        <p class="description-text">
+          <strong>Description:</strong> {{ questionnaire.description }}
+        </p>
       </mat-card-title>
     </mat-card>
 
-    @for (question of questionnaire.item; track $index) {
+    @for (question of questionnaire.item; track $index; let i = $index) {
     <app-question
       class="question"
       [question]="question"
-      (callSave)="saveToSessionStorage()"
+      [observation]="observations[i]"
     ></app-question>
     <!--@for (conditional of question.item; track $index) {
     <app-question

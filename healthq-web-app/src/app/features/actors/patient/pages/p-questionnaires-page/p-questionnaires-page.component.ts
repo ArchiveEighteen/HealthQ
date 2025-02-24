@@ -3,7 +3,7 @@ import { MatIcon } from '@angular/material/icon';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatOption, MatSelect } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
-import { NgClass, NgForOf } from '@angular/common';
+import { JsonPipe, NgClass, NgForOf } from '@angular/common';
 import { PServiceService } from '../../p-service.service';
 import { Router } from '@angular/router';
 import { Questionnaire } from 'fhir/r5';
@@ -56,12 +56,14 @@ export class PQuestionnairesPageComponent implements OnInit {
   loadData() {
     this.questionnaireService.getQuestionnaires().subscribe({
       next: (data) => {
-        this.availableQuestionnaires = data;
-        this.availableQuestionnaires.forEach((q) => {
-          // @ts-ignore
-          q.status = this.getStatusString(q.status);
-        });
-        this.doctors = [...new Set(data.map((q) => q.publisher!))]; // Get unique doctors
+        if (Array.isArray(data)) {
+          for (let q of data) {
+            this.availableQuestionnaires.push(JSON.parse(q));
+          }
+        } else {
+          console.error('Data is not an array!');
+        }
+        // this.doctors = [...new Set(data.map((q) => q.publisher!))];
         this.applyFilters();
       },
       error: (err) => {

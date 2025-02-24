@@ -13,17 +13,23 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatRadioModule } from '@angular/material/radio';
-import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRadioChange, MatRadioModule } from '@angular/material/radio';
+import {
+  MatCheckboxChange,
+  MatCheckboxModule,
+} from '@angular/material/checkbox';
 import { QuestionType } from '../../../../shared/enums/question-types';
-import { v4 as uuidv4 } from 'uuid';
+import { UUIDTypes, v4 as uuidv4 } from 'uuid';
 import {
   Extension,
   QuestionnaireItem,
   QuestionnaireItemAnswerOption,
   QuestionnaireItemEnableWhen,
+  Observation,
 } from 'fhir/r5';
-import { QuestionConditionComponent } from '../question-condition/question-condition.component';
+``;
+import { FileUploadComponent } from '../../../../shared/components/file-upload/file-upload.component';
+import { User } from '../../../../core/auth/user.model';
 
 @Component({
   selector: 'app-question',
@@ -43,45 +49,43 @@ import { QuestionConditionComponent } from '../question-condition/question-condi
     MatExpansionModule,
     MatRadioModule,
     MatCheckboxModule,
-    QuestionConditionComponent,
     MatButtonToggleModule,
+    FileUploadComponent,
   ],
   templateUrl: './question.component.html',
   styleUrl: './question.component.scss',
 })
 export class QuestionComponent implements OnInit {
   @Input({ required: true }) question: QuestionnaireItem;
-  @Input() conditional: boolean = false;
+  @Input({ required: true }) observation: Observation;
 
   @Output() callSave = new EventEmitter<void>();
-  @Output() callDelete = new EventEmitter<void>();
 
   questionTypes = Object.entries(QuestionType);
-  selectedType: string;
 
-  ngOnInit(): void {
-    this.selectedType = this.getQuestionTypeValue();
-    const defaultEvent = { value: this.selectedType };
-    this.onQuestionTypeChange(defaultEvent);
+  selectedCheckboxValues: string[] = [];
+
+  oid: string = uuidv4();
+
+  ngOnInit(): void {}
+
+  onRadioSelectionChange(event: MatRadioChange) {
+    const selectedValue = event.value;
+    this.observation.valueString = selectedValue;
   }
 
-  saveToSessionStorage() {
-    this.callSave.emit();
-  }
+  onCheckboxChange(event: MatCheckboxChange, value: string): void {
+    if (event.checked) {
+      this.selectedCheckboxValues.push(value);
+    } else {
+      this.selectedCheckboxValues = this.selectedCheckboxValues.filter(
+        (v) => v !== value
+      );
+    }
 
-  onQuestionTypeChange(event: any) {
-    const selectedType = event.value;
-    const questionTypeExtension = this.getQuestionTypeExtension();
-    questionTypeExtension.valueString = selectedType;
-    this.saveToSessionStorage();
-  }
+    this.observation.valueString = JSON.stringify(this.selectedCheckboxValues);
 
-  getQuestionTypeExtension(): any {
-    return (
-      this.question.extension?.find(
-        (ext: any) => ext.url === 'question-type'
-      ) || {}
-    );
+    console.log('Selected values:', this.observation.valueString);
   }
 
   getQuestionTypeValue(): string {
@@ -92,72 +96,5 @@ export class QuestionComponent implements OnInit {
     const stringValue = result.valueString;
 
     return result.valueString;
-  }
-
-  deleteOption(option: QuestionnaireItemAnswerOption) {
-    const index = this.question.answerOption.indexOf(option);
-    if (index > -1) {
-      this.question.answerOption.splice(index, 1);
-    }
-
-    this.saveToSessionStorage();
-  }
-
-  addNewOption() {
-    if (!this.question.answerOption) {
-      this.question.answerOption = [];
-    }
-
-    this.question.answerOption.push({
-      valueString: ``,
-    });
-
-    this.saveToSessionStorage();
-  }
-
-  deleteQuestion() {
-    this.callDelete.emit();
-  }
-
-  addConditionalQuestion() {
-    this.question.item.push({
-      linkId: uuidv4(),
-      type: 'question',
-      text: '',
-      answerOption: [],
-      item: [],
-      extension: [{ url: 'question-type', valueString: '' }],
-      enableWhen: [{ question: this.question.linkId, operator: 'exists' }],
-      enableBehavior: 'all',
-    });
-  }
-
-  onRequiredChange(event: Event) {
-    event;
-  }
-
-  onAddConditionClicked() {
-    const initialCondition = this.question.enableWhen.at(0);
-
-    this.question.enableWhen.push({
-      question: initialCondition.question,
-      operator: 'exists',
-    });
-    this.saveToSessionStorage();
-  }
-
-  removeCondition(condition: QuestionnaireItemEnableWhen) {
-    const index = this.question.enableWhen.findIndex((c) => c === condition);
-
-    if (index > -1) {
-      this.question.enableWhen.splice(index, 1);
-      this.saveToSessionStorage();
-    } else {
-      console.log('Failed to remove condition!');
-    }
-  }
-
-  onEnableBehaviorChange() {
-    this.saveToSessionStorage();
   }
 }

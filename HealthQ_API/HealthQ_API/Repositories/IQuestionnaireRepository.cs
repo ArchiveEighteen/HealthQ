@@ -16,7 +16,6 @@ public interface IQuestionnaireRepository
     public Task UpdateQuestionnaireAsync(QuestionnaireModel questionnaire, CancellationToken ct);
     public Task CreateQuestionnaireAsync(QuestionnaireModel questionnaire, CancellationToken ct);
     public Task DeleteQuestionnaireAsync(Guid id, CancellationToken ct);
-    
     public Task CreatePatientQuestionnaireAsync(PatientQuestionnaire patientQuestionnaire, CancellationToken ct);
-    
+    // public Task UploadFileAsync(byte[] file, Guid questionnaireId, CancellationToken ct);
 }
