@@ -12,7 +12,7 @@ namespace HealthQ_API.Controllers;
 [Authorize]
 [Route("[controller]/[action]")]
 [ApiController]
-public class UserController : ControllerBase
+public class UserController : BaseController
 {
     private readonly UserService _userService;
     private readonly AuthService _authService;
@@ -26,56 +26,34 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult> Get(CancellationToken ct)
-    {
-        try
+    public Task<ActionResult> Get(CancellationToken ct) =>
+        ExecuteSafely(async () =>
         {
             var users = await _userService.GetAllUsersAsync(ct);
             return Ok(users);
-        }
-        catch (OperationCanceledException)
-        {
-            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
-        }
-    }
+        });
 
     [HttpGet]
-    public async Task<ActionResult> GetUser(CancellationToken ct)
-    {
-        try
+    public Task<ActionResult> GetUser(CancellationToken ct) =>
+        ExecuteSafely(async () =>
         {
             var email = (User.Identity as ClaimsIdentity)!.FindFirst(ClaimTypes.Email)?.Value;
             if (string.IsNullOrEmpty(email))
                 return Unauthorized();
-            
+
             var userDto = await _userService.GetUserByEmailAsync(email, ct);
 
             return Ok(userDto);
-        }
-        catch (OperationCanceledException)
-        {
-            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
-        }
-        catch (Exception e)
-        {
-            return StatusCode(StatusCodes.Status409Conflict, $"{{\"message\":\"{e.Message}\"}}");
-        }
-    }
+        });
 
     [HttpGet("{email}")]
-    public async Task<ActionResult> GetById(string email, CancellationToken ct)
-    {
-        try
+    public Task<ActionResult> GetById(string email, CancellationToken ct) =>
+        ExecuteSafely(async () =>
         {
             var userDto = await _userService.GetUserByEmailAsync(email, ct);
-            
+
             return Ok(userDto);
-        }
-        catch (OperationCanceledException)
-        {
-            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
-        }
-    }    
+        });
     
     [AllowAnonymous]
     [HttpGet]
@@ -91,98 +69,55 @@ public class UserController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost]
-    public async Task<ActionResult> Register([FromBody] UserDTO user, CancellationToken ct)
-    {
-        try
+    public Task<ActionResult> Register([FromBody] UserDTO user, CancellationToken ct) =>
+        ExecuteSafely(async () =>
         {
             var createdUser = await _userService.CreateUserAsync(user, ct);
-            
+
             var accessToken = _authService.GenerateToken(createdUser.Email);
             var cookieOptions = _authService.GetCookieOptions(createdUser.Email);
             HttpContext.Response.Cookies.Append("auth_token", accessToken, cookieOptions);
-            
+
             return Ok(createdUser);
-        }
-        catch (OperationCanceledException)
-        {
-            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
-        }
-        catch (InvalidCastException)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError, "{\"message\":\"Internal Server Error\"}");
-        }
-        catch (Exception e)
-        {
-            return Conflict($"{{\"message\":\"{e.Message}\"}}");
-        }
-    }
+        });
 
     [AllowAnonymous]
     [HttpPost]
-    public async Task<ActionResult> Login(UserDTO user, CancellationToken ct)
-    {
-        try
+    public Task<ActionResult> Login(UserDTO user, CancellationToken ct) =>
+        ExecuteSafely(async () =>
         {
             var verifiedUser = await _userService.VerifyUserAsync(user, ct);
-            
+
             var accessToken = _authService.GenerateToken(verifiedUser.Email);
             var cookieOptions = _authService.GetCookieOptions(verifiedUser.Email);
             HttpContext.Response.Cookies.Append("auth_token", accessToken, cookieOptions);
-            
+
             return Ok(verifiedUser);
-        }
-        catch (OperationCanceledException)
-        {
-            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
-        }
-        catch (Exception e)
-        {
-            return StatusCode(StatusCodes.Status409Conflict, $"{{\"message\":\"{e.Message}\"}}");
-        }
-    }
+        });
 
     [HttpPut]
-    public async Task<ActionResult> UpdateUser([FromBody] UserDTO user, CancellationToken ct)
-    {
-        try
+    public Task<ActionResult> UpdateUser([FromBody] UserDTO user, CancellationToken ct) =>
+        ExecuteSafely(async () =>
         {
             var updatedUser = await _userService.UpdateUserAsync(user, ct);
-            
+
             return Ok(updatedUser);
-        }
-        catch (OperationCanceledException)
-        {
-            
-            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
-        }
-        catch (Exception e)
-        {
-            return StatusCode(StatusCodes.Status409Conflict, $"{{\"message\":\"{e.Message}\"}}");
-        }
-        
-    }
+        });
 
     [HttpDelete]
     public Task<ActionResult> Logout()
     {
-        
         HttpContext.Response.Cookies.Delete("auth_token");
         
         return Task.FromResult<ActionResult>(Ok());
     }
-    
+
 
     [HttpDelete("{email}")]
-    public async Task<ActionResult> Delete(string email, CancellationToken ct)
-    {
-        try
+    public Task<ActionResult> Delete(string email, CancellationToken ct) =>
+        ExecuteSafely(async () =>
         {
             await _userService.DeleteUserAsync(email, ct);
             return NoContent();
-        }
-        catch (OperationCanceledException)
-        {
-            return StatusCode(StatusCodes.Status499ClientClosedRequest, "{\"message\":\"Operation was canceled\"}");
-        }
-    }
+        });
 }

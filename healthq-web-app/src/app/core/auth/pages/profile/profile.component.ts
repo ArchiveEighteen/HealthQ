@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatCard, MatCardContent, MatCardHeader } from '@angular/material/card';
 import {
@@ -7,11 +7,10 @@ import {
   MatSuffix,
 } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatAnchor, MatButton, MatIconButton } from '@angular/material/button';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { FormsModule, NgForm, NgModel } from '@angular/forms';
+import { MatButton } from '@angular/material/button';
+import { Router } from '@angular/router';
+import { FormsModule, NgForm } from '@angular/forms';
 import { AuthService } from '../../auth.service';
-import { MatGridList, MatGridTile } from '@angular/material/grid-list';
 import {
   MatDatepickerInput,
   MatDatepickerModule,
@@ -22,9 +21,6 @@ import { MatSelect } from '@angular/material/select';
 import { GenderEnum } from '../../../../shared/enums/gender-enum';
 import { UserRoleEnum } from '../../../../shared/enums/user-role-enum';
 import { NgForOf } from '@angular/common';
-import { MatIcon } from '@angular/material/icon';
-import { User } from '../../user.model';
-import { routes } from '../../../../app.routes';
 
 @Component({
   selector: 'app-profile',
@@ -37,11 +33,7 @@ import { routes } from '../../../../app.routes';
     MatLabel,
     MatInputModule,
     MatButton,
-    MatAnchor,
-    RouterLink,
     FormsModule,
-    MatGridList,
-    MatGridTile,
     MatDatepickerInput,
     MatDatepickerToggle,
     MatSuffix,
@@ -50,8 +42,6 @@ import { routes } from '../../../../app.routes';
     MatOption,
     MatCardHeader,
     NgForOf,
-    MatIconButton,
-    MatIcon,
   ],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',
@@ -60,7 +50,6 @@ export class ProfileComponent {
   EGender = Object.entries(GenderEnum);
   EUserRole = Object.entries(UserRoleEnum);
   readonly _currentDate = new Date();
-  errorMessage: string = '';
 
   constructor(
     public service: AuthService,

@@ -24,6 +24,7 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<DoctorService>();
 builder.Services.AddScoped<QuestionnaireService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<AdminService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IQuestionnaireRepository, QuestionnaireRepository>();
 builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();

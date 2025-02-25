@@ -1,0 +1,10 @@
+<mat-card appearance="outlined" class="card-container"
+          (click)="onClick()">
+  <mat-card-header>
+    <mat-card-title>{{ doctor.firstName + ' ' + doctor.lastName }}</mat-card-title>
+    <mat-card-subtitle>{{ doctor.gender }}</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <p>{{ doctor.birthDate }}</p>
+  </mat-card-content>
+</mat-card>

@@ -1,0 +1,18 @@
+<mat-toolbar class="header">
+  <mat-form-field  appearance="outline" class="form-field">
+    <mat-label>Search</mat-label>
+    <input matInput placeholder="Doctor's Name..."
+           [(ngModel)]="searchQuery" (input)="applyFilters()" />
+  </mat-form-field>
+
+</mat-toolbar>
+
+<div class="doctor-list">
+  <app-a-doctor
+    class="doctor"
+    *ngFor="let d of doctors"
+    [doctor]="d"
+  >
+
+  </app-a-doctor>
+</div>

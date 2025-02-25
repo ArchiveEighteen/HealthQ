@@ -6975,19 +6975,24 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Danatello\\.nuget\\packages\\": {}
+    "C:\\Users\\Akmitliviy\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Danatello\\Documents\\HealthQ\\HealthQ_API\\HealthQ_API\\HealthQ_API.csproj",
+      "projectUniqueName": "E:\\A_Work\\Project.png\\HealthQ_API\\HealthQ_API\\HealthQ_API.csproj",
       "projectName": "HealthQ_API",
-      "projectPath": "C:\\Users\\Danatello\\Documents\\HealthQ\\HealthQ_API\\HealthQ_API\\HealthQ_API.csproj",
-      "packagesPath": "C:\\Users\\Danatello\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Danatello\\Documents\\HealthQ\\HealthQ_API\\HealthQ_API\\obj\\",
+      "projectPath": "E:\\A_Work\\Project.png\\HealthQ_API\\HealthQ_API\\HealthQ_API.csproj",
+      "packagesPath": "C:\\Users\\Akmitliviy\\.nuget\\packages\\",
+      "outputPath": "E:\\A_Work\\Project.png\\HealthQ_API\\HealthQ_API\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
-        "C:\\Users\\Danatello\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Akmitliviy\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -7083,7 +7088,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.101/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
