@@ -66,6 +66,10 @@ export class QuestionnaireComponent implements OnInit, OnDestroy {
   constructor(private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe((params) => {
+      this.questionnaire = JSON.parse(params['questionnaire']);
+    });
+
     const user: User = JSON.parse(sessionStorage.getItem('user')!);
     if (!user) {
       console.log('User is invalid!');
