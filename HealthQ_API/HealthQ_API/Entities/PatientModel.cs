@@ -19,4 +19,6 @@ public class PatientModel
     public ICollection<PatientQuestionnaire> PatientQuestionnaires { get; set; } = new List<PatientQuestionnaire>();
     public ICollection<DoctorModel> Doctors { get; set; } = new List<DoctorModel>();
     public ICollection<DoctorPatient> DoctorPatients { get; set; } = new List<DoctorPatient>();
+    
+    public ICollection<ClinicalImpressionModel> ClinicalImpressions { get; set; } = new List<ClinicalImpressionModel>();
 }

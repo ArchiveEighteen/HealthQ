@@ -57,6 +57,12 @@ export const routes: Routes = [
         canActivate: [authGuard],
         title: 'Constructor',
       },
+      {
+        path: 'questionnaire',
+        component: QuestionnaireComponent,
+        canActivate: [authGuard],
+        title: 'Answer Review',
+      },
     ],
   },
   {

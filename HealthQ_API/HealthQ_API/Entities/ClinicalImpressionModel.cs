@@ -22,10 +22,15 @@ public class ClinicalImpressionModel
     public required Guid QuestionnaireId { get; set; }
     
     [Required]
+    [Column("patient_id")]
+    public required string PatientId { get; set; }
+    
+    [Required]
     [Column("questionnaire_content")]
     public required string ClinicalImpressionContent { get; set; }
     
     public QuestionnaireModel? Questionnaire { get; set; }
+    public PatientModel? Patient { get; set; }
     
     public ICollection<ObservationModel> Observations { get; set; } = new List<ObservationModel>();
 }

@@ -1,5 +1,6 @@
 using HealthQ_API.Context;
 using HealthQ_API.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace HealthQ_API.Repositories;
 
@@ -16,5 +17,12 @@ public class ClinicalImpressionRepository : IClinicalImpressionRepository
     {
         await _context.ClinicalImpressions.AddAsync(clinicalImpressionModel, ct);
         await _context.SaveChangesAsync(ct);
+    }
+
+    public async Task<string> GetClinicalImpressionContentByPatientAsync(string questionnaireId, string patientId, CancellationToken ct)
+    {
+        var clinicalImpression = await _context.ClinicalImpressions.FirstOrDefaultAsync(ci => ci.QuestionnaireId == Guid.Parse(questionnaireId) && ci.PatientId == patientId, ct);
+
+        return clinicalImpression != null ?  clinicalImpression.ClinicalImpressionContent : "";
     }
 }

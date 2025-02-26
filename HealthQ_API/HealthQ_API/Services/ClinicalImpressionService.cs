@@ -27,9 +27,15 @@ public class ClinicalImpressionService
         {
             Id = Guid.Parse(clinicalImpression.Id),
             QuestionnaireId = Guid.Parse(questionnaireId),
+            PatientId = clinicalImpression.Subject.Reference,
             ClinicalImpressionContent = clinicalImpressionJson.GetRawText(),
         };
         
         await _clinicalImpressionRepository.SubmitClinicalImpressionAsync(clinicalImpressionModel, CancellationToken.None);
+    }
+
+    public async Task<string> GetClinicalImpressionContentByPatientAsync(string questionnaireId, string patientId)
+    {
+        return await _clinicalImpressionRepository.GetClinicalImpressionContentByPatientAsync(patientId, questionnaireId, CancellationToken.None);
     }
 }

@@ -33,6 +33,7 @@ import { QuestionComponent } from '../../components/question/question.component'
 import { User } from '../../../../core/auth/user.model';
 import { Observable } from 'rxjs';
 import { PServiceService } from '../../../actors/patient/p-service.service';
+import { QuestionnaireService } from '../../questionaire.service';
 
 @Component({
   selector: 'app-questionnaire',
@@ -57,69 +58,111 @@ import { PServiceService } from '../../../actors/patient/p-service.service';
 })
 export class QuestionnaireComponent implements OnInit, OnDestroy {
   questionnaire: Questionnaire;
+  isReview: boolean = false;
 
   observations: Observation[] = [];
 
   dateDue: string;
 
-  clinicalImpression: ClinicalImpression;
+  clinicalImpression: ClinicalImpression = null;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private patientService: PServiceService
+    private patientService: PServiceService,
+    private questionnaireService: QuestionnaireService
   ) {}
+
+  sortObservations() {
+    this.observations.sort((a, b) => {
+      const orderA = this.clinicalImpression.finding.findIndex(
+        (f) => f.item.reference.reference === a.id
+      );
+      const orderB = this.clinicalImpression.finding.findIndex(
+        (f) => f.item.reference.reference === b.id
+      );
+      return orderA - orderB;
+    });
+  }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       this.questionnaire = JSON.parse(params['questionnaire']);
+
+      if (params['isReview']) {
+        this.isReview = params['isReview'] === 'true';
+        this.clinicalImpression = JSON.parse(params['clinicalImpression']);
+
+        for (let i = 0; i < this.clinicalImpression.finding.length; ++i) {
+          this.questionnaireService
+            .getObservationById(
+              this.clinicalImpression.finding[i].item.reference.reference
+            )
+            .subscribe({
+              next: (data) => {
+                this.observations.push(data);
+
+                if (
+                  this.observations.length ===
+                  this.clinicalImpression.finding.length
+                ) {
+                  this.sortObservations();
+                }
+              },
+            });
+        }
+      }
     });
 
-    const user: User = JSON.parse(sessionStorage.getItem('user')!);
-    if (!user) {
-      console.log('User is invalid!');
-    }
+    if (!this.clinicalImpression) {
+      const user: User = JSON.parse(sessionStorage.getItem('user')!);
+      if (!user) {
+        console.log('User is invalid!');
+      }
 
-    const ciid = uuidv4();
-    this.clinicalImpression = {
-      id: ciid,
-      resourceType: 'ClinicalImpression',
-      status: 'preparation',
-      subject: {
-        id: user.email,
-      },
-      finding: [],
-    };
-
-    this.questionnaire.item.forEach((item) => {
-      let observation: Observation = {
-        id: uuidv4(),
-        resourceType: 'Observation',
-        status: 'unknown',
-        code: {},
-        basedOn: [{ reference: item.id }],
-        valueString: '',
+      const ciid = uuidv4();
+      this.clinicalImpression = {
+        id: ciid,
+        resourceType: 'ClinicalImpression',
+        status: 'preparation',
+        subject: {
+          reference: user.email,
+        },
+        finding: [],
       };
 
-      this.observations.push(observation);
+      this.questionnaire.item.forEach((item) => {
+        let observation: Observation = {
+          id: uuidv4(),
+          resourceType: 'Observation',
+          status: 'unknown',
+          code: {},
+          basedOn: [{ reference: item.id }],
+          valueString: '',
+        };
 
-      this.clinicalImpression.finding.push({
-        item: {
-          reference: {
-            type: 'http://hl7.org/fhir/StructureDefinition/Observation',
-            reference: observation.id,
+        this.observations.push(observation);
+
+        this.clinicalImpression.finding.push({
+          item: {
+            reference: {
+              type: 'http://hl7.org/fhir/StructureDefinition/Observation',
+              reference: observation.id,
+            },
           },
-        },
+        });
       });
-    });
+    }
 
-    this.route.queryParams.subscribe((params) => {
-      this.questionnaire = JSON.parse(params['questionnaire']);
-    });
+    this.dateDue = this.convertToReadableDate(
+      this.questionnaire.effectivePeriod.end
+    );
+  }
 
-    const date = new Date(this.questionnaire.effectivePeriod.end);
+  convertToReadableDate(dateStr: string): string {
+    const date = new Date(dateStr);
 
-    this.dateDue =
+    return (
       date.getDate().toString().padStart(2, '0') +
       '.' +
       date.getMonth().toString().padStart(2, '0') +
@@ -130,7 +173,8 @@ export class QuestionnaireComponent implements OnInit, OnDestroy {
       ':' +
       date.getMinutes().toString().padStart(2, '0') +
       ':' +
-      date.getSeconds().toString().padStart(2, '0');
+      date.getSeconds().toString().padStart(2, '0')
+    );
   }
 
   saveToSessionStorage() {
@@ -156,6 +200,18 @@ export class QuestionnaireComponent implements OnInit, OnDestroy {
           console.error('Error:', err);
         },
       });
+
+    this.questionnaire.status = 'retired';
+
+    this.questionnaireService.updateById(this.questionnaire).subscribe({
+      error: (err) => {
+        console.log(err);
+      },
+    });
+  }
+
+  onClose() {
+    this.router.navigate(['..']);
   }
 
   isAnswerFormValid(): boolean {

@@ -51,6 +51,7 @@ import { FileUploadComponent } from '../../../../shared/components/file-upload/f
 export class QuestionComponent implements OnInit {
   @Input({ required: true }) question: QuestionnaireItem;
   @Input({ required: true }) observation: Observation;
+  @Input() isReview: boolean = false;
 
   @Output() callSave = new EventEmitter<void>();
 
@@ -93,5 +94,15 @@ export class QuestionComponent implements OnInit {
 
   onTextareaBlur() {
     this.observation.valueString = this.answerText;
+  }
+
+  stringArrayJsonParse(jsonStr: string): string {
+    let stringArray: string[] = JSON.parse(jsonStr);
+
+    let result: string = '';
+
+    result = stringArray.join(', ');
+
+    return result;
   }
 }

@@ -68,8 +68,6 @@ export class DPatientComponent implements OnInit {
               this.questionnaires.push(JSON.parse(d));
             });
           }
-
-          console.log(this.questionnaires);
         },
         error: (err) => {
           console.log(err);

@@ -1,19 +1,32 @@
-<mat-card appearance="outlined" class="card-container">
+<mat-card
+  appearance="outlined"
+  class="card-container"
+  [ngClass]="{
+    assigned: questionnaire.status === 'active',
+    finished: questionnaire.status === 'retired',
+    outdated: questionnaire.status === 'draft'
+  }"
+>
   <mat-card-header>
     <mat-card-title>{{ questionnaire.title }}</mat-card-title>
-    <mat-card-subtitle>{{ questionnaire.date }}</mat-card-subtitle>
+    <mat-card-subtitle>{{ dateAssigned }}</mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
     <p>{{ questionnaire.description }}</p>
     <p>
-      Questions count:
-      {{ questionnaire.item?.length }}
+      Status:
+      <span>{{ questionnaireStatus }}</span>
     </p>
   </mat-card-content>
   <mat-card-actions class="card-actions">
     @if(template){
     <button mat-icon-button class="icon-button" (click)="onEditClick()">
       <mat-icon>edit</mat-icon>
+    </button>
+    } @if(questionnaire.status === 'retired'){
+    <button mat-button (click)="onViewResultsClicked()">
+      <mat-icon>edit_note</mat-icon>
+      <span>View results</span>
     </button>
     }
     <button mat-icon-button class="icon-button" (click)="onDeleteClick()">

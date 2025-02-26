@@ -72,11 +72,18 @@ namespace HealthQ_API.Migrations
                         .HasColumnType("text")
                         .HasColumnName("questionnaire_content");
 
+                    b.Property<string>("PatientId")
+                        .IsRequired()
+                        .HasColumnType("character varying(254)")
+                        .HasColumnName("patient_id");
+
                     b.Property<Guid>("QuestionnaireId")
                         .HasColumnType("uuid")
                         .HasColumnName("questionnaire_id");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PatientId");
 
                     b.HasIndex("QuestionnaireId");
 
@@ -284,11 +291,19 @@ namespace HealthQ_API.Migrations
 
             modelBuilder.Entity("HealthQ_API.Entities.ClinicalImpressionModel", b =>
                 {
+                    b.HasOne("HealthQ_API.Entities.PatientModel", "Patient")
+                        .WithMany("ClinicalImpressions")
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("HealthQ_API.Entities.QuestionnaireModel", "Questionnaire")
                         .WithMany("ClinicalImpressions")
                         .HasForeignKey("QuestionnaireId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Patient");
 
                     b.Navigation("Questionnaire");
                 });
@@ -349,6 +364,8 @@ namespace HealthQ_API.Migrations
 
             modelBuilder.Entity("HealthQ_API.Entities.PatientModel", b =>
                 {
+                    b.Navigation("ClinicalImpressions");
+
                     b.Navigation("DoctorPatients");
 
                     b.Navigation("PatientQuestionnaires");

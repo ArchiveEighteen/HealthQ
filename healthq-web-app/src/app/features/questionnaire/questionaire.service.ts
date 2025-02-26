@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { Questionnaire } from 'fhir/r5';
+import { ClinicalImpression, Observation, Questionnaire } from 'fhir/r5';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable({
@@ -67,5 +67,25 @@ export class QuestionnaireService {
       body: questionnaire,
       withCredentials: true,
     });
+  }
+
+  getClinicalImpressionContent(questionnaireId: string, patientId: string) {
+    return this.http.get<ClinicalImpression>(
+      this.url +
+        '/GetClinicalImpressionContent/' +
+        questionnaireId +
+        '/' +
+        patientId,
+      { withCredentials: true }
+    );
+  }
+
+  getObservationById(observationId: string) {
+    return this.http.get<Observation>(
+      this.url + '/GetObservationById/' + observationId,
+      {
+        withCredentials: true,
+      }
+    );
   }
 }

@@ -12,3 +12,13 @@
 .icon-button {
   color: var(--mat-sys-primary);
 }
+
+.assigned {
+  background: lightgray;
+}
+.finished {
+  background: lightgreen;
+}
+.outdated {
+  background: lightcoral;
+}

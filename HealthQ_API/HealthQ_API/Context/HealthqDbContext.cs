@@ -110,6 +110,12 @@ public sealed class HealthqDbContext : DbContext
                 .WithMany(q => q.ClinicalImpressions)
                 .HasForeignKey(ci => ci.QuestionnaireId)
                 .OnDelete(DeleteBehavior.Cascade);
+            
+            entity
+                .HasOne(ci => ci.Patient)
+                .WithMany(p => p.ClinicalImpressions)
+                .HasForeignKey(ci => ci.PatientId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<ObservationModel>(entity =>
