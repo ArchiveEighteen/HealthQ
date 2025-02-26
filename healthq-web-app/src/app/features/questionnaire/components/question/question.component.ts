@@ -19,17 +19,10 @@ import {
   MatCheckboxModule,
 } from '@angular/material/checkbox';
 import { QuestionType } from '../../../../shared/enums/question-types';
-import { UUIDTypes, v4 as uuidv4 } from 'uuid';
-import {
-  Extension,
-  QuestionnaireItem,
-  QuestionnaireItemAnswerOption,
-  QuestionnaireItemEnableWhen,
-  Observation,
-} from 'fhir/r5';
+import { v4 as uuidv4 } from 'uuid';
+import { Extension, QuestionnaireItem, Observation } from 'fhir/r5';
 ``;
 import { FileUploadComponent } from '../../../../shared/components/file-upload/file-upload.component';
-import { User } from '../../../../core/auth/user.model';
 
 @Component({
   selector: 'app-question',
@@ -65,6 +58,8 @@ export class QuestionComponent implements OnInit {
 
   selectedCheckboxValues: string[] = [];
 
+  answerText: string = '';
+
   oid: string = uuidv4();
 
   ngOnInit(): void {}
@@ -84,8 +79,6 @@ export class QuestionComponent implements OnInit {
     }
 
     this.observation.valueString = JSON.stringify(this.selectedCheckboxValues);
-
-    console.log('Selected values:', this.observation.valueString);
   }
 
   getQuestionTypeValue(): string {
@@ -96,5 +89,9 @@ export class QuestionComponent implements OnInit {
     const stringValue = result.valueString;
 
     return result.valueString;
+  }
+
+  onTextareaBlur() {
+    this.observation.valueString = this.answerText;
   }
 }

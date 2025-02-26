@@ -13,6 +13,8 @@ public sealed class HealthqDbContext : DbContext
     public DbSet<QuestionnaireModel> Questionnaires { get; set; }
     public DbSet<PatientQuestionnaire> PatientQuestionnaire { get; set; }
     public DbSet<DoctorPatient> DoctorPatients { get; set; }
+    public DbSet<ClinicalImpressionModel> ClinicalImpressions { get; set; }
+    public DbSet<FileModel> Files { get; set; }
     
     public HealthqDbContext()
     {
@@ -88,7 +90,7 @@ public sealed class HealthqDbContext : DbContext
                         .OnDelete(DeleteBehavior.Cascade));
         });
 
-        //QuestionnaireModel
+        // QuestionnaireModel
         modelBuilder.Entity<QuestionnaireModel>(entity =>
         {
             entity
@@ -99,6 +101,15 @@ public sealed class HealthqDbContext : DbContext
 
         });
 
+        // ClinicalImpressionModel
+        modelBuilder.Entity<ClinicalImpressionModel>(entity =>
+        {
+            entity
+                .HasOne(ci => ci.Questionnaire)
+                .WithMany(q => q.ClinicalImpressions)
+                .HasForeignKey(ci => ci.QuestionnaireId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
     }
     
 }

@@ -45,7 +45,11 @@
       <ng-container *ngSwitchCase="'Text'">
         <mat-form-field appearance="outline" class="answer-form-field">
           <mat-label>Answer</mat-label>
-          <textarea matInput></textarea>
+          <textarea
+            matInput
+            [(ngModel)]="answerText"
+            (blur)="onTextareaBlur()"
+          ></textarea>
         </mat-form-field>
       </ng-container>
 

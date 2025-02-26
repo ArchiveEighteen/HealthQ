@@ -32,7 +32,7 @@ export const routes: Routes = [
     path: 'Doctor',
     component: DMainPageComponent,
     canActivate: [authGuard],
-    title: 'Doctor Main Page',
+    title: 'Main Page',
     children: [
       {
         path: '',
@@ -43,13 +43,13 @@ export const routes: Routes = [
         path: 'templates',
         component: DTemplatesPageComponent,
         canActivate: [authGuard],
-        title: 'Doctor Templates Page',
+        title: 'Templates',
       },
       {
         path: 'patients',
         component: DPatientsPageComponent,
         canActivate: [authGuard],
-        title: 'Doctor Patients Page',
+        title: 'Patients',
       },
       {
         path: 'constructor',
@@ -65,6 +65,12 @@ export const routes: Routes = [
     canActivate: [authGuard, patientGuard],
     title: 'Patient Main Page',
     children: [
+      {
+        path: 'questionnaire',
+        component: QuestionnaireComponent,
+        canActivate: [authGuard],
+        title: 'Questionnaire',
+      },
       {
         path: 'questionnaires',
         component: PQuestionnairesPageComponent,

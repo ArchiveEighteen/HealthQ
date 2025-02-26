@@ -28,4 +28,5 @@ public class QuestionnaireModel
     public DoctorModel Owner { get; set; }
     public ICollection<PatientModel> Patients { get; set; } = new List<PatientModel>();
     public ICollection<PatientQuestionnaire> PatientQuestionnaires { get; set; } = new List<PatientQuestionnaire>();
+    public ICollection<ClinicalImpressionModel> ClinicalImpressions { get; set; } = new List<ClinicalImpressionModel>();
 }

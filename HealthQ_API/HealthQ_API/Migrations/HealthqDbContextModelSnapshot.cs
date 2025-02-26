@@ -60,6 +60,29 @@ namespace HealthQ_API.Migrations
                     b.ToTable("patient_questionnaire", "public");
                 });
 
+            modelBuilder.Entity("HealthQ_API.Entities.ClinicalImpressionModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("ClinicalImpressionContent")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("questionnaire_content");
+
+                    b.Property<Guid>("QuestionnaireId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("questionnaire_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionnaireId");
+
+                    b.ToTable("clinical_impressions", "public");
+                });
+
             modelBuilder.Entity("HealthQ_API.Entities.DoctorModel", b =>
                 {
                     b.Property<string>("UserEmail")
@@ -70,6 +93,35 @@ namespace HealthQ_API.Migrations
                     b.HasKey("UserEmail");
 
                     b.ToTable("doctors", "public");
+                });
+
+            modelBuilder.Entity("HealthQ_API.Entities.FileModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("content_type");
+
+                    b.Property<byte[]>("FileData")
+                        .IsRequired()
+                        .HasColumnType("bytea")
+                        .HasColumnName("file_data");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("file_name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Files", "public");
                 });
 
             modelBuilder.Entity("HealthQ_API.Entities.PatientModel", b =>
@@ -207,6 +259,17 @@ namespace HealthQ_API.Migrations
                     b.Navigation("Questionnaire");
                 });
 
+            modelBuilder.Entity("HealthQ_API.Entities.ClinicalImpressionModel", b =>
+                {
+                    b.HasOne("HealthQ_API.Entities.QuestionnaireModel", "Questionnaire")
+                        .WithMany("ClinicalImpressions")
+                        .HasForeignKey("QuestionnaireId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Questionnaire");
+                });
+
             modelBuilder.Entity("HealthQ_API.Entities.DoctorModel", b =>
                 {
                     b.HasOne("HealthQ_API.Entities.UserModel", "User")
@@ -254,6 +317,8 @@ namespace HealthQ_API.Migrations
 
             modelBuilder.Entity("HealthQ_API.Entities.QuestionnaireModel", b =>
                 {
+                    b.Navigation("ClinicalImpressions");
+
                     b.Navigation("PatientQuestionnaires");
                 });
 

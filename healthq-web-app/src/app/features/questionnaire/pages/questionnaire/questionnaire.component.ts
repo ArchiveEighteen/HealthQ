@@ -32,6 +32,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { QuestionComponent } from '../../components/question/question.component';
 import { User } from '../../../../core/auth/user.model';
 import { Observable } from 'rxjs';
+import { PServiceService } from '../../../actors/patient/p-service.service';
 
 @Component({
   selector: 'app-questionnaire',
@@ -63,7 +64,11 @@ export class QuestionnaireComponent implements OnInit, OnDestroy {
 
   clinicalImpression: ClinicalImpression;
 
-  constructor(private router: Router, private route: ActivatedRoute) {}
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private patientService: PServiceService
+  ) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
@@ -99,12 +104,11 @@ export class QuestionnaireComponent implements OnInit, OnDestroy {
       this.observations.push(observation);
 
       this.clinicalImpression.finding.push({
-        item: {
-          reference: {
-            type: 'http://hl7.org/fhir/StructureDefinition/Observation',
-            reference: observation.id,
-          },
-        },
+        item: observation,
+        // reference: {
+        //   type: 'http://hl7.org/fhir/StructureDefinition/Observation',
+        //   reference: observation.id,
+        // },
       });
     });
 
@@ -132,10 +136,30 @@ export class QuestionnaireComponent implements OnInit, OnDestroy {
     sessionStorage.setItem('questionnaire', JSON.stringify(this.questionnaire));
   }
 
-  onSubmit() {}
+  onSubmit() {
+    this.patientService
+      .submitClinicalImpression(this.questionnaire.id, this.clinicalImpression)
+      .subscribe({
+        next: (data) => {
+          this.router.navigate(['..']);
+        },
+        error: (err) => {
+          console.error('Error:', err);
+        },
+      });
+  }
 
   isAnswerFormValid(): boolean {
-    return false;
+    for (let i = 0; i < this.observations.length; i++) {
+      if (
+        this.observations[i].valueString === '' &&
+        this.questionnaire.item[i].required === true
+      ) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   ngOnDestroy(): void {
