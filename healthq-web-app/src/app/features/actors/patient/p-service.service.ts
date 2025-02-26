@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { User } from '../../../core/auth/user.model';
-import { ClinicalImpression } from 'fhir/r5';
+import { ClinicalImpression, Observation } from 'fhir/r5';
 
 @Injectable({
   providedIn: 'root',
@@ -22,13 +22,17 @@ export class PServiceService {
 
   submitClinicalImpression(
     questionnaireId: string,
-    clinicalImpression: ClinicalImpression
+    clinicalImpression: ClinicalImpression,
+    observations: Observation[]
   ) {
-    const clinicalImpressionJson = JSON.stringify(clinicalImpression);
+    const payload = {
+      clinicalImpression,
+      observations,
+    };
 
     return this.http.post(
       this.url + '/SubmitClinicalImpression/' + questionnaireId,
-      clinicalImpressionJson,
+      payload,
       {
         withCredentials: true,
       }

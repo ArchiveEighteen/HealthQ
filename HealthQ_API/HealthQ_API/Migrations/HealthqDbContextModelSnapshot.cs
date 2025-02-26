@@ -124,6 +124,29 @@ namespace HealthQ_API.Migrations
                     b.ToTable("Files", "public");
                 });
 
+            modelBuilder.Entity("HealthQ_API.Entities.ObservationModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("ClinicalImpressionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("clinical_impression_id");
+
+                    b.Property<string>("ObservationContent")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("observation_content");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClinicalImpressionId");
+
+                    b.ToTable("observations", "public");
+                });
+
             modelBuilder.Entity("HealthQ_API.Entities.PatientModel", b =>
                 {
                     b.Property<string>("UserEmail")
@@ -280,6 +303,17 @@ namespace HealthQ_API.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("HealthQ_API.Entities.ObservationModel", b =>
+                {
+                    b.HasOne("HealthQ_API.Entities.ClinicalImpressionModel", "ClinicalImpression")
+                        .WithMany("Observations")
+                        .HasForeignKey("ClinicalImpressionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ClinicalImpression");
+                });
+
             modelBuilder.Entity("HealthQ_API.Entities.PatientModel", b =>
                 {
                     b.HasOne("HealthQ_API.Entities.UserModel", "User")
@@ -299,6 +333,11 @@ namespace HealthQ_API.Migrations
                         .IsRequired();
 
                     b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("HealthQ_API.Entities.ClinicalImpressionModel", b =>
+                {
+                    b.Navigation("Observations");
                 });
 
             modelBuilder.Entity("HealthQ_API.Entities.DoctorModel", b =>

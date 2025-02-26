@@ -14,6 +14,7 @@ public sealed class HealthqDbContext : DbContext
     public DbSet<PatientQuestionnaire> PatientQuestionnaire { get; set; }
     public DbSet<DoctorPatient> DoctorPatients { get; set; }
     public DbSet<ClinicalImpressionModel> ClinicalImpressions { get; set; }
+    public DbSet<ObservationModel> Observations { get; set; }
     public DbSet<FileModel> Files { get; set; }
     
     public HealthqDbContext()
@@ -108,6 +109,15 @@ public sealed class HealthqDbContext : DbContext
                 .HasOne(ci => ci.Questionnaire)
                 .WithMany(q => q.ClinicalImpressions)
                 .HasForeignKey(ci => ci.QuestionnaireId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<ObservationModel>(entity =>
+        {
+            entity
+                .HasOne(o => o.ClinicalImpression)
+                .WithMany(c => c.Observations)
+                .HasForeignKey(o => o.ClinicalImpressionId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }

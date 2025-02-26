@@ -104,11 +104,12 @@ export class QuestionnaireComponent implements OnInit, OnDestroy {
       this.observations.push(observation);
 
       this.clinicalImpression.finding.push({
-        item: observation,
-        // reference: {
-        //   type: 'http://hl7.org/fhir/StructureDefinition/Observation',
-        //   reference: observation.id,
-        // },
+        item: {
+          reference: {
+            type: 'http://hl7.org/fhir/StructureDefinition/Observation',
+            reference: observation.id,
+          },
+        },
       });
     });
 
@@ -137,8 +138,16 @@ export class QuestionnaireComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
+    const now = new Date();
+
+    this.clinicalImpression.date = now.toISOString();
+
     this.patientService
-      .submitClinicalImpression(this.questionnaire.id, this.clinicalImpression)
+      .submitClinicalImpression(
+        this.questionnaire.id,
+        this.clinicalImpression,
+        this.observations
+      )
       .subscribe({
         next: (data) => {
           this.router.navigate(['..']);

@@ -26,4 +26,6 @@ public class ClinicalImpressionModel
     public required string ClinicalImpressionContent { get; set; }
     
     public QuestionnaireModel? Questionnaire { get; set; }
+    
+    public ICollection<ObservationModel> Observations { get; set; } = new List<ObservationModel>();
 }
