@@ -6,6 +6,7 @@
           mat-button
           [routerLink]="'./questionnaires'"
           routerLinkActive="active-button"
+          [routerLinkActiveOptions]="{exact: true}"
         >
           <mat-icon>list_alt</mat-icon>
           <span>Questionnaires</span>
@@ -16,6 +17,7 @@
           mat-button
           [routerLink]="'./doctors'"
           routerLinkActive="active-button"
+          [routerLinkActiveOptions]="{exact: true}"
         >
           <mat-icon>chat_bubble_outline</mat-icon>
           <span>Doctors</span>

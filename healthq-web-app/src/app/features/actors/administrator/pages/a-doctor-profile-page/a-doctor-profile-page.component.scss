@@ -28,6 +28,7 @@
 
 .patients-section {
   margin-top: 20px;
+  padding: 20px;
 }
 
 table {
@@ -40,10 +41,18 @@ td {
   border-bottom: 1px solid #ddd;
 }
 
-button {
-  background-color: red;
-  color: white;
+.assign-button-container{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.assign-button {
   border: none;
-  padding: 5px 10px;
   cursor: pointer;
+  width: 30%;
+}
+
+.icon-button{
+
 }

@@ -14,8 +14,9 @@ import {
   MatRow,
   MatRowDef, MatTable
 } from '@angular/material/table';
-import {MatButton} from '@angular/material/button';
+import {MatButton, MatIconButton} from '@angular/material/button';
 import {User} from '../../../../../core/auth/user.model';
+import {MatIcon} from '@angular/material/icon';
 
 @Component({
   selector: 'app-a-doctor-profile-page',
@@ -37,7 +38,9 @@ import {User} from '../../../../../core/auth/user.model';
     MatCellDef,
     MatButton,
     MatColumnDef,
-    MatTable
+    MatTable,
+    MatIconButton,
+    MatIcon
   ],
   templateUrl: './a-doctor-profile-page.component.html',
   styleUrl: './a-doctor-profile-page.component.scss'
@@ -49,15 +52,21 @@ export class ADoctorProfilePageComponent implements OnInit {
   allPatients: User[] = []; // For assigning new patients
   selectedPatientId: string = '';
   displayedColumns: string[] = ['name', 'email', 'actions'];
+  select: string;
 
   constructor(private adminService: AdministratorService) {}
 
   ngOnInit() {
     this.doctor = JSON.parse(sessionStorage.getItem('doctor')!);
-    this.loadDoctorsPatients();
-    this.loadNotOwnedPatients();
+    this.refresh();
   }
 
+  refresh(){
+    this.loadDoctorsPatients();
+    this.loadNotOwnedPatients();
+
+    this.select
+  }
 
   loadNotOwnedPatients(){
     this.adminService.getNotOwnedPatients(this.doctor.email).subscribe({
