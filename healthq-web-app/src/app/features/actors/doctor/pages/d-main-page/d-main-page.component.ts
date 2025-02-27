@@ -14,7 +14,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { FormsModule } from '@angular/forms';
-import { RouterModule, Routes } from '@angular/router';
+import {ActivatedRoute, Router, RouterModule, Routes} from '@angular/router';
 
 @Component({
   selector: 'app-d-main-page',
@@ -39,4 +39,14 @@ import { RouterModule, Routes } from '@angular/router';
   templateUrl: './d-main-page.component.html',
   styleUrl: './d-main-page.component.scss',
 })
-export class DMainPageComponent {}
+export class DMainPageComponent implements OnInit {
+
+  constructor(public router: Router, public route: ActivatedRoute) {
+  }
+
+  ngOnInit(): void {
+    if(this.router.url === "/Doctor"){
+      this.router.navigate(['./patients'], {relativeTo: this.route});
+    }
+  }
+}

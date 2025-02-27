@@ -3,7 +3,7 @@ import {MatButton} from "@angular/material/button";
 import {MatIcon} from "@angular/material/icon";
 import {MatList, MatListItem} from "@angular/material/list";
 import {MatSidenav, MatSidenavContainer, MatSidenavContent} from "@angular/material/sidenav";
-import {RouterLink, RouterLinkActive, RouterOutlet} from "@angular/router";
+import {ActivatedRoute, Router, RouterLink, RouterLinkActive, RouterOutlet} from "@angular/router";
 
 @Component({
   selector: 'app-p-main-page',
@@ -24,4 +24,12 @@ import {RouterLink, RouterLinkActive, RouterOutlet} from "@angular/router";
 })
 export class PMainPageComponent {
 
+  constructor(public router: Router, public route: ActivatedRoute) {
+  }
+
+  ngOnInit(): void {
+    if(this.router.url === "/Patient"){
+      this.router.navigate(['./questionnaires'], {relativeTo: this.route});
+    }
+  }
 }

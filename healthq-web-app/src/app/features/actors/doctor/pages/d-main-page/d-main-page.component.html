@@ -6,6 +6,7 @@
           mat-button
           [routerLink]="'./patients'"
           routerLinkActive="active-button"
+          [routerLinkActiveOptions]="{exact: true}"
         >
           <mat-icon>personal_injury</mat-icon>
           <span>Patients</span>
@@ -16,6 +17,7 @@
           mat-button
           [routerLink]="'./templates'"
           routerLinkActive="active-button"
+          [routerLinkActiveOptions]="{exact: true}"
         >
           <mat-icon>star</mat-icon>
           <span>Templates</span>

@@ -84,6 +84,12 @@ export const routes: Routes = [
         title: 'My Questionnaires',
       },
       {
+        path: 'questionnaire',
+        component: QuestionnaireComponent,
+        canActivate: [authGuard],
+        title: 'My Questionnaire',
+      },
+      {
         path: 'doctors',
         component: PDoctorsPageComponent,
         canActivate: [authGuard],
@@ -108,6 +114,12 @@ export const routes: Routes = [
         component: ADoctorProfilePageComponent,
         canActivate: [authGuard],
         title: 'Doctor',
+      },
+      {
+        path: 'templates',
+        component: DTemplatesPageComponent,
+        canActivate: [authGuard],
+        title: 'Doctor Templates Page',
       },
     ],
   },
