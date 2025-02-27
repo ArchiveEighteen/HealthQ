@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\build\HealthQ_API.props" />
-</Project>
