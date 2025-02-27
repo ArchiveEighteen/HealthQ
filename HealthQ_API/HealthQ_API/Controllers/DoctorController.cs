@@ -20,17 +20,23 @@ public class DoctorController : BaseController
     private readonly DoctorService _doctorService;
     private readonly AdminService _adminService;
     private readonly UserService _userService;
+    private readonly ClinicalImpressionService _clinicalImpressionService;
+    private readonly ObservationService _observationService;
 
     public DoctorController(
         QuestionnaireService questionnaireService,
         DoctorService doctorService,
         AdminService adminService,
-        UserService userService)
+        UserService userService,
+        ClinicalImpressionService clinicalImpressionService,
+        ObservationService observationService)
     {
         _questionnaireService = questionnaireService;
         _doctorService = doctorService;
         _adminService = adminService;
         _userService = userService;
+        _clinicalImpressionService = clinicalImpressionService;
+        _observationService = observationService;
     }
 
     [HttpGet]
@@ -149,5 +155,21 @@ public class DoctorController : BaseController
             var userQuestionnaire =
                 await _questionnaireService.DeleteSurveyAsync(questionnaireJson, CancellationToken.None);
             return Ok(userQuestionnaire);
+        });
+    
+    [HttpGet("{patientEmail}/{questionnaireId}")]
+    public Task<ActionResult> GetClinicalImpressionContent(string patientEmail, string questionnaireId, CancellationToken ct) => 
+        ExecuteSafely(async () =>
+        {
+            var clinicalImpressionContent = await _clinicalImpressionService.GetClinicalImpressionContentByPatientAsync(questionnaireId, patientEmail);
+            return Ok(clinicalImpressionContent);
+        });
+    
+    [HttpGet("{observationId}")]
+    public Task<ActionResult> GetObservationById(string observationId, CancellationToken ct) => 
+        ExecuteSafely(async () =>
+        {
+            var observationContent = await _observationService.GetByIdAsync(Guid.Parse(observationId));
+            return Ok(observationContent);
         });
 }

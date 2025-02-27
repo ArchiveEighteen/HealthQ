@@ -1,5 +1,6 @@
 .card-container {
   width: 100%;
+  cursor: pointer;
 }
 
 .card-actions {
@@ -12,7 +13,8 @@
 }
 .finished {
   background: lightgreen;
+  cursor: default;
 }
 .outdated {
-  background: lightgray;
+  background: lightcoral;
 }

@@ -19,17 +19,10 @@ import {
   MatCheckboxModule,
 } from '@angular/material/checkbox';
 import { QuestionType } from '../../../../shared/enums/question-types';
-import { UUIDTypes, v4 as uuidv4 } from 'uuid';
-import {
-  Extension,
-  QuestionnaireItem,
-  QuestionnaireItemAnswerOption,
-  QuestionnaireItemEnableWhen,
-  Observation,
-} from 'fhir/r5';
+import { v4 as uuidv4 } from 'uuid';
+import { Extension, QuestionnaireItem, Observation } from 'fhir/r5';
 ``;
 import { FileUploadComponent } from '../../../../shared/components/file-upload/file-upload.component';
-import { User } from '../../../../core/auth/user.model';
 
 @Component({
   selector: 'app-question',
@@ -58,12 +51,15 @@ import { User } from '../../../../core/auth/user.model';
 export class QuestionComponent implements OnInit {
   @Input({ required: true }) question: QuestionnaireItem;
   @Input({ required: true }) observation: Observation;
+  @Input() isReview: boolean = false;
 
   @Output() callSave = new EventEmitter<void>();
 
   questionTypes = Object.entries(QuestionType);
 
   selectedCheckboxValues: string[] = [];
+
+  answerText: string = '';
 
   oid: string = uuidv4();
 
@@ -84,8 +80,6 @@ export class QuestionComponent implements OnInit {
     }
 
     this.observation.valueString = JSON.stringify(this.selectedCheckboxValues);
-
-    console.log('Selected values:', this.observation.valueString);
   }
 
   getQuestionTypeValue(): string {
@@ -96,5 +90,19 @@ export class QuestionComponent implements OnInit {
     const stringValue = result.valueString;
 
     return result.valueString;
+  }
+
+  onTextareaBlur() {
+    this.observation.valueString = this.answerText;
+  }
+
+  stringArrayJsonParse(jsonStr: string): string {
+    let stringArray: string[] = JSON.parse(jsonStr);
+
+    let result: string = '';
+
+    result = stringArray.join(', ');
+
+    return result;
   }
 }

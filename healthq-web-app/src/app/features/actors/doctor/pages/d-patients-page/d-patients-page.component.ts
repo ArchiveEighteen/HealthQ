@@ -29,8 +29,6 @@ export class DPatientsPageComponent implements OnInit {
         if (Array.isArray(data)) {
           this.patients = data;
         }
-
-        console.log(this.patients);
       },
       error: (err) => {
         console.log(err);

@@ -18,10 +18,13 @@
           class="radio-group"
           (change)="onRadioSelectionChange($event)"
         >
-          @for (option of question.answerOption; track $index) {
+          @if(isReview === false){ @for (option of question.answerOption; track
+          $index) {
           <mat-radio-button class="radio-button" [value]="option.valueString">
             <span class="button-title">{{ option.valueString }}</span>
           </mat-radio-button>
+          }} @else {
+          <span>Answer: {{ observation.valueString }}</span>
           }
         </mat-radio-group>
       </ng-container>
@@ -29,7 +32,8 @@
       <!-- Multiple choice -->
       <ng-container *ngSwitchCase="'MultipleChoice'">
         <div class="checkbox-group">
-          @for (option of question.answerOption; track $index) {
+          @if(isReview === false){ @for (option of question.answerOption; track
+          $index) {
           <mat-checkbox
             class="checkbox-button"
             [value]="option.valueString"
@@ -37,21 +41,37 @@
           >
             <span class="button-title">{{ option.valueString }}</span>
           </mat-checkbox>
+          } } @else {
+          <span
+            >Answer: {{ stringArrayJsonParse(observation.valueString) }}</span
+          >
           }
         </div>
       </ng-container>
 
       <!-- Text input -->
       <ng-container *ngSwitchCase="'Text'">
+        @if(isReview === false){
         <mat-form-field appearance="outline" class="answer-form-field">
           <mat-label>Answer</mat-label>
-          <textarea matInput></textarea>
+          <textarea
+            matInput
+            [(ngModel)]="answerText"
+            (blur)="onTextareaBlur()"
+          ></textarea>
         </mat-form-field>
+        } @else{
+        <span>Answer: {{ observation.valueString }}</span>
+        }
       </ng-container>
 
       <!-- File upload -->
       <ng-container *ngSwitchCase="'File'">
+        @if(isReview === false){
         <app-file-upload></app-file-upload>
+        } @else {
+        <span>Answer: {{ observation.valueString }}</span>
+        }
       </ng-container>
     </ng-container>
   </mat-card-content>

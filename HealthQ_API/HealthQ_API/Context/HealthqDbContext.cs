@@ -13,6 +13,9 @@ public sealed class HealthqDbContext : DbContext
     public DbSet<QuestionnaireModel> Questionnaires { get; set; }
     public DbSet<PatientQuestionnaire> PatientQuestionnaire { get; set; }
     public DbSet<DoctorPatient> DoctorPatients { get; set; }
+    public DbSet<ClinicalImpressionModel> ClinicalImpressions { get; set; }
+    public DbSet<ObservationModel> Observations { get; set; }
+    public DbSet<FileModel> Files { get; set; }
     
     public HealthqDbContext()
     {
@@ -88,7 +91,7 @@ public sealed class HealthqDbContext : DbContext
                         .OnDelete(DeleteBehavior.Cascade));
         });
 
-        //QuestionnaireModel
+        // QuestionnaireModel
         modelBuilder.Entity<QuestionnaireModel>(entity =>
         {
             entity
@@ -99,6 +102,30 @@ public sealed class HealthqDbContext : DbContext
 
         });
 
+        // ClinicalImpressionModel
+        modelBuilder.Entity<ClinicalImpressionModel>(entity =>
+        {
+            entity
+                .HasOne(ci => ci.Questionnaire)
+                .WithMany(q => q.ClinicalImpressions)
+                .HasForeignKey(ci => ci.QuestionnaireId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity
+                .HasOne(ci => ci.Patient)
+                .WithMany(p => p.ClinicalImpressions)
+                .HasForeignKey(ci => ci.PatientId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<ObservationModel>(entity =>
+        {
+            entity
+                .HasOne(o => o.ClinicalImpression)
+                .WithMany(c => c.Observations)
+                .HasForeignKey(o => o.ClinicalImpressionId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
     }
     
 }

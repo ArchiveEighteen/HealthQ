@@ -2,6 +2,7 @@
   <mat-toolbar class="header">
     <p class="title-text">{{ questionnaire.title }}</p>
     <span class="spacer"></span>
+    @if(isReview === false){
     <button
       mat-flat-button
       class="toolbar-button"
@@ -11,6 +12,17 @@
       <mat-icon>check</mat-icon>
       <span>Submit</span>
     </button>
+    } @else {
+    <button
+      mat-flat-button
+      class="toolbar-button"
+      (click)="onClose()"
+      [disabled]="!isAnswerFormValid()"
+    >
+      <mat-icon>close</mat-icon>
+      <span>Close</span>
+    </button>
+    }
   </mat-toolbar>
 
   <div class="questions-container" #questionsContainer>
@@ -18,7 +30,14 @@
       <mat-card-title class="description-title">
         <div>
           <p><strong>Purpose:</strong> {{ questionnaire.purpose }}</p>
+          @if(isReview === false){
           <p><strong>Submit due:</strong> {{ dateDue }}</p>
+          } @else {
+          <p>
+            <strong>Submitted:</strong>
+            {{ convertToReadableDate(clinicalImpression.date) }}
+          </p>
+          }
         </div>
         <p class="description-text">
           <strong>Description:</strong> {{ questionnaire.description }}
@@ -31,6 +50,7 @@
       class="question"
       [question]="question"
       [observation]="observations[i]"
+      [isReview]="true"
     ></app-question>
     <!--@for (conditional of question.item; track $index) {
     <app-question
