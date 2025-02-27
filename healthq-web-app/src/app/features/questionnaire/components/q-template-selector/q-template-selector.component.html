@@ -1,0 +1,51 @@
+<mat-card class="template-selector-card">
+  <mat-toolbar>
+    <span>Choose a Questionnaire Template</span>
+    <mat-form-field appearance="outline" class="search-bar">
+      <mat-label>Search</mat-label>
+      <input matInput
+             [(ngModel)]="searchQuery"
+             placeholder="Search by filename">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+  </mat-toolbar>
+
+  <mat-tab-group>
+    <mat-tab label="My Templates">
+      <div class="template-grid">
+        <ng-container *ngFor="let template of filteredTemplates(myTemplates)">
+          <mat-card class="template-card" (click)="selectTemplate(template)">
+            <mat-card-title>{{ template.title }}</mat-card-title>
+            <button *ngIf="canDelete(template)"  mat-icon-button class="icon-button" (click)="removeTemplate(template.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </mat-card>
+        </ng-container>
+      </div>
+    </mat-tab>
+    <mat-tab label="Shared">
+      <div class="template-grid">
+        <ng-container *ngFor="let template of filteredTemplates(sharedTemplates)">
+          <mat-card class="template-card" (click)="selectTemplate(template)">
+            <mat-card-title>{{ template.title }}</mat-card-title>
+            <button *ngIf="canDelete(template)"  mat-icon-button class="icon-button" (click)="removeTemplate(template.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </mat-card>
+        </ng-container>
+      </div>
+    </mat-tab>
+    <mat-tab label="All">
+      <div class="template-grid">
+        <ng-container *ngFor="let template of filteredTemplates(allTemplates)">
+          <mat-card class="template-card" (click)="selectTemplate(template)">
+            <mat-card-title>{{ template.title }}</mat-card-title>
+            <button *ngIf="canDelete(template)"  mat-icon-button class="icon-button" (click)="removeTemplate(template.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </mat-card>
+        </ng-container>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</mat-card>

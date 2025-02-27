@@ -191,6 +191,29 @@ namespace HealthQ_API.Migrations
                     b.ToTable("questionnaires", "public");
                 });
 
+            modelBuilder.Entity("HealthQ_API.Entities.TemplateModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("OwnerId")
+                        .IsRequired()
+                        .HasMaxLength(254)
+                        .HasColumnType("character varying(254)")
+                        .HasColumnName("owner_email");
+
+                    b.Property<string>("QuestionnaireContent")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("questionnaire_content");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("templates", "public");
+                });
+
             modelBuilder.Entity("HealthQ_API.Entities.UserModel", b =>
                 {
                     b.Property<string>("Email")

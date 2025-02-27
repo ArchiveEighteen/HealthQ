@@ -1,5 +1,6 @@
 ﻿using HealthQ_API.DTOs;
 using HealthQ_API.Repositories;
+using HealthQ_API.Repositories.Interfaces;
 
 namespace HealthQ_API.Services;
 

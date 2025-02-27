@@ -116,6 +116,12 @@ export const routes: Routes = [
         title: 'Doctor',
       },
       {
+        path: 'constructor',
+        component: QConstructorComponent,
+        canActivate: [authGuard],
+        title: 'Constructor',
+      },
+      {
         path: 'templates',
         component: DTemplatesPageComponent,
         canActivate: [authGuard],

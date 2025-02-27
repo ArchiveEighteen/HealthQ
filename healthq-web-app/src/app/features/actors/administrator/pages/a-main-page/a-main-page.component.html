@@ -16,12 +16,13 @@
       <mat-list-item>
         <button
           mat-button
-          [routerLink]="'./templates'"
+          [routerLink]="'./constructor'"
+          [queryParams]="{isTemplate: true}"
           routerLinkActive="active-button"
           [routerLinkActiveOptions]="{exact: true}"
         >
           <mat-icon>star</mat-icon>
-          <span>Templates</span>
+          <span>Constructor</span>
         </button>
       </mat-list-item>
     </mat-list>

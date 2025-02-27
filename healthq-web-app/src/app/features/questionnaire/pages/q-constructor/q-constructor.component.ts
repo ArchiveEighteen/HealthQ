@@ -30,6 +30,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { QuestionnaireService } from '../../questionaire.service';
 import { QuestionnaireTopics } from '../../../../shared/enums/questionnaire-topics';
 import { ConstructorQuestionComponent } from '../../components/constructor-question/constructor-question.component';
+import {QTemplateSelectorComponent} from '../../components/q-template-selector/q-template-selector.component';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-q-constructor',
@@ -100,7 +102,8 @@ export class QConstructorComponent implements OnInit {
     private http: HttpClient,
     private constructorService: QuestionnaireService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private dialog: MatDialog
   ) {
     service.get().subscribe({
       next: (data) => {
@@ -121,6 +124,10 @@ export class QConstructorComponent implements OnInit {
       this.patientEmail = params['patientEmail'];
     });
 
+    this.loadQuestionnaire();
+  }
+
+  loadQuestionnaire() {
     const savedQuestionnaire = sessionStorage.getItem('questionnaire');
     if (savedQuestionnaire) {
       this.questionnaire = JSON.parse(savedQuestionnaire);
@@ -271,6 +278,15 @@ export class QConstructorComponent implements OnInit {
       return false;
     }
 
+    if (this.questionnaire.item && this.questionnaire.item.length === 0) {
+      return false;
+    }
+
+    return this.validateQuestions(this.questions);
+  }
+
+  private isDateValid(): boolean{
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -280,11 +296,7 @@ export class QConstructorComponent implements OnInit {
       return false;
     }
 
-    if (this.questionnaire.item && this.questionnaire.item.length === 0) {
-      return false;
-    }
-
-    return this.validateQuestions(this.questions);
+    return true;
   }
 
   private validateQuestions(questions: QuestionnaireItem[]): boolean {
@@ -356,6 +368,9 @@ export class QConstructorComponent implements OnInit {
         },
       });
     } else {
+      this.questionnaire.id = uuidv4();
+      this.questionnaire.publisher = user.email;
+
       this.constructorService
         .addByEmail(user.email, this.questionnaire)
         .subscribe({
@@ -392,5 +407,49 @@ export class QConstructorComponent implements OnInit {
       end: this.range.value.end.toISOString(),
     };
     this.saveToSessionStorage();
+  }
+
+  openTemplateSelector(): void {
+    this.dialog.open(QTemplateSelectorComponent, {
+      maxWidth: 'none',
+      width: '33%',
+      height: '66%',
+      disableClose: false,
+    }).afterClosed().subscribe({
+      next: () => {
+
+        const savedQuestionnaire = sessionStorage.getItem('questionnaire');
+        if (savedQuestionnaire) {
+          this.questionnaire = JSON.parse(savedQuestionnaire);
+        }
+
+        this.loadQuestionnaire();
+      }
+    })
+  }
+
+  saveTemplate(){
+    const user: User = JSON.parse(sessionStorage.getItem('user')!);
+    if (!user) {
+      console.log('User is invalid!');
+    }
+
+    this.questionnaire.date = this.getDateFormatted();
+    this.questionnaire.id = uuidv4();
+
+    if(user.userType === 'Administrator') {
+      this.questionnaire.publisher = 'shared';
+    }else{
+      this.questionnaire.publisher = user.email;
+    }
+
+    this.constructorService.saveTemplate(this.questionnaire).subscribe({
+      next: (data) => console.log(data),
+      error: (err) => console.log(err),
+    })
+  }
+
+  canSubmit(): boolean {
+    return this.patientEmail && this.isFormValid() && this.isDateValid();
   }
 }

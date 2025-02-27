@@ -59,12 +59,12 @@ public class DoctorController : BaseController
         });
 
     [HttpGet("{email}")]
-    public Task<ActionResult> GetDoctorQuestionnaires(string email, CancellationToken ct) =>
+    public Task<ActionResult> GetDoctorTemplates(string email, CancellationToken ct) =>
         ExecuteSafely(async () =>
         {
-            var questionnaires = await _questionnaireService.GetAllDoctorSurveysAsync(email, ct);
+            var templates = await _questionnaireService.GetDoctorTemplatesAsync(email, ct);
 
-            return Ok(questionnaires);
+            return Ok(templates);
         });
 
     [HttpGet("{doctorEmail}/{patientEmail}")]
@@ -102,6 +102,14 @@ public class DoctorController : BaseController
         {
             var userQuestionnaire = await _questionnaireService.AddSurveyAsync(questionnaireJson, ct);
             return Ok(userQuestionnaire);
+        });
+
+    [HttpPost]
+    public Task<ActionResult> SaveTemplate([FromBody] JsonElement templateJson, CancellationToken ct) =>
+        ExecuteSafely(async () =>
+        {
+            var template = await _questionnaireService.AddTemplateAsync(templateJson, ct);
+            return Ok(template);
         });
 
     [HttpPut]
@@ -149,12 +157,20 @@ public class DoctorController : BaseController
         });
     
     [HttpDelete]
-    public Task<ActionResult> DeleteById([FromBody] JsonElement questionnaireJson) =>
+    public Task<ActionResult> DeleteById([FromBody] JsonElement questionnaireJson, CancellationToken ct) =>
         ExecuteSafely(async () =>
         {
             var userQuestionnaire =
-                await _questionnaireService.DeleteSurveyAsync(questionnaireJson, CancellationToken.None);
+                await _questionnaireService.DeleteSurveyAsync(questionnaireJson, ct);
             return Ok(userQuestionnaire);
+        });
+    
+    [HttpDelete("{templateId}")]
+    public Task<ActionResult> DeleteTemplate(string templateId, CancellationToken ct) =>
+        ExecuteSafely(async () =>
+        {
+            await _questionnaireService.DeleteTemplateAsync(templateId, ct);
+            return Ok();
         });
     
     [HttpGet("{patientEmail}/{questionnaireId}")]

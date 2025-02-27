@@ -4,6 +4,7 @@ using HealthQ_API.Context;
 using HealthQ_API.DTOs;
 using HealthQ_API.Entities;
 using HealthQ_API.Repositories;
+using HealthQ_API.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 

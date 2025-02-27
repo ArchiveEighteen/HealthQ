@@ -1,5 +1,6 @@
 using HealthQ_API.Context;
 using HealthQ_API.Entities;
+using HealthQ_API.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace HealthQ_API.Repositories;

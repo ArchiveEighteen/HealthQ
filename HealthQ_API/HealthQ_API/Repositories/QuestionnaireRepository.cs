@@ -1,6 +1,7 @@
 ﻿using HealthQ_API.Context;
 using HealthQ_API.Entities;
 using HealthQ_API.Entities.Auxiliary;
+using HealthQ_API.Repositories.Interfaces;
 using Hl7.Fhir.Model;
 using Microsoft.EntityFrameworkCore;
 using Task = System.Threading.Tasks.Task;
@@ -25,7 +26,7 @@ public class QuestionnaireRepository : IQuestionnaireRepository
     public async Task<IEnumerable<QuestionnaireModel>> GetQuestionnairesByOwnerAsync(string doctorEmail, CancellationToken ct)
     {
         var questionnaires =  await _context.Questionnaires
-            .Where(q => q.OwnerId == doctorEmail)
+            .Where(q => q.OwnerId == doctorEmail || q.OwnerId == "shared")
             .ToListAsync(ct);
         
         return questionnaires;

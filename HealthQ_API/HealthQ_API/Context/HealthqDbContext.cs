@@ -11,6 +11,7 @@ public sealed class HealthqDbContext : DbContext
     public DbSet<DoctorModel> Doctors { get; set; }
     public DbSet<PatientModel> Patients { get; set; }
     public DbSet<QuestionnaireModel> Questionnaires { get; set; }
+    public DbSet<TemplateModel> Templates { get; set; }
     public DbSet<PatientQuestionnaire> PatientQuestionnaire { get; set; }
     public DbSet<DoctorPatient> DoctorPatients { get; set; }
     public DbSet<ClinicalImpressionModel> ClinicalImpressions { get; set; }

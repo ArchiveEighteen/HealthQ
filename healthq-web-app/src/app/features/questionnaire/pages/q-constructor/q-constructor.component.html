@@ -10,11 +10,11 @@
         (blur)="saveToSessionStorage()"
       />
     </mat-form-field>
-    <button mat-flat-button class="toolbar-button" disabled="true">
+    <button mat-flat-button class="toolbar-button" (click)="openTemplateSelector()">
       <mat-icon>star</mat-icon>
       <span>Select template</span>
     </button>
-    <button mat-flat-button class="toolbar-button" disabled="true">
+    <button mat-flat-button class="toolbar-button" (click)="saveTemplate()" [disabled]="!isFormValid()">
       <mat-icon>bookmark</mat-icon>
       <span>Save template</span>
     </button>
@@ -26,7 +26,7 @@
       mat-flat-button
       class="toolbar-button"
       (click)="onSubmit()"
-      [disabled]="!isFormValid()"
+      [disabled]="!canSubmit()"
     >
       <mat-icon>check</mat-icon>
       <span>Submit</span>

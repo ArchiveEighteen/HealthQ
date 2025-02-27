@@ -1,6 +1,6 @@
 ﻿using HealthQ_API.Entities;
 
-namespace HealthQ_API.Repositories;
+namespace HealthQ_API.Repositories.Interfaces;
 
 public interface IDoctorRepository
 {

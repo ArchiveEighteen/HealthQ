@@ -1,9 +1,8 @@
 ﻿using HealthQ_API.Entities;
 using HealthQ_API.Entities.Auxiliary;
-using Hl7.Fhir.Model;
 using Task = System.Threading.Tasks.Task;
 
-namespace HealthQ_API.Repositories;
+namespace HealthQ_API.Repositories.Interfaces;
 
 public interface IQuestionnaireRepository
 {

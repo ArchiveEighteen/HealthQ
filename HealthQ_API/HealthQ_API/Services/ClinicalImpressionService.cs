@@ -1,6 +1,7 @@
 using System.Text.Json;
 using HealthQ_API.Entities;
 using HealthQ_API.Repositories;
+using HealthQ_API.Repositories.Interfaces;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
 using Hl7.FhirPath.Sprache;
